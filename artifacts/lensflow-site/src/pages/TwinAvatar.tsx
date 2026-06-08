@@ -592,7 +592,7 @@ export default function TwinAvatar() {
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href="mailto:prestige@lensflow.com.au?subject=Twin+Avatar+Solution+Enquiry">
                 <Button className="rounded-full h-14 px-10 text-base font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-2xl shadow-primary/25">
-                  Apply for Twin Avatar <ArrowRight className="w-5 h-5 ml-2" />
+                  Claim Your Twin Avatar <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </a>
               <Link href="/pricing">
