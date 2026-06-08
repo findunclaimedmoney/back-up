@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link2, ArrowRight, Mic, Loader2, Play, ChevronDown, CheckCircle2, ImagePlus, X, Upload, Camera, Music2, Film, Video, Square, User, Bot, Layers } from "lucide-react";
+import { Link2, ArrowRight, Mic, Loader2, Play, ChevronDown, CheckCircle2, ImagePlus, X, Upload, Camera, Music2, Film, Video, Square, User, Bot, Layers, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useUpload } from "@workspace/object-storage-web";
@@ -223,6 +223,8 @@ export default function NewJob() {
   const [uploadingCount, setUploadingCount] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [enhancePhotos, setEnhancePhotos] = useState(true);
+  const [roomRescue, setRoomRescue] = useState(false);
+  const [roomRescueMode, setRoomRescueMode] = useState<"declutter" | "staging">("declutter");
   const [outputType, setOutputType] = useState<"presenter" | "voice_photos" | "film_myself">("presenter");
   const [selectedBackground, setSelectedBackground] = useState<string>("studio");
   const [filmStep, setFilmStep] = useState<"configure" | "script-ready" | "recording" | "uploading">("configure");
@@ -426,6 +428,8 @@ export default function NewJob() {
           propertyImages: readyPhotos.map((p) => p.publicUrl),
           musicTrack: values.musicTrack || undefined,
           enhancePhotos: enhancePhotos ? true : undefined,
+          roomRescue: roomRescue ? true : undefined,
+          roomRescueMode: roomRescue ? roomRescueMode : undefined,
           outputType: outputType as "presenter" | "voice_photos",
           lookId: selectedLookId ?? undefined,
         },
@@ -1077,6 +1081,62 @@ export default function NewJob() {
                     <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${enhancePhotos ? "translate-x-4" : "translate-x-0"}`} />
                   </div>
                 </button>
+              )}
+
+              {/* AI Room Rescue toggle */}
+              <button
+                type="button"
+                onClick={() => setRoomRescue((v) => !v)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border text-left transition-all ${
+                  roomRescue
+                    ? "border-violet-500/50 bg-violet-500/5"
+                    : "border-border hover:border-violet-500/30"
+                }`}
+              >
+                <Wand2 className={`w-5 h-5 shrink-0 ${roomRescue ? "text-violet-400" : "text-muted-foreground/50"}`} />
+                <div className="flex-1 min-w-0">
+                  <div className={`text-sm font-mono font-medium ${roomRescue ? "text-foreground" : "text-muted-foreground"}`}>
+                    AI Room Rescue
+                  </div>
+                  <div className="text-[10px] text-muted-foreground/60 leading-tight mt-0.5">
+                    Declutter messy rooms or virtually stage empty ones — requires your approval before use
+                  </div>
+                </div>
+                <div className={`w-9 h-5 rounded-full transition-colors flex items-center px-0.5 shrink-0 ${roomRescue ? "bg-violet-600" : "bg-muted"}`}>
+                  <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${roomRescue ? "translate-x-4" : "translate-x-0"}`} />
+                </div>
+              </button>
+
+              {/* Mode picker — shown when Room Rescue is enabled */}
+              {roomRescue && (
+                <div className="flex gap-2 pl-1">
+                  {([
+                    { id: "declutter" as const, label: "Declutter", desc: "Remove clutter, tidy the space" },
+                    { id: "staging" as const, label: "Virtual Staging", desc: "Add furniture to empty rooms" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setRoomRescueMode(opt.id)}
+                      className={`flex-1 px-3 py-2 rounded-lg border text-left transition-all ${
+                        roomRescueMode === opt.id
+                          ? "border-violet-500/50 bg-violet-500/8"
+                          : "border-border hover:border-violet-500/30"
+                      }`}
+                    >
+                      <div className={`text-xs font-mono font-medium ${roomRescueMode === opt.id ? "text-violet-300" : "text-muted-foreground"}`}>
+                        {opt.label}
+                      </div>
+                      <div className="text-[9px] text-muted-foreground/50 leading-tight mt-0.5">{opt.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {roomRescue && (
+                <p className="text-[10px] text-violet-400/70 font-mono pl-1">
+                  ⚠ Compliance: structural defects are never removed. You'll review before &amp; after photos before they're used in the campaign.
+                </p>
               )}
             </div>
 
