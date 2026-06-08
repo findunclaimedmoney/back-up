@@ -318,19 +318,19 @@ export default function Home() {
             {/* Left — phone mockups */}
             <div className="order-2 lg:order-1">
               <div className="relative mx-auto max-w-sm lg:max-w-none">
-                {/* Main phone — teleprompter screen */}
+                {/* Main phone — create campaign screen */}
                 <div className="overflow-hidden rounded-[2.5rem] border-4 border-white/15 bg-black shadow-2xl shadow-black/60">
                   <img
-                    src="/mobile-1.jpg"
-                    alt="LensFlow mobile app — teleprompter recording"
+                    src="/mobile-4.jpg"
+                    alt="LensFlow mobile app — create campaign"
                     className="w-full"
                   />
                 </div>
-                {/* Floating mini phone — script screen */}
+                {/* Floating mini phone — features screen */}
                 <div className="absolute -bottom-4 -right-4 w-36 overflow-hidden rounded-[1.5rem] border-4 border-white/15 bg-black shadow-xl sm:w-44 lg:w-40">
                   <img
-                    src="/mobile-3.jpg"
-                    alt="LensFlow mobile — script"
+                    src="/mobile-2.jpg"
+                    alt="LensFlow mobile — features"
                     className="w-full"
                   />
                 </div>

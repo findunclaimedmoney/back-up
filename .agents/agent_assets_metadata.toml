@@ -12,6 +12,12 @@ uri = "file://artifacts/lensflow-site/public/property-6.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "-PznBj1FCzFMUojMf9mu2"
+uri = "file://attached_assets/generated_images/bright_modern_australian_living_4aa7.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "GJSJTvrQG8OqI7nTZIiR7"
 uri = "file://exports/sophie-hq.jpg"

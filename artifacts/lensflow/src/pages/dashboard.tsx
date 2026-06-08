@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useGetJobStats, useGetMarketBrief, useRefreshMarketBrief, getGetMarketBriefQueryKey } from "@workspace/api-client-react";
 import { Link } from "wouter";
 import { ChevronDown, TrendingUp, TrendingDown, Minus, RefreshCw, MapPin, MessageSquare, BarChart2, ArrowRight, Play } from "lucide-react";
