@@ -18,6 +18,12 @@ uri = "file://attached_assets/generated_images/bright_modern_australian_living_4
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "kEym-y153cdMesG1ydVGh"
+uri = "file://attached_assets/generated_images/luxury_australian_real_estate_235a.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "GJSJTvrQG8OqI7nTZIiR7"
 uri = "file://exports/sophie-hq.jpg"
