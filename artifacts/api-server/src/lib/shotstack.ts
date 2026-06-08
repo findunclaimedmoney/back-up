@@ -230,7 +230,7 @@ export async function composePresenterVideoPremiumLuxuryV1(
   // ── Presenter Track ─────────────────────────────────────────────────────────
   // Large scale, bottom-center, fades in after opening — feels integrated not pasted
   const presenterClip = {
-    asset: { type: "video", src: presenterVideoUrl, volume: 1 },
+    asset: { type: "video", src: presenterVideoUrl, volume: 0 },
     start: PRESENTER_START,
     length: TOTAL - PRESENTER_START,
     fit: "contain",
@@ -368,26 +368,20 @@ export async function composePresenterVideoPremiumLuxuryV1(
     transition: { in: "fade", out: "fade" },
   } : null;
 
-  /// ── Assemble Tracks (bottom → top render order) ──────────────────────────────
-const vignetteTrack = buildVignetteTrack();
-const tracks = [
-  buildPhotoTrack(),
-  ...(vignetteTrack ? [vignetteTrack] : []),
-  // Fix: Mute the presenter video audio by setting volume to 0
-  { 
-    clips: [{ 
-      ...presenterClip, 
-      asset: { ...presenterClip.asset, volume: 0 } 
-    }] 
-  },
-  { clips: [openingTitle] },
-  { clips: [exclusiveBadge] },
-  ...(presenterBadge ? [{ clips: [presenterBadge] }] : []),
-  { clips: [watermarkClip] },
-  ...sellingPointClips.map((c) => ({ clips: [c] })),
-  ...(closingCta ? [{ clips: [closingCta] }] : []),
-  ...(closingDomain ? [{ clips: [closingDomain] }] : []),
-];
+  // ── Assemble Tracks (bottom → top render order) ──────────────────────────────
+  const vignetteTrack = buildVignetteTrack();
+  const tracks = [
+    buildPhotoTrack(),
+    ...(vignetteTrack ? [vignetteTrack] : []),
+    { clips: [presenterClip] },
+    { clips: [openingTitle] },
+    { clips: [exclusiveBadge] },
+    ...(presenterBadge ? [{ clips: [presenterBadge] }] : []),
+    { clips: [watermarkClip] },
+    ...sellingPointClips.map((c) => ({ clips: [c] })),
+    ...(closingCta ? [{ clips: [closingCta] }] : []),
+    ...(closingDomain ? [{ clips: [closingDomain] }] : []),
+  ];
   
   // Music URL: prefer caller-supplied URL (HeyGen auto-music) over static map key
   const MUSIC_VOLUME = 0.15; // voice sits cleanly on top
