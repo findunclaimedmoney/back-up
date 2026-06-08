@@ -368,21 +368,27 @@ export async function composePresenterVideoPremiumLuxuryV1(
     transition: { in: "fade", out: "fade" },
   } : null;
 
-  // ── Assemble Tracks (bottom → top render order) ──────────────────────────────
-  const vignetteTrack = buildVignetteTrack();
-  const tracks = [
-    buildPhotoTrack(),
-    ...(vignetteTrack ? [vignetteTrack] : []),
-    { clips: [presenterClip] },
-    { clips: [openingTitle] },
-    { clips: [exclusiveBadge] },
-    ...(presenterBadge ? [{ clips: [presenterBadge] }] : []),
-    { clips: [watermarkClip] },
-    ...sellingPointClips.map((c) => ({ clips: [c] })),
-    ...(closingCta ? [{ clips: [closingCta] }] : []),
-    ...(closingDomain ? [{ clips: [closingDomain] }] : []),
-  ];
-
+  /// ── Assemble Tracks (bottom → top render order) ──────────────────────────────
+const vignetteTrack = buildVignetteTrack();
+const tracks = [
+  buildPhotoTrack(),
+  ...(vignetteTrack ? [vignetteTrack] : []),
+  // Fix: Mute the presenter video audio by setting volume to 0
+  { 
+    clips: [{ 
+      ...presenterClip, 
+      asset: { ...presenterClip.asset, volume: 0 } 
+    }] 
+  },
+  { clips: [openingTitle] },
+  { clips: [exclusiveBadge] },
+  ...(presenterBadge ? [{ clips: [presenterBadge] }] : []),
+  { clips: [watermarkClip] },
+  ...sellingPointClips.map((c) => ({ clips: [c] })),
+  ...(closingCta ? [{ clips: [closingCta] }] : []),
+  ...(closingDomain ? [{ clips: [closingDomain] }] : []),
+];
+  
   // Music URL: prefer caller-supplied URL (HeyGen auto-music) over static map key
   const MUSIC_VOLUME = 0.15; // voice sits cleanly on top
   const resolvedMusicUrl = musicUrl
