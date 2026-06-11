@@ -209,18 +209,10 @@ export default function MiaChat() {
     if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
-  // Allow any page to open Mia by dispatching: window.dispatchEvent(new CustomEvent('mia:open', { detail: { message } }))
-  useEffect(() => {
-    const handler = (e: Event) => {
-      setOpen(true);
-      const msg = (e as CustomEvent<{ message?: string }>).detail?.message;
-      if (msg) setTimeout(() => inputRef.current && (inputRef.current.value = msg), 150);
-    };
-    window.addEventListener("mia:open", handler);
-    return () => window.removeEventListener("mia:open", handler);
-  }, []);
-
   const handleVideoUnavailable = useCallback(() => setVideoOk(false), []);
+
+  // Stable ref so the mia:open listener always calls the latest sendMessage
+  const sendMessageRef = useRef<((text?: string) => void) | null>(null);
 
   const sendMessage = useCallback(
     async (overrideText?: string) => {
@@ -301,6 +293,27 @@ export default function MiaChat() {
     },
     [input, streaming, messages, open],
   );
+
+  // Keep ref current so the mia:open event listener always has the latest sendMessage
+  useEffect(() => { sendMessageRef.current = sendMessage; }, [sendMessage]);
+
+  // Allow any page to open Mia and optionally auto-send a guidance message:
+  // window.dispatchEvent(new CustomEvent('mia:open', { detail: { message: '...', autoSend: true } }))
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setOpen(true);
+      setUnread(false);
+      const detail = (e as CustomEvent<{ message?: string; autoSend?: boolean }>).detail;
+      const msg = detail?.message;
+      if (msg && detail?.autoSend) {
+        setTimeout(() => sendMessageRef.current?.(msg), 700);
+      } else if (msg) {
+        setTimeout(() => inputRef.current && (inputRef.current.value = msg), 150);
+      }
+    };
+    window.addEventListener("mia:open", handler);
+    return () => window.removeEventListener("mia:open", handler);
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

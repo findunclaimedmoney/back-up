@@ -2,6 +2,7 @@ import { Link, useRoute } from "wouter";
 import { usePageSEO } from "@/hooks/use-page-seo";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Download, Home } from "lucide-react";
+import { useEffect } from "react";
 
 type GuideConfig = {
   title: string;
