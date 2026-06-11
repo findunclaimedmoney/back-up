@@ -22,8 +22,8 @@ export function Scene1() {
     >
       {/* Background image */}
       <div className="absolute inset-0">
-        <img src={`${import.meta.env.BASE_URL}images/bg-mc5.jpg`} className="w-full h-full object-cover" alt="" />
-        <div className="absolute inset-0 bg-[#050d1a]/65" />
+        <img src={`${import.meta.env.BASE_URL}images/bg-mc5.jpg`} className="w-full h-full object-cover blur-sm scale-105" alt="" />
+        <div className="absolute inset-0 bg-[#050d1a]/82" />
       </div>
 
       {/* Background Map Element */}

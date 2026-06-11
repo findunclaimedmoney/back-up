@@ -21,8 +21,8 @@ export function Scene5() {
     >
       {/* Background image */}
       <div className="absolute inset-0">
-        <img src={`${import.meta.env.BASE_URL}images/bg-mc5.jpg`} className="w-full h-full object-cover" alt="" />
-        <div className="absolute inset-0 bg-[#050d1a]/60" />
+        <img src={`${import.meta.env.BASE_URL}images/bg-mc5.jpg`} className="w-full h-full object-cover blur-sm scale-105" alt="" />
+        <div className="absolute inset-0 bg-[#050d1a]/82" />
       </div>
 
       <div className="relative z-10 text-center flex flex-col items-center">
