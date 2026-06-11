@@ -10,6 +10,7 @@ import Crypto from "@/pages/Crypto";
 import Finance from "@/pages/Finance";
 import Contact from "@/pages/Contact";
 import Privacy from "@/pages/Privacy";
+import Guides from "@/pages/Guides";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
         <Route path="/finance" component={Finance} />
         <Route path="/contact" component={Contact} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/guides" component={Guides} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

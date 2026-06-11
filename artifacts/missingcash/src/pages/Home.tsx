@@ -206,9 +206,11 @@ export default function Home() {
                     To protect user privacy, exact amounts and claim details are restricted. 
                     Get our step-by-step guide to unlock these records and submit your claim directly with the relevant agencies.
                   </p>
-                  <Button size="lg" className="w-full h-14 text-lg font-bold tracking-wider rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_14px_rgba(245,185,66,0.3)] transition-all" data-testid="button-claim-money">
-                    GET THE CLAIM GUIDE ($4.99)
-                  </Button>
+                  <a href="https://buy.stripe.com/6oUbJ0eCE4FDbAFaYo4c800" target="_blank" rel="noopener noreferrer">
+                    <Button size="lg" className="w-full h-14 text-lg font-bold tracking-wider rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_14px_rgba(245,185,66,0.3)] transition-all" data-testid="button-claim-money">
+                      GET THE CLAIM GUIDE ($4.99)
+                    </Button>
+                  </a>
                 </div>
               </div>
             )}
