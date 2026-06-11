@@ -81,12 +81,20 @@ function MiaAvatar({
         animate={active ? { scale: [1, 1.04, 1] } : { y: [0, -2, 0] }}
         transition={{ duration: active ? 1.1 : 4, repeat: Infinity, ease: "easeInOut" }}
       >
+        {/* Monogram fallback sits underneath; the portrait covers it when loaded */}
+        <div
+          className="absolute inset-0 grid place-items-center bg-gradient-to-br from-primary/30 to-secondary font-bold text-primary"
+          style={{ fontSize: size * 0.42, lineHeight: 1 }}
+          aria-hidden
+        >
+          M
+        </div>
         <img
           src={AVATAR}
           alt="Mia"
-          className="w-full h-full object-cover"
+          className="relative w-full h-full object-cover"
           onError={(e) => {
-            (e.currentTarget.style.display = "none");
+            e.currentTarget.style.display = "none";
           }}
         />
       </motion.div>
