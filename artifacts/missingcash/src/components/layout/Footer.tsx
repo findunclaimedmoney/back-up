@@ -14,7 +14,7 @@ export default function Footer() {
               <span className="font-heading text-2xl mt-1 tracking-wider text-white">MISSINGCASH</span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-sm">
-              MissingCash helps Australians find money held by government agencies and financial institutions. Fast, secure, and 100% free to search.
+              MissingCash helps Australians find money held by government agencies and financial institutions. Fast, secure, and backed by official sources.
             </p>
             <div className="space-y-1">
               <p className="text-sm font-medium text-white/80">ABN: 52 347 989 391</p>

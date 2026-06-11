@@ -15,7 +15,7 @@ export default function Home() {
   usePageSEO({
     title: "MissingCash | Find Your Unclaimed Money in Australia — Free Search",
     description:
-      "Search billions in unclaimed money held by the ATO, ASIC, banks and state registers. MissingCash helps Australians find and claim lost super, shares, dividends and dormant accounts. 100% free to search.",
+      "Search billions in unclaimed money held by the ATO, ASIC, banks and state registers. MissingCash helps Australians find and claim lost super, shares, dividends and dormant accounts.",
     keywords:
       "unclaimed money Australia, missing money, lost super, ASIC unclaimed money, ATO unclaimed super, find lost money, dormant bank accounts, unclaimed dividends, MissingCash",
     canonical: "https://www.missingcash.com.au/",
@@ -53,7 +53,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center justify-center rounded-full border border-border bg-secondary/50 backdrop-blur-sm px-4 py-1.5 mb-8 shadow-sm">
               <span className="text-xs font-semibold tracking-wide text-muted-foreground flex items-center gap-2">
-                <span role="img" aria-label="au">🇦🇺</span> TRUSTED · SECURE · 100% FREE TO SEARCH
+                <span role="img" aria-label="au">🇦🇺</span> TRUSTED · SECURE · OFFICIAL SOURCES
               </span>
             </div>
             
@@ -251,6 +251,48 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
+      {/* Marketing Video */}
+      <section className="py-20 border-t border-border">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-1.5 text-sm text-primary font-medium mb-5">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" /> Meet Mia — Australia's First AI Avatar
+            </div>
+            <h2 className="text-4xl md:text-5xl font-heading tracking-wider mb-4 text-white">SEE HOW IT WORKS</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">Watch Mia walk you through how MissingCash helps Australians find and reclaim what's theirs.</p>
+          </div>
+
+          <div className="relative max-w-4xl mx-auto group">
+            {/* Glow */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-primary/10 to-primary/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-90 transition-opacity pointer-events-none" />
+
+            {/* Video frame */}
+            <div className="relative rounded-2xl overflow-hidden border border-primary/30 shadow-2xl aspect-video bg-black">
+              <iframe
+                src="/missingcash-clip/"
+                className="w-full h-full"
+                allow="autoplay; fullscreen"
+                title="MissingCash — Meet Mia"
+              />
+
+              {/* Transparent click overlay → missingcash.com.au */}
+              <a
+                href="https://www.missingcash.com.au"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute inset-0 z-10"
+                aria-label="Visit MissingCash"
+              />
+            </div>
+
+            {/* Caption */}
+            <p className="text-center text-xs text-muted-foreground mt-4 tracking-widest uppercase">
+              Click to visit <span className="text-primary">missingcash.com.au</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
       <section className="py-20 bg-secondary/30 border-y border-border">
         <div className="container mx-auto px-4">
@@ -337,9 +379,9 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center max-w-6xl mx-auto">
             {[
               { title: 'Official Sources Only', icon: '🏛️' },
-              { title: 'We Never Store Your Data', icon: '🔒' },
-              { title: '100% Free to Search', icon: '🆓' },
-              { title: 'Instant Results', icon: '⚡' }
+              { title: 'Australian Owned & Operated', icon: '🇦🇺' },
+              { title: 'Instant Name Search', icon: '⚡' },
+              { title: 'ATO · ASIC · myGov', icon: '✅' }
             ].map((item, i) => (
               <div key={i} className="flex flex-col items-center">
                 <div className="text-4xl mb-4">{item.icon}</div>
@@ -367,7 +409,7 @@ export default function Home() {
             <AccordionItem value="item-2" className="bg-card border border-border rounded-lg px-4">
               <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary">Is this service really free?</AccordionTrigger>
               <AccordionContent className="text-muted-foreground leading-relaxed">
-                Yes, searching our database is 100% free. If you find a match and want assistance with the claims process, we offer a comprehensive recovery guide for a small one-off fee of $4.99.
+                Running a name search is free. If you find a match and want help with the claims process, we offer options ranging from a DIY guide ($4.99) to a fully done-for-you recovery service ($149).
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3" className="bg-card border border-border rounded-lg px-4">
