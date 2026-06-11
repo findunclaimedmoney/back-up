@@ -1,8 +1,31 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "cojV_oisjPh1wSZ68Jr56"
 uri = "file://artifacts/missingcash/public/mia-avatar.png"
 type = "image"
 title = "Mia avatar portrait"
+
+[[generated]]
+id = "4MYpShCs8vvzpayKSJMuj"
+uri = "file://artifacts/missingcash-clip/public/images/australia.png"
+type = "image"
+title = "australia map outline"
+
+[[generated]]
+id = "29t2R70zsOz39ngSVx2Ne"
+uri = "file://artifacts/missingcash-clip/public/images/coins.png"
+type = "image"
+title = "gold coins floating"
+
+[[outputs]]
+id = "J8z9di3ph9H_gIqz7BT48"
+uri = "file://artifacts/missingcash-clip/public/images/happy-person.jpg"
+type = "image"
+title = "happy australian person looking surprised at phone"
+
+[[outputs]]
+id = "AUOHbbX_e2d23ylBHz4as"
+uri = "file://artifacts/missingcash-clip/public/audio/bg_music.mp3"
+type = "audio"
+title = "background music"

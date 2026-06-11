@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/missingcash-clip/"
+title = "MissingCash Marketing Clip"
+version = "1.0.0"
+id = "artifacts/missingcash-clip"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/missingcash-clip/" ]
+localPort = 19493
+
+[services.development]
+run = "pnpm --filter @workspace/missingcash-clip run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/missingcash-clip", "run", "build" ]
+publicDir = "artifacts/missingcash-clip/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19493"
+BASE_PATH = "/missingcash-clip/"
