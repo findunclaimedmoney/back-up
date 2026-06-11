@@ -98,7 +98,7 @@ export default function Navbar() {
           <div className="flex items-center justify-center gap-4 md:gap-8 text-xs md:text-sm font-medium text-muted-foreground whitespace-nowrap overflow-x-auto py-0.5">
             <span className="flex items-center gap-1.5">🛡️ Official Government Sources</span>
             <span className="hidden sm:inline text-border">•</span>
-            <span className="flex items-center gap-1.5">🇦🇺 Australian Owned & Operated</span>
+            <span className="flex items-center gap-1.5">🇦🇺 100% Australian Owned</span>
             <span className="hidden sm:inline text-border">•</span>
             <span className="flex items-center gap-1.5">⚡ Instant Name Search</span>
             <span className="hidden lg:inline text-border">•</span>

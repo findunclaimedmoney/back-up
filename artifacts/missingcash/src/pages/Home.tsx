@@ -379,7 +379,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center max-w-6xl mx-auto">
             {[
               { title: 'Official Sources Only', icon: '🏛️' },
-              { title: 'Australian Owned & Operated', icon: '🇦🇺' },
+              { title: '100% Australian Owned', icon: '🇦🇺' },
               { title: 'Instant Name Search', icon: '⚡' },
               { title: 'ATO · ASIC · myGov', icon: '✅' }
             ].map((item, i) => (
