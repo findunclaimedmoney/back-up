@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const pressures = [
   "Cost of living ↑",
@@ -7,11 +8,35 @@ const pressures = [
   "Stamp duty",
 ];
 
+const ITEM_DURATION = 2200; // ms each item stays visible
+const INTRO_DELAY  = 1400; // ms before first item appears
+
 interface SceneMiaProps {
   muted?: boolean;
 }
 
 export function SceneMia({ muted = false }: SceneMiaProps) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Start cycling after intro delay
+    const start = setTimeout(() => {
+      setActiveIndex(0);
+    }, INTRO_DELAY);
+
+    // Advance through each item
+    const timers = pressures.map((_, i) =>
+      setTimeout(() => {
+        setActiveIndex(i + 1 < pressures.length ? i + 1 : null);
+      }, INTRO_DELAY + ITEM_DURATION * (i + 1))
+    );
+
+    return () => {
+      clearTimeout(start);
+      timers.forEach(clearTimeout);
+    };
+  }, []);
+
   return (
     <motion.div
       className="absolute inset-0 overflow-hidden"
@@ -30,14 +55,11 @@ export function SceneMia({ muted = false }: SceneMiaProps) {
       />
 
       {/* ── Cinematic overlays ── */}
-      {/* bottom-to-top dark gradient — grounds her feet */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#050d1a] via-[#050d1a]/40 to-transparent pointer-events-none" />
-      {/* left dark vignette — space for lower thirds */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#050d1a]/80 via-transparent to-[#050d1a]/30 pointer-events-none" />
-      {/* top vignette */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#050d1a]/60 via-transparent to-transparent pointer-events-none" />
 
-      {/* ── Gold ambient glow behind Mia ── */}
+      {/* ── Gold ambient glow ── */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         initial={{ opacity: 0 }}
@@ -48,40 +70,28 @@ export function SceneMia({ muted = false }: SceneMiaProps) {
         }}
       />
 
-      {/* ── AI Avatar badge — top left ── */}
-      <motion.div
-        className="absolute top-[5vh] left-[3vw] z-20"
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.6 }}
-      >
-        <span className="inline-flex items-center gap-2 bg-black/50 backdrop-blur-sm border border-[var(--color-primary)]/50 rounded-full px-[1.2vw] py-[0.5vh]">
-          <span className="w-[0.5vw] h-[0.5vw] rounded-full bg-[var(--color-primary)] animate-pulse" />
-          <span className="text-[var(--color-primary)] text-[0.7vw] font-bold tracking-widest uppercase">
-            Australia's First AI Avatar
-          </span>
-        </span>
-      </motion.div>
-
-      {/* ── Lower-third pressure cards ── */}
-      <div className="absolute bottom-[18vh] left-[3vw] z-20 flex flex-col gap-[1vh]">
-        {pressures.map((line, i) => (
-          <motion.div
-            key={line}
-            className="flex items-center gap-[0.8vw]"
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.4 + i * 0.5, duration: 0.4, ease: 'easeOut' }}
-          >
-            <div className="w-[0.25vw] h-[3vh] bg-[var(--color-primary)] rounded-full shrink-0" />
-            <span className="text-white text-[1.4vw] font-semibold tracking-wide leading-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-              {line}
-            </span>
-          </motion.div>
-        ))}
+      {/* ── Cycling lower-third pressure point ── */}
+      <div className="absolute bottom-[18vh] left-[3vw] z-20 h-[6vh] flex items-center">
+        <AnimatePresence mode="wait">
+          {activeIndex !== null && (
+            <motion.div
+              key={activeIndex}
+              className="flex items-center gap-[0.8vw]"
+              initial={{ opacity: 0, x: -50, scale: 0.92 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 50, scale: 0.92 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+            >
+              <div className="w-[0.25vw] h-[3.5vh] bg-[var(--color-primary)] rounded-full shrink-0" />
+              <span className="text-white text-[2.2vw] font-bold tracking-wide leading-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                {pressures[activeIndex]}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* ── $2.6B stat — bottom centre, dramatic ── */}
+      {/* ── $2.6B stat ── */}
       <motion.div
         className="absolute bottom-[5vh] left-1/2 -translate-x-1/2 z-20 text-center"
         initial={{ opacity: 0, y: 20 }}
