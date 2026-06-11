@@ -9,7 +9,7 @@ import { SceneStratton } from './video_scenes/SceneStratton';
 import { Scene5 } from './video_scenes/Scene5';
 
 export const SCENE_DURATIONS: Record<string, number> = {
-  mia: 21000,
+  mia: 44000,
   opportunity: 6000,
   solution: 6000,
   services: 7500,
