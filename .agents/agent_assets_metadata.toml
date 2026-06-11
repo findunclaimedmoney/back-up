@@ -18,6 +18,12 @@ uri = "file://artifacts/missingcash-clip/public/images/coins.png"
 type = "image"
 title = "gold coins floating"
 
+[[generated]]
+id = "wKNd9Yp0G-BXtbGKCJujM"
+uri = "file://artifacts/missingcash-clip/public/images/mia-avatar.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "J8z9di3ph9H_gIqz7BT48"
 uri = "file://artifacts/missingcash-clip/public/images/happy-person.jpg"
@@ -29,3 +35,9 @@ id = "AUOHbbX_e2d23ylBHz4as"
 uri = "file://artifacts/missingcash-clip/public/audio/bg_music.mp3"
 type = "audio"
 title = "background music"
+
+[[outputs]]
+id = "3TvptBV36G_hImySxdl2j"
+uri = "file://artifacts/missingcash-clip/public/audio/mia_vo.mp3"
+type = "audio"
+title = "mia voiceover intro"
