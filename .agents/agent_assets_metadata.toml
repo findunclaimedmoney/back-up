@@ -47,3 +47,9 @@ id = "nw5KRTMkphcu1Jo-2upjp"
 uri = "file://artifacts/missingcash-clip/public/missingcash-clip.mp4"
 type = "video"
 title = "MissingCash Marketing Clip"
+
+[[outputs]]
+id = "f_vgmHuyGrIVdvyvSKHx_"
+uri = "file://artifacts/missingcash-clip/public/videos/mia-talk.mp4"
+type = "video"
+title = "Mia Talking Head — Your Voice"
