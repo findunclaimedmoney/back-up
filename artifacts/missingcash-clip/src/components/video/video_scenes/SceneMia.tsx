@@ -8,8 +8,8 @@ const pressures = [
   "Stamp duty",
 ];
 
-const ITEM_DURATION = 2200; // ms each item stays visible
-const INTRO_DELAY  = 1400; // ms before first item appears
+const ITEM_DURATION = 2400; // ms each item stays visible
+const INTRO_DELAY  = 2500; // ms before first item appears — lets Mia say "Hello Australia!"
 
 interface SceneMiaProps {
   muted?: boolean;
@@ -96,7 +96,7 @@ export function SceneMia({ muted = false }: SceneMiaProps) {
         className="absolute bottom-[5vh] left-1/2 -translate-x-1/2 z-20 text-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 5.2, duration: 0.8, ease: 'easeOut' }}
+        transition={{ delay: 13, duration: 0.8, ease: 'easeOut' }}
       >
         <p className="text-white/50 text-[0.65vw] tracking-[0.3em] uppercase mb-[0.4vh]">
           Yet right now — sitting unclaimed
