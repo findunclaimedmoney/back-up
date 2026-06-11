@@ -1,26 +1,20 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { useVideoPlayer } from '@/lib/video';
-import { Scene1 } from './video_scenes/Scene1';
+import { SceneMia } from './video_scenes/SceneMia';
 import { Scene2 } from './video_scenes/Scene2';
 import { Scene3 } from './video_scenes/Scene3';
 import { Scene4 } from './video_scenes/Scene4';
+import { SceneStratton } from './video_scenes/SceneStratton';
 import { Scene5 } from './video_scenes/Scene5';
 
 export const SCENE_DURATIONS: Record<string, number> = {
-  hook: 6500,
+  mia: 23000,
   opportunity: 6000,
   solution: 6000,
   services: 7500,
+  stratton: 7000,
   cta: 6000,
-};
-
-const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
-  hook: Scene1,
-  opportunity: Scene2,
-  solution: Scene3,
-  services: Scene4,
-  cta: Scene5,
 };
 
 const SCENE_START_SEC: Record<string, number> = (() => {
@@ -46,7 +40,7 @@ export default function VideoTemplate({
   muted?: boolean;
   onSceneChange?: (sceneKey: string) => void;
 } = {}) {
-  const { currentScene, currentSceneKey } = useVideoPlayer({ durations, loop });
+  const { currentSceneKey } = useVideoPlayer({ durations, loop });
 
   useEffect(() => {
     onSceneChange?.(currentSceneKey);
@@ -54,14 +48,14 @@ export default function VideoTemplate({
 
   const baseSceneKey = currentSceneKey.replace(/_r[12]$/, '') as keyof typeof SCENE_DURATIONS;
   const sceneIndex = Object.keys(SCENE_DURATIONS).indexOf(baseSceneKey);
-  const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.volume = 0.45;
+    // Duck bg music during Mia's spoken scene so her voice comes through clearly
+    audio.volume = baseSceneKey === 'mia' ? 0.08 : 0.45;
     const targetTime = SCENE_START_SEC[baseSceneKey] ?? 0;
     if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {
       audio.currentTime = targetTime;
@@ -109,7 +103,14 @@ export default function VideoTemplate({
       </div>
 
       <AnimatePresence mode="popLayout">
-        {SceneComponent && <SceneComponent key={currentSceneKey} />}
+        {baseSceneKey === 'mia' && (
+          <SceneMia key={currentSceneKey} muted={muted} />
+        )}
+        {baseSceneKey === 'opportunity' && <Scene2 key={currentSceneKey} />}
+        {baseSceneKey === 'solution' && <Scene3 key={currentSceneKey} />}
+        {baseSceneKey === 'services' && <Scene4 key={currentSceneKey} />}
+        {baseSceneKey === 'stratton' && <SceneStratton key={currentSceneKey} />}
+        {baseSceneKey === 'cta' && <Scene5 key={currentSceneKey} />}
       </AnimatePresence>
 
       <audio

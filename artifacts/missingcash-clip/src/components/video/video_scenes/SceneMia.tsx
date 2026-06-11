@@ -7,7 +7,11 @@ const lines = [
   "Stamp duty",
 ];
 
-export function SceneMia() {
+interface SceneMiaProps {
+  muted?: boolean;
+}
+
+export function SceneMia({ muted = false }: SceneMiaProps) {
   return (
     <motion.div
       className="absolute inset-0 flex items-center justify-center"
@@ -16,28 +20,24 @@ export function SceneMia() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Left panel — talking head video */}
       <div className="relative flex items-center justify-center w-full h-full">
 
-        {/* Mia video — centred portrait, fills vertical space */}
+        {/* Mia talking head video */}
         <div className="relative h-full aspect-[9/16] max-h-full overflow-hidden">
-          {/* Subtle vignette overlay */}
           <div className="absolute inset-0 z-10 bg-gradient-to-r from-[var(--color-bg-dark)] via-transparent to-[var(--color-bg-dark)] opacity-60 pointer-events-none" />
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-[var(--color-bg-dark)] via-transparent to-transparent opacity-70 pointer-events-none" />
-
           <video
             src={`${import.meta.env.BASE_URL}videos/mia-talk.mp4`}
             className="w-full h-full object-cover"
             autoPlay
             playsInline
-            muted={false}
+            muted={muted}
           />
         </div>
 
-        {/* Right panel — bullet points stagger in */}
+        {/* Right panel — staggered bullet points */}
         <div className="absolute right-0 top-0 bottom-0 w-[42%] flex flex-col justify-center pr-12 pl-4 z-20">
 
-          {/* Eyebrow */}
           <motion.p
             className="text-[var(--color-secondary)] text-sm font-bold tracking-[0.2em] uppercase mb-6"
             initial={{ opacity: 0, x: 30 }}
@@ -47,7 +47,6 @@ export function SceneMia() {
             Sound familiar?
           </motion.p>
 
-          {/* Pain-point bullets */}
           <div className="space-y-3 mb-8">
             {lines.map((line, i) => (
               <motion.div
@@ -63,7 +62,6 @@ export function SceneMia() {
             ))}
           </div>
 
-          {/* Big reveal */}
           <motion.div
             className="border-l-4 border-[var(--color-primary)] pl-5"
             initial={{ opacity: 0, y: 20 }}
@@ -71,15 +69,12 @@ export function SceneMia() {
             transition={{ delay: 5.8, duration: 0.6, ease: 'easeOut' }}
           >
             <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Yet right now</p>
-            <p className="text-[var(--color-primary)] text-3xl font-heading font-black leading-tight">
-              $2.6B
-            </p>
+            <p className="text-[var(--color-primary)] text-3xl font-heading font-black leading-tight">$2.6B</p>
             <p className="text-white/80 text-sm leading-snug mt-1">
               of your money sits<br />unclaimed in their vaults
             </p>
           </motion.div>
 
-          {/* CTA badge */}
           <motion.div
             className="mt-8 inline-flex items-center gap-2 bg-[var(--color-primary)]/15 border border-[var(--color-primary)]/40 rounded-full px-4 py-2 w-fit"
             initial={{ opacity: 0, scale: 0.85 }}
