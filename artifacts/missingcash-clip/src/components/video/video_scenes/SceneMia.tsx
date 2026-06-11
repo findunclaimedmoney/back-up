@@ -38,6 +38,20 @@ export function SceneMia({ muted = false }: SceneMiaProps) {
         {/* Right panel — staggered bullet points */}
         <div className="absolute right-0 top-0 bottom-0 w-[42%] flex flex-col justify-center pr-12 pl-4 z-20">
 
+          <motion.div
+            className="mb-5"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
+            <span className="inline-flex items-center gap-2 bg-[var(--color-primary)]/20 border border-[var(--color-primary)]/50 rounded-full px-3 py-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse" />
+              <span className="text-[var(--color-primary)] text-xs font-bold tracking-widest uppercase">
+                Australia's First AI Avatar
+              </span>
+            </span>
+          </motion.div>
+
           <motion.p
             className="text-[var(--color-secondary)] text-sm font-bold tracking-[0.2em] uppercase mb-6"
             initial={{ opacity: 0, x: 30 }}
