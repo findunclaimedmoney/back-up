@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "cojV_oisjPh1wSZ68Jr56"
+uri = "file://artifacts/missingcash/public/mia-avatar.png"
+type = "image"
+title = "Mia avatar portrait"
