@@ -1,2 +1,3 @@
 - [Express 5 SSE disconnect](express-sse-streaming.md) — use res.on('close') not req.on('close') to abort upstream streams; req close fires right after body parse.
 - [Orval barrel name collision](orval-barrel-name-collision.md) — name request-body component schemas `*Input`, never `{OperationId}Body`, or the zod const and TS type clash in the barrel.
+- [D-ID talking avatar](did-talking-avatar.md) — transparent PNG renders black; flatten onto solid bg, cover free-tier watermark, and re-poll the talk id since nohup pollers die but renders continue server-side.

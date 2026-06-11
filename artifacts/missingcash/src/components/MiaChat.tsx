@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send } from "lucide-react";
+import { X, Send, Volume2 } from "lucide-react";
 
 interface Message {
   id: string;
@@ -10,6 +10,7 @@ interface Message {
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 const AVATAR = `${import.meta.env.BASE_URL}mia-avatar.png`;
+const AVATAR_VIDEO = `${import.meta.env.BASE_URL}mia-welcome.mp4`;
 
 const WELCOME =
   "Hi, I'm Mia — your MissingCash assistant. I can help you search for unclaimed money, walk you through the claim process, or answer questions about finance with our partner Stratton Finance. What would you like to know?";
@@ -105,6 +106,68 @@ function MiaAvatar({
   );
 }
 
+/** Talking welcome video — Mia "comes to life" and greets the visitor when the chat opens. */
+function MiaWelcomeVideo({ onUnavailable }: { onUnavailable: () => void }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [muted, setMuted] = useState(false);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = false;
+    v.play().catch(() => {
+      // Autoplay-with-sound blocked — fall back to muted playback and offer a tap-to-unmute.
+      v.muted = true;
+      setMuted(true);
+      v.play().catch(() => {
+        // Even muted playback was rejected — drop back to the static avatar.
+        onUnavailable();
+      });
+    });
+    return () => {
+      v.pause();
+      v.currentTime = 0;
+    };
+  }, [onUnavailable]);
+
+  const enableSound = () => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = false;
+    v.currentTime = 0;
+    void v.play();
+    setMuted(false);
+  };
+
+  return (
+    <div className="relative" style={{ width: 168, height: 168 }}>
+      <motion.span
+        className="absolute inset-0 rounded-full bg-primary/35 blur-md"
+        animate={{ scale: [1, 1.12, 1], opacity: [0.5, 0.2, 0.5] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <video
+        ref={ref}
+        src={AVATAR_VIDEO}
+        playsInline
+        autoPlay
+        aria-label="Mia greets you and explains how MissingCash helps find unclaimed money"
+        onError={onUnavailable}
+        className="relative w-full h-full object-cover rounded-full ring-2 ring-primary/40"
+      />
+      {muted && (
+        <button
+          onClick={enableSound}
+          className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-[11px] font-semibold px-2.5 py-1 shadow-lg shadow-primary/30"
+          data-testid="button-mia-unmute"
+        >
+          <Volume2 size={12} /> Tap for sound
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function MiaChat() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -113,6 +176,7 @@ export default function MiaChat() {
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [unread, setUnread] = useState(false);
+  const [videoOk, setVideoOk] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -125,6 +189,8 @@ export default function MiaChat() {
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
+
+  const handleVideoUnavailable = useCallback(() => setVideoOk(false), []);
 
   const sendMessage = useCallback(
     async (overrideText?: string) => {
@@ -274,7 +340,11 @@ export default function MiaChat() {
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
               {showSuggestions && (
                 <div className="flex flex-col items-center text-center pt-2 pb-1">
-                  <MiaAvatar size={84} active={streaming} />
+                  {videoOk ? (
+                    <MiaWelcomeVideo onUnavailable={handleVideoUnavailable} />
+                  ) : (
+                    <MiaAvatar size={84} active={streaming} />
+                  )}
                   <p className="mt-3 text-base font-bold text-white">Hi, I'm Mia</p>
                   <p className="text-xs text-muted-foreground">Your personal MissingCash guide</p>
                 </div>
