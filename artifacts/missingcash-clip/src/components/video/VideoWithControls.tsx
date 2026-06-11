@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, Repeat, Volume2, VolumeX } from 'lucide-react';
+import { ChevronDown, ChevronUp, Download, Repeat, Volume2, VolumeX } from 'lucide-react';
 import VideoTemplate, { SCENE_DURATIONS } from './VideoTemplate';
 import { useSceneControls } from './useSceneControls';
 
@@ -206,7 +206,21 @@ export default function VideoWithControls() {
 
   const barVisible = !collapsed || hovering || tapPinned;
 
-  if (!isIframed) return <VideoTemplate />;
+  if (!isIframed) {
+    return (
+      <div className="relative w-full h-screen">
+        <VideoTemplate />
+        <a
+          href={`${import.meta.env.BASE_URL}missingcash-clip.mp4`}
+          download="missingcash-clip.mp4"
+          className="absolute top-4 right-4 z-50 flex items-center gap-2 bg-black/60 hover:bg-black/80 backdrop-blur-sm border border-white/20 text-white text-sm font-semibold px-4 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg"
+        >
+          <Download className="w-4 h-4" />
+          Download MP4
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-screen">

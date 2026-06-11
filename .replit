@@ -46,3 +46,6 @@ SMTP_HOST = "smtp.zoho.com.au"
 SMTP_PORT = "587"
 SMTP_USER = "jmorgan@missingcash.com.au"
 FROM_EMAIL = "jmorgan@missingcash.com.au"
+
+[nix]
+channel = "stable-25_05"
