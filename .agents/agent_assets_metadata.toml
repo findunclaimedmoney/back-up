@@ -41,3 +41,9 @@ id = "3TvptBV36G_hImySxdl2j"
 uri = "file://artifacts/missingcash-clip/public/audio/mia_vo.mp3"
 type = "audio"
 title = "mia voiceover intro"
+
+[[outputs]]
+id = "nw5KRTMkphcu1Jo-2upjp"
+uri = "file://artifacts/missingcash-clip/public/missingcash-clip.mp4"
+type = "video"
+title = "MissingCash Marketing Clip"
