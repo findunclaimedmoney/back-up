@@ -16,6 +16,13 @@ export function SceneStratton() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.7 }}
     >
+      {/* Background image */}
+      <div className="absolute inset-0">
+        <img src={`${import.meta.env.BASE_URL}images/bg-mc1.jpg`} className="w-full h-full object-cover" alt="" />
+        <div className="absolute inset-0 bg-[#050d1a]/68" />
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center w-full">
       {/* Top eyebrow */}
       <motion.div
         className="flex items-center gap-3 mb-8"
@@ -93,6 +100,7 @@ export function SceneStratton() {
       >
         missingcash.com.au
       </motion.p>
+      </div>
     </motion.div>
   );
 }

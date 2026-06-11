@@ -20,6 +20,12 @@ export function Scene1() {
       className="absolute inset-0 flex items-center justify-center overflow-hidden"
       {...sceneTransitions.fadeBlur}
     >
+      {/* Background image */}
+      <div className="absolute inset-0">
+        <img src={`${import.meta.env.BASE_URL}images/bg-mc5.jpg`} className="w-full h-full object-cover" alt="" />
+        <div className="absolute inset-0 bg-[#050d1a]/65" />
+      </div>
+
       {/* Background Map Element */}
       <motion.div 
         className="absolute w-[80vw] h-[80vh] opacity-40 mix-blend-screen"

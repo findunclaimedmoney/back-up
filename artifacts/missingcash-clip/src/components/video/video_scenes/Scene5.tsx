@@ -16,9 +16,15 @@ export function Scene5() {
 
   return (
     <motion.div 
-      className="absolute inset-0 flex items-center justify-center overflow-hidden bg-[var(--color-bg-dark)]"
+      className="absolute inset-0 flex items-center justify-center overflow-hidden"
       {...sceneTransitions.morphExpand}
     >
+      {/* Background image */}
+      <div className="absolute inset-0">
+        <img src={`${import.meta.env.BASE_URL}images/bg-mc5.jpg`} className="w-full h-full object-cover" alt="" />
+        <div className="absolute inset-0 bg-[#050d1a]/60" />
+      </div>
+
       <div className="relative z-10 text-center flex flex-col items-center">
         <motion.div
           className="mb-8"

@@ -17,9 +17,16 @@ export function Scene4() {
 
   return (
     <motion.div 
-      className="absolute inset-0 flex flex-col justify-center px-[10vw] overflow-hidden bg-[var(--color-bg-dark)]"
+      className="absolute inset-0 flex flex-col justify-center px-[10vw] overflow-hidden"
       {...sceneTransitions.pushLeft}
     >
+      {/* Background image */}
+      <div className="absolute inset-0">
+        <img src={`${import.meta.env.BASE_URL}images/bg-mc4.jpg`} className="w-full h-full object-cover" alt="" />
+        <div className="absolute inset-0 bg-[#050d1a]/72" />
+      </div>
+
+      <div className="relative z-10">
       <motion.div
         className="mb-[6vh]"
         initial={{ opacity: 0, x: -40 }}
@@ -64,6 +71,7 @@ export function Scene4() {
           <p className="text-[1.8vw] text-white/70 mb-4">We handle everything.</p>
           <div className="text-[var(--color-primary)] font-bold text-[2.5vw]">$149</div>
         </motion.div>
+      </div>
       </div>
     </motion.div>
   );

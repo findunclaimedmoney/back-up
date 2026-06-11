@@ -26,9 +26,15 @@ export function Scene3() {
 
   return (
     <motion.div 
-      className="absolute inset-0 flex items-center justify-center overflow-hidden bg-[var(--color-bg-dark)]"
+      className="absolute inset-0 flex items-center justify-center overflow-hidden"
       {...sceneTransitions.slideUp}
     >
+      {/* Background image */}
+      <div className="absolute inset-0">
+        <img src={`${import.meta.env.BASE_URL}images/bg-mc1.jpg`} className="w-full h-full object-cover" alt="" />
+        <div className="absolute inset-0 bg-[#050d1a]/70" />
+      </div>
+
       <div className="relative z-10 w-full flex flex-col items-center">
         <motion.h2 
           className="text-[4vw] font-display font-bold text-white mb-16"
