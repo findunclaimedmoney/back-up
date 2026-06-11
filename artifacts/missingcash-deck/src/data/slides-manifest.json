@@ -1,0 +1,42 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "position": 1,
+    "filepath": "src/pages/slides/TitleSlide.tsx",
+    "title": "MissingCash × Stratton Finance",
+    "description": "Title slide — Find it. Claim it. Fund it.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567802",
+    "position": 2,
+    "filepath": "src/pages/slides/OpportunitySlide.tsx",
+    "title": "$2.6 Billion Opportunity",
+    "description": "The unclaimed money market and why MissingCash visitors convert.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567803",
+    "position": 3,
+    "filepath": "src/pages/slides/StrattonSlide.tsx",
+    "title": "Stratton Finance",
+    "description": "Partner credentials — 150K+ customers, $8B+ funded, 40+ lenders, 4.8 stars.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567804",
+    "position": 4,
+    "filepath": "src/pages/slides/PartnershipSlide.tsx",
+    "title": "How the Partnership Works",
+    "description": "4-step funnel: Search → Mia Guides → Warm Handoff → Stratton Closes.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567805",
+    "position": 5,
+    "filepath": "src/pages/slides/ClosingSlide.tsx",
+    "title": "Get Started",
+    "description": "Closing slide with contact details for both parties.",
+    "speakerNotes": ""
+  }
+]

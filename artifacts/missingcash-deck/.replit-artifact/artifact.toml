@@ -1,0 +1,31 @@
+kind = "slides"
+previewPath = "/missingcash-deck/"
+title = "MissingCash × Stratton Finance Deck"
+version = "1.0.0"
+id = "artifacts/missingcash-deck"
+router = "path"
+
+[[integratedSkills]]
+name = "slides"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/missingcash-deck/" ]
+localPort = 25124
+
+[services.development]
+run = "pnpm --filter @workspace/missingcash-deck run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/missingcash-deck", "run", "build" ]
+publicDir = "artifacts/missingcash-deck/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25124"
+BASE_PATH = "/missingcash-deck/"
