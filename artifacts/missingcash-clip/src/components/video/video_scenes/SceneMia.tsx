@@ -23,7 +23,7 @@ export function SceneMia({ muted = false }: SceneMiaProps) {
       {/* ── Full-bleed Mia video ── */}
       <video
         src={`${import.meta.env.BASE_URL}videos/mia-talk.mp4`}
-        className="absolute inset-0 w-full h-full object-cover object-center"
+        className="absolute inset-0 w-full h-full object-cover object-top"
         autoPlay
         playsInline
         muted={muted}
