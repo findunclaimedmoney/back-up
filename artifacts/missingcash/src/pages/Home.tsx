@@ -205,8 +205,9 @@ export default function Home() {
                   <div className="bg-gradient-to-br from-[#00C1D5]/10 to-primary/10 border-2 border-[#00C1D5]/40 rounded-xl p-5 text-center relative overflow-hidden">
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00C1D5] text-white text-xs font-bold px-4 py-1 rounded-full tracking-wider">⚡ FASTEST OPTION</div>
                     <h4 className="font-heading text-xl mb-1 text-white mt-2">MIA SPEED RECOVERY</h4>
+                    <p className="text-sm font-semibold text-[#00C1D5] mb-1">Months of searching → done in minutes.</p>
                     <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                      Mia personally guides you through claiming every dollar — step by step, right now.
+                      Mia guides you live through every database — ATO, ASIC, myGov, and all state registers — right now, in one conversation.
                     </p>
                     <a href="https://buy.stripe.com/PLACEHOLDER_MIA_RECOVERY" target="_blank" rel="noopener noreferrer">
                       <Button size="lg" className="w-full h-14 text-lg font-bold tracking-wider rounded-xl bg-[#00C1D5] text-white hover:bg-[#00C1D5]/90 shadow-[0_4px_14px_rgba(0,193,213,0.4)] transition-all">

@@ -123,17 +123,18 @@ export default function Guides() {
             <div className="flex flex-col md:flex-row items-center gap-8 mt-2">
               <div className="text-7xl shrink-0">🤖</div>
               <div className="flex-1 text-center md:text-left">
-                <h2 className="text-3xl font-heading tracking-wider text-white mb-2">MIA SPEED RECOVERY</h2>
+                <h2 className="text-3xl font-heading tracking-wider text-white mb-1">MIA SPEED RECOVERY</h2>
+                <p className="text-lg font-semibold text-[#00C1D5] mb-3">What takes months on your own — Mia does in minutes.</p>
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  Mia — your personal AI recovery guide — walks you through finding and claiming every dollar of your unclaimed money in real time. No PDFs to read. Just ask Mia and she guides you step by step.
+                  Finding unclaimed money yourself means months of navigating ATO portals, ASIC registers, state databases, and bank systems — most people give up. With Mia, you're guided through every single database in one conversation, right now.
                 </p>
                 <ul className="space-y-1.5 mb-6 text-sm text-left">
                   {[
-                    "Mia activates instantly after payment",
-                    "Guides you through ATO, ASIC, myGov & state registers personally",
+                    "Mia activates the second your payment clears",
+                    "Guides you live through ATO, ASIC, myGov & all state registers",
+                    "No forms to navigate, no phone queues, no months of waiting",
                     "Covers crypto recovery, cyber security & identity protection too",
-                    "Ask unlimited questions — Mia never rushes you",
-                    "Fastest path from search to claim",
+                    "Ask unlimited questions — Mia stays with you until it's done",
                   ].map((f) => (
                     <li key={f} className="flex items-start gap-2 text-muted-foreground">
                       <span className="text-[#00C1D5] mt-0.5 shrink-0">✓</span> {f}
