@@ -13,3 +13,6 @@ export * from './healthStatus';
 export * from './miaChatInput';
 export * from './miaChatMessage';
 export * from './miaChatMessageRole';
+export * from './searchSubmitInput';
+export * from './searchSubmitInputState';
+export * from './searchSubmitResult';

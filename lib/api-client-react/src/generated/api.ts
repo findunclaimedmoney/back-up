@@ -23,7 +23,9 @@ import type {
   FinanceEnquiryInput,
   FinanceEnquiryResult,
   HealthStatus,
-  MiaChatInput
+  MiaChatInput,
+  SearchSubmitInput,
+  SearchSubmitResult
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -260,5 +262,78 @@ export const useFinanceEnquiry = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getFinanceEnquiryMutationOptions(options));
+    }
+
+export const getSearchSubmitUrl = () => {
+
+
+
+
+  return `/api/search/submit`
+}
+
+/**
+ * Saves a user's personal details so Mia can search all Australian unclaimed money databases on their behalf. Returns the created submission ID.
+
+ * @summary Submit a money search request
+ */
+export const searchSubmit = async (searchSubmitInput: SearchSubmitInput, options?: RequestInit): Promise<SearchSubmitResult> => {
+
+  return customFetch<SearchSubmitResult>(getSearchSubmitUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      searchSubmitInput,)
+  }
+);}
+
+
+
+
+export const getSearchSubmitMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchSubmit>>, TError,{data: BodyType<SearchSubmitInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof searchSubmit>>, TError,{data: BodyType<SearchSubmitInput>}, TContext> => {
+
+const mutationKey = ['searchSubmit'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof searchSubmit>>, {data: BodyType<SearchSubmitInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  searchSubmit(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SearchSubmitMutationResult = NonNullable<Awaited<ReturnType<typeof searchSubmit>>>
+    export type SearchSubmitMutationBody = BodyType<SearchSubmitInput>
+    export type SearchSubmitMutationError = ErrorType<void>
+
+    /**
+ * @summary Submit a money search request
+ */
+export const useSearchSubmit = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchSubmit>>, TError,{data: BodyType<SearchSubmitInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof searchSubmit>>,
+        TError,
+        {data: BodyType<SearchSubmitInput>},
+        TContext
+      > => {
+      return useMutation(getSearchSubmitMutationOptions(options));
     }
 

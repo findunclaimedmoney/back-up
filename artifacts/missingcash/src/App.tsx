@@ -12,6 +12,7 @@ import Contact from "@/pages/Contact";
 import Privacy from "@/pages/Privacy";
 import Guides from "@/pages/Guides";
 import ThankYou from "@/pages/ThankYou";
+import FindMyMoney from "@/pages/FindMyMoney";
 
 function Router() {
   return (
@@ -23,6 +24,7 @@ function Router() {
         <Route path="/contact" component={Contact} />
         <Route path="/privacy" component={Privacy} />
         <Route path="/guides" component={Guides} />
+        <Route path="/find-my-money" component={FindMyMoney} />
         <Route path="/thank-you/:guide" component={ThankYou} />
         <Route component={NotFound} />
       </Switch>

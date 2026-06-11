@@ -66,6 +66,49 @@ export interface FinanceEnquiryInput {
   message?: string;
 }
 
+export type SearchSubmitInputState = typeof SearchSubmitInputState[keyof typeof SearchSubmitInputState];
+
+
+export const SearchSubmitInputState = {
+  NSW: 'NSW',
+  VIC: 'VIC',
+  QLD: 'QLD',
+  WA: 'WA',
+  SA: 'SA',
+  TAS: 'TAS',
+  ACT: 'ACT',
+  NT: 'NT',
+} as const;
+
+export interface SearchSubmitInput {
+  /** @minLength 1 */
+  firstName: string;
+  /** @minLength 1 */
+  lastName: string;
+  email: string;
+  /**
+     * Date of birth in YYYY-MM-DD format
+     * @pattern ^\d{4}-\d{2}-\d{2}$
+     */
+  dob: string;
+  /** @minLength 1 */
+  addressLine: string;
+  /** @minLength 1 */
+  suburb: string;
+  state: SearchSubmitInputState;
+  /**
+     * @minLength 4
+     * @maxLength 4
+     */
+  postcode: string;
+}
+
+export interface SearchSubmitResult {
+  success: boolean;
+  submissionId?: number;
+  error?: string;
+}
+
 export interface FinanceEnquiryResult {
   success: boolean;
   message?: string;

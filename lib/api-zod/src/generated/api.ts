@@ -72,3 +72,30 @@ export const FinanceEnquiryResponse = zod.object({
 })
 
 
+/**
+ * Saves a user's personal details so Mia can search all Australian unclaimed money databases on their behalf. Returns the created submission ID.
+
+ * @summary Submit a money search request
+ */
+
+
+export const searchSubmitBodyDobRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+
+
+export const searchSubmitBodyPostcodeMin = 4;
+export const searchSubmitBodyPostcodeMax = 4;
+
+
+
+export const SearchSubmitBody = zod.object({
+  "firstName": zod.string().min(1),
+  "lastName": zod.string().min(1),
+  "email": zod.string().email(),
+  "dob": zod.string().regex(searchSubmitBodyDobRegExp).describe('Date of birth in YYYY-MM-DD format'),
+  "addressLine": zod.string().min(1),
+  "suburb": zod.string().min(1),
+  "state": zod.enum(['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']),
+  "postcode": zod.string().min(searchSubmitBodyPostcodeMin).max(searchSubmitBodyPostcodeMax)
+})
+
+
