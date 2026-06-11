@@ -6,6 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './financeEnquiryInput';
+export * from './financeEnquiryInputLoanType';
+export * from './financeEnquiryResult';
 export * from './healthStatus';
 export * from './miaChatInput';
 export * from './miaChatMessage';

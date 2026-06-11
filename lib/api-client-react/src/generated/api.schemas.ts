@@ -34,3 +34,40 @@ export interface MiaChatInput {
   messages: MiaChatMessage[];
 }
 
+export type FinanceEnquiryInputLoanType = typeof FinanceEnquiryInputLoanType[keyof typeof FinanceEnquiryInputLoanType];
+
+
+export const FinanceEnquiryInputLoanType = {
+  car: 'car',
+  boat: 'boat',
+  home: 'home',
+  personal: 'personal',
+} as const;
+
+export interface FinanceEnquiryInput {
+  loanType: FinanceEnquiryInputLoanType;
+  /** @minimum 1000 */
+  loanAmount: number;
+  /** @minimum 1 */
+  preferredTerm: number;
+  estimatedMonthly?: number;
+  /** @minLength 1 */
+  firstName: string;
+  /** @minLength 1 */
+  lastName: string;
+  email: string;
+  /** @minLength 6 */
+  phone: string;
+  /**
+     * @minLength 4
+     * @maxLength 4
+     */
+  postcode: string;
+  message?: string;
+}
+
+export interface FinanceEnquiryResult {
+  success: boolean;
+  message?: string;
+}
+

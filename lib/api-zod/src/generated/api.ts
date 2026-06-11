@@ -36,3 +36,39 @@ export const MiaChatBody = zod.object({
 })
 
 
+/**
+ * Accepts a loan enquiry from the MissingCash Finance page and emails the lead details to the Stratton Finance consultant (erin.crofton@stratton.com.au).
+
+ * @summary Submit a Stratton Finance lead enquiry
+ */
+export const financeEnquiryBodyLoanAmountMin = 1000;
+
+
+
+
+export const financeEnquiryBodyPhoneMin = 6;
+
+export const financeEnquiryBodyPostcodeMin = 4;
+export const financeEnquiryBodyPostcodeMax = 4;
+
+
+
+export const FinanceEnquiryBody = zod.object({
+  "loanType": zod.enum(['car', 'boat', 'home', 'personal']),
+  "loanAmount": zod.number().min(financeEnquiryBodyLoanAmountMin),
+  "preferredTerm": zod.number().min(1),
+  "estimatedMonthly": zod.number().optional(),
+  "firstName": zod.string().min(1),
+  "lastName": zod.string().min(1),
+  "email": zod.string().email(),
+  "phone": zod.string().min(financeEnquiryBodyPhoneMin),
+  "postcode": zod.string().min(financeEnquiryBodyPostcodeMin).max(financeEnquiryBodyPostcodeMax),
+  "message": zod.string().optional()
+})
+
+export const FinanceEnquiryResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().optional()
+})
+
+

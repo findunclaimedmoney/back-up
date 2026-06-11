@@ -20,6 +20,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  FinanceEnquiryInput,
+  FinanceEnquiryResult,
   HealthStatus,
   MiaChatInput
 } from './api.schemas';
@@ -185,5 +187,78 @@ export const useMiaChat = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getMiaChatMutationOptions(options));
+    }
+
+export const getFinanceEnquiryUrl = () => {
+
+
+
+
+  return `/api/finance/enquiry`
+}
+
+/**
+ * Accepts a loan enquiry from the MissingCash Finance page and emails the lead details to the Stratton Finance consultant (erin.crofton@stratton.com.au).
+
+ * @summary Submit a Stratton Finance lead enquiry
+ */
+export const financeEnquiry = async (financeEnquiryInput: FinanceEnquiryInput, options?: RequestInit): Promise<FinanceEnquiryResult> => {
+
+  return customFetch<FinanceEnquiryResult>(getFinanceEnquiryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      financeEnquiryInput,)
+  }
+);}
+
+
+
+
+export const getFinanceEnquiryMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof financeEnquiry>>, TError,{data: BodyType<FinanceEnquiryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof financeEnquiry>>, TError,{data: BodyType<FinanceEnquiryInput>}, TContext> => {
+
+const mutationKey = ['financeEnquiry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof financeEnquiry>>, {data: BodyType<FinanceEnquiryInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  financeEnquiry(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type FinanceEnquiryMutationResult = NonNullable<Awaited<ReturnType<typeof financeEnquiry>>>
+    export type FinanceEnquiryMutationBody = BodyType<FinanceEnquiryInput>
+    export type FinanceEnquiryMutationError = ErrorType<void>
+
+    /**
+ * @summary Submit a Stratton Finance lead enquiry
+ */
+export const useFinanceEnquiry = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof financeEnquiry>>, TError,{data: BodyType<FinanceEnquiryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof financeEnquiry>>,
+        TError,
+        {data: BodyType<FinanceEnquiryInput>},
+        TContext
+      > => {
+      return useMutation(getFinanceEnquiryMutationOptions(options));
     }
 
