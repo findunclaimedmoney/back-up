@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Shield, Menu, X } from "lucide-react";
+import { Shield, Menu, X, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
@@ -44,7 +44,12 @@ export default function Navbar() {
         </nav>
 
         {/* Desktop CTA + mobile toggle */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <a href="/#alerts" className="hidden md:block">
+            <Button variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 font-bold tracking-wider rounded-full px-5 gap-2">
+              <Bell className="w-4 h-4" /> Sign Up
+            </Button>
+          </a>
           <Link href="/finance" className="hidden md:block">
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold tracking-wider rounded-full px-6" data-testid="button-finance-cta">
               Get Finance

@@ -305,7 +305,7 @@ export default function Home() {
       </section>
 
       {/* Email Alert Signup */}
-      <section className="py-16 border-t border-border">
+      <section id="alerts" className="py-16 border-t border-border">
         <div className="container mx-auto px-4 max-w-2xl text-center">
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-1.5 text-sm text-primary font-medium mb-5">
             <Bell className="w-4 h-4" /> Weekly Money Alerts
