@@ -200,17 +200,33 @@ export default function Home() {
                   ))}
                 </div>
                 
-                <div className="bg-primary/10 border border-primary/30 rounded-xl p-6 text-center">
-                  <h4 className="font-heading text-xl mb-2 text-primary">HOW TO CLAIM YOUR MONEY</h4>
-                  <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-                    To protect user privacy, exact amounts and claim details are restricted. 
-                    Get our step-by-step guide to unlock these records and submit your claim directly with the relevant agencies.
-                  </p>
-                  <a href="https://buy.stripe.com/6oUbJ0eCE4FDbAFaYo4c800" target="_blank" rel="noopener noreferrer">
-                    <Button size="lg" className="w-full h-14 text-lg font-bold tracking-wider rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_14px_rgba(245,185,66,0.3)] transition-all" data-testid="button-claim-money">
-                      GET THE CLAIM GUIDE ($4.99)
-                    </Button>
-                  </a>
+                <div className="space-y-3">
+                  {/* Mia Speed Recovery — premium option */}
+                  <div className="bg-gradient-to-br from-[#00C1D5]/10 to-primary/10 border-2 border-[#00C1D5]/40 rounded-xl p-5 text-center relative overflow-hidden">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00C1D5] text-white text-xs font-bold px-4 py-1 rounded-full tracking-wider">⚡ FASTEST OPTION</div>
+                    <h4 className="font-heading text-xl mb-1 text-white mt-2">MIA SPEED RECOVERY</h4>
+                    <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                      Mia personally guides you through claiming every dollar — step by step, right now.
+                    </p>
+                    <a href="https://buy.stripe.com/PLACEHOLDER_MIA_RECOVERY" target="_blank" rel="noopener noreferrer">
+                      <Button size="lg" className="w-full h-14 text-lg font-bold tracking-wider rounded-xl bg-[#00C1D5] text-white hover:bg-[#00C1D5]/90 shadow-[0_4px_14px_rgba(0,193,213,0.4)] transition-all">
+                        GET MIA TO GUIDE ME — $99
+                      </Button>
+                    </a>
+                    <p className="text-xs text-muted-foreground mt-2">🔒 Secure via Stripe · Mia activates instantly after payment</p>
+                  </div>
+                  {/* Guide — self-service option */}
+                  <div className="bg-primary/10 border border-primary/30 rounded-xl p-5 text-center">
+                    <h4 className="font-heading text-lg mb-1 text-primary">DIY CLAIM GUIDE</h4>
+                    <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                      Step-by-step PDF guide — do it yourself at your own pace.
+                    </p>
+                    <a href="https://buy.stripe.com/6oUbJ0eCE4FDbAFaYo4c800" target="_blank" rel="noopener noreferrer">
+                      <Button size="lg" variant="outline" className="w-full h-12 text-base font-bold tracking-wider rounded-xl border-primary/40 text-primary hover:bg-primary/10 transition-all" data-testid="button-claim-money">
+                        GET THE CLAIM GUIDE — $4.99
+                      </Button>
+                    </a>
+                  </div>
                 </div>
               </div>
             )}

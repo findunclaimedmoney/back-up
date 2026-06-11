@@ -83,15 +83,45 @@ const configs: Record<string, GuideConfig> = {
   },
 };
 
+const MIA_GUIDANCE: Record<string, string> = {
+  missingcash: "I can see you've purchased the MissingCash Premium Guide. I'm Mia and I'm here to guide you through the full claiming process right now. Tell me your full name and which state you're in — I'll walk you through every database step by step so you don't miss a dollar.",
+  crypto: "Welcome! You've got the MissingCrypto Recovery Guide. I'm Mia and I'll guide you through recovering your lost crypto accounts personally. Which exchange are you trying to recover — CoinSpot, Binance, Coinbase, Swyftx, or something else?",
+  cyber: "Great choice getting the Cyber Security Guide. I'm Mia — let's get your digital life locked down right now. Tell me: are you more concerned about your phone security, your bank accounts, or your email and passwords? I'll start there.",
+  identity: "You've taken the right step getting the Identity Theft Recovery Guide. I'm Mia and I'm here to help you right now. Has the identity theft already happened, or are you trying to prevent it? I'll guide you through the exact steps based on your situation.",
+  bundle: "You've got the complete MissingCash library — fantastic! I'm Mia and I'm here to help you use every guide. What's most urgent for you right now — finding unclaimed money, recovering crypto, protecting your phone, or dealing with identity theft? Let's start there.",
+  "mia-recovery": "Welcome to your MissingCash Speed Recovery service! I'm Mia — your personal recovery guide. I'm going to walk you through finding and claiming every dollar of your unclaimed money right now, personally and step by step. To get started, what's your full name and which Australian state are you in?",
+};
+
 export default function ThankYou() {
   const [, params] = useRoute("/thank-you/:guide");
   const guide = params?.guide ?? "missingcash";
-  const config = configs[guide] ?? configs.missingcash;
+  const isMiaRecovery = guide === "mia-recovery";
+  const config = isMiaRecovery
+    ? {
+        title: "Mia is Ready to Guide You!",
+        subtitle: "Your Speed Recovery session is active. Mia will open in a moment and guide you through the full claim process personally — step by step.",
+        note: "Powered by Mia AI · Personalised guidance · Unlimited questions",
+        downloads: [] as { label: string; file: string; color: string }[],
+        steps: [
+          "Mia will open automatically in a few seconds",
+          "Tell Mia your name and state — she'll guide you through every database",
+          "Follow Mia's step-by-step instructions to complete your claim",
+        ],
+      }
+    : (configs[guide] ?? configs.missingcash);
 
   usePageSEO({
-    title: `${config.title} — MissingCash`,
+    title: `${isMiaRecovery ? "Mia Speed Recovery" : config.title} — MissingCash`,
     description: config.subtitle,
   });
+
+  useEffect(() => {
+    const msg = MIA_GUIDANCE[guide] ?? MIA_GUIDANCE["missingcash"];
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("mia:open", { detail: { message: msg, autoSend: true } }));
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [guide]);
 
   return (
     <div className="w-full min-h-[80vh] flex items-center justify-center py-16">

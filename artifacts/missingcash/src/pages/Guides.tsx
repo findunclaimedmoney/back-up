@@ -8,6 +8,7 @@ const STRIPE = {
   cyber: "https://buy.stripe.com/5kQbJ0eCEgolgUZ6I84c80d",
   identity: "https://buy.stripe.com/28EcN46686NLdIN8Qg4c80e",
   bundle: "https://buy.stripe.com/cNi14m9ikdc93492rS4c80g",
+  miaRecovery: "https://buy.stripe.com/PLACEHOLDER_MIA_RECOVERY",
 };
 
 const guides = [
@@ -107,6 +108,53 @@ export default function Guides() {
             Step-by-step guides to help Australians find lost money, recover inaccessible crypto, and protect their digital identity.
           </p>
           <p className="text-sm text-muted-foreground">🔒 Secure via Stripe · Instant PDF download · 30-day money-back guarantee</p>
+        </div>
+      </section>
+
+      {/* Mia Speed Recovery — hero product */}
+      <section className="pb-6">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="relative rounded-2xl border-2 border-[#00C1D5]/50 p-8 bg-gradient-to-br from-[#00C1D5]/10 via-background to-primary/5 shadow-[0_0_60px_rgba(0,193,213,0.12)] overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#00C1D5] via-primary to-[#00C1D5]" />
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00C1D5] text-white text-xs font-bold px-5 py-1.5 rounded-full tracking-wider">
+              ⚡ FASTEST · MOST POPULAR
+            </div>
+
+            <div className="flex flex-col md:flex-row items-center gap-8 mt-2">
+              <div className="text-7xl shrink-0">🤖</div>
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-3xl font-heading tracking-wider text-white mb-2">MIA SPEED RECOVERY</h2>
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Mia — your personal AI recovery guide — walks you through finding and claiming every dollar of your unclaimed money in real time. No PDFs to read. Just ask Mia and she guides you step by step.
+                </p>
+                <ul className="space-y-1.5 mb-6 text-sm text-left">
+                  {[
+                    "Mia activates instantly after payment",
+                    "Guides you through ATO, ASIC, myGov & state registers personally",
+                    "Covers crypto recovery, cyber security & identity protection too",
+                    "Ask unlimited questions — Mia never rushes you",
+                    "Fastest path from search to claim",
+                  ].map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-muted-foreground">
+                      <span className="text-[#00C1D5] mt-0.5 shrink-0">✓</span> {f}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <div>
+                    <span className="text-4xl font-bold text-primary">$99</span>
+                    <span className="text-sm text-muted-foreground ml-2">one-time · Mia activates instantly</span>
+                  </div>
+                  <a href={STRIPE.miaRecovery} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                    <Button className="w-full h-14 px-8 text-lg font-bold tracking-wider rounded-xl bg-[#00C1D5] hover:bg-[#00C1D5]/90 text-white shadow-[0_4px_20px_rgba(0,193,213,0.4)]">
+                      ⚡ Get Mia Speed Recovery — $99
+                    </Button>
+                  </a>
+                </div>
+                <p className="text-xs text-muted-foreground mt-3">🔒 Secure via Stripe · 30-day money-back guarantee</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
