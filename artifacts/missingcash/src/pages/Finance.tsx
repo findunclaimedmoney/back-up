@@ -1,25 +1,22 @@
-import { Car, Banknote, Building2, CheckCircle2, ExternalLink, Phone, Shield, Star, MapPin, Clock, TrendingDown, Users } from "lucide-react";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { CheckCircle2, ExternalLink, Phone, Shield, Star, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { useState, useEffect, useRef } from "react";
 import { usePageSEO } from "@/hooks/use-page-seo";
+
+const BASE = import.meta.env.BASE_URL;
+const STRATTON_LOGO = `${BASE}stratton-logo.png`;
 
 const HERO_IMG =
   "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1400&q=80";
-const ERIN_IMG =
-  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=80";
-const CAR_IMG =
-  "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80";
-const PERSONAL_IMG =
-  "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80";
-const COMMERCIAL_IMG =
-  "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80";
 
 export default function Finance() {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   usePageSEO({
     title: "Stratton Finance Wanneroo, Perth | Car Loans & Personal Finance — MissingCash",
@@ -69,208 +66,207 @@ export default function Finance() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFormSubmitted(true);
+    if (!consent) return;
+    setSubmitting(true);
+    // Short delay to mimic submission, then show success
+    setTimeout(() => {
+      setSubmitting(false);
+      setFormSubmitted(true);
+    }, 800);
   };
 
   return (
     <div className="w-full">
-      {/* Hero */}
+
+      {/* ── Hero ──────────────────────────────────────────────────── */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <img
             src={HERO_IMG}
-            alt="Stratton Finance car loans and personal finance in Perth"
-            className="w-full h-full object-cover opacity-20"
+            alt="Finance with Stratton"
+            className="w-full h-full object-cover opacity-15"
             loading="eager"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/90 to-background" />
         </div>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
-        <div className="container mx-auto px-4 relative z-10 max-w-6xl">
+        <div className="container mx-auto px-4 max-w-5xl text-center relative z-10">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 mb-8 text-xs font-semibold tracking-wide text-muted-foreground">
+            <MapPin className="w-3.5 h-3.5 text-primary" /> OFFICIAL FINANCE PARTNER · WANNEROO, PERTH WA
+          </div>
+          <h1 className="text-5xl md:text-7xl font-heading tracking-wider mb-6 text-white leading-none">
+            FINANCE WITH <span className="text-primary">STRATTON</span>
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
+            MissingCash has partnered with <strong className="text-white">Stratton Finance</strong> — one of
+            Australia's most awarded finance brokers. Access <strong className="text-white">40+ lenders</strong>,
+            expert brokers, and fast approvals.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <a href="#enquire">
+              <Button className="h-12 px-8 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold tracking-wider shadow-[0_4px_14px_rgba(245,185,66,0.25)]">
+                GET FINANCE READY TODAY
+              </Button>
+            </a>
+            <a href="tel:0894469893">
+              <Button variant="outline" className="h-12 px-6 rounded-xl gap-2 border-border">
+                <Phone className="w-4 h-4 text-primary" /> (08) 9446 9893
+              </Button>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stratton Logo + About ──────────────────────────────────── */}
+      <section className="py-16 border-y border-border bg-white/[0.03]">
+        <div className="container mx-auto px-4 max-w-5xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="inline-flex items-center justify-center rounded-full border border-border bg-secondary/50 px-4 py-1.5 mb-8">
-                <span className="text-xs font-semibold tracking-wide text-muted-foreground flex items-center gap-2">
-                  <Banknote className="w-3.5 h-3.5 text-primary" /> OFFICIAL FINANCE PARTNER · STRATTON FINANCE
-                </span>
+            {/* Logo side */}
+            <div className="flex flex-col items-center lg:items-start gap-6">
+              <div className="bg-white rounded-2xl p-8 inline-flex items-center justify-center shadow-xl">
+                <img
+                  src={STRATTON_LOGO}
+                  alt="Stratton Finance"
+                  className="h-16 w-auto object-contain"
+                  crossOrigin="anonymous"
+                />
               </div>
-              <h1 className="text-5xl md:text-7xl font-heading tracking-wider mb-6 text-white leading-none">
-                FINANCE WITH <span className="text-primary">STRATTON</span>
-              </h1>
-              <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                MissingCash has partnered with <strong className="text-white">Stratton Finance</strong> — one of
-                Australia's most awarded finance brokers. Whether you've just found your missing cash or simply need a
-                great rate, get matched from <strong className="text-white">40+ lenders</strong> and approved fast.
-              </p>
-              <div className="flex flex-wrap gap-3 mb-8">
-                {["Car Loans", "Personal Loans", "Commercial Finance", "Asset Finance"].map((tag, i) => (
-                  <span key={i} className="px-3 py-1.5 rounded-full bg-secondary border border-border text-sm text-muted-foreground font-medium">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-primary" /> Wanneroo, Perth WA</span>
-                <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-primary" /> Same-day approvals</span>
-                <span className="flex items-center gap-1.5"><Shield className="w-4 h-4 text-primary" /> ACL 364340</span>
-              </div>
-            </div>
-
-            {/* Stratton card */}
-            <div className="bg-card border border-border rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-60" />
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-primary/20 border border-primary/30 rounded-xl p-3">
-                  <Shield className="w-7 h-7 text-primary" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">Stratton Finance</h2>
-                  <p className="text-sm text-muted-foreground">ACL 364340 · AFCA Member · FBAA Member</p>
-                </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                {[
-                  "One of Australia's leading car finance brokers",
-                  "Access to 40+ lenders for the best rates",
-                  "Fast approval — same day in most cases",
-                  "Expert broker: Erin Crofton, Finance Consultant",
-                ].map((point, i) => (
-                  <div key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
-                    {point}
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-t border-border pt-5 mb-5">
-                <p className="text-sm text-muted-foreground mb-1">Finance Consultant</p>
-                <p className="font-bold text-white text-lg">Erin Crofton</p>
-                <a href="tel:0894469893" className="flex items-center gap-2 text-primary hover:underline font-semibold mt-1">
+              <div className="text-center lg:text-left">
+                <p className="text-muted-foreground text-sm">Finance Consultant · Wanneroo, Perth WA</p>
+                <p className="text-white font-bold text-xl mt-1">Erin Crofton</p>
+                <a href="tel:0894469893" className="flex items-center gap-2 text-primary hover:underline font-semibold mt-2 justify-center lg:justify-start">
                   <Phone className="w-4 h-4" /> (08) 9446 9893
                 </a>
               </div>
-
-              <a href="https://www.strattonfinance.com.au/wanneroo" target="_blank" rel="noopener noreferrer">
-                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold tracking-wider h-12 rounded-xl shadow-[0_4px_14px_rgba(245,185,66,0.25)] gap-2" data-testid="button-stratton-direct">
-                  Get a Quote Now <ExternalLink className="w-4 h-4" />
-                </Button>
-              </a>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Stats bar */}
-      <section className="border-y border-border bg-secondary/30">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
-            {[
-              { icon: <Users className="w-6 h-6 text-primary" />, stat: "40+", label: "Lenders compared" },
-              { icon: <TrendingDown className="w-6 h-6 text-primary" />, stat: "Low", label: "Competitive rates" },
-              { icon: <Clock className="w-6 h-6 text-primary" />, stat: "Same day", label: "Approvals" },
-              { icon: <Star className="w-6 h-6 text-primary" />, stat: "Top rated", label: "Finance broker" },
-            ].map((item, i) => (
-              <div key={i} className="flex flex-col items-center gap-1.5 py-8 px-2 text-center">
-                {item.icon}
-                <p className="text-2xl md:text-3xl font-heading tracking-wider text-white">{item.stat}</p>
-                <p className="text-xs md:text-sm text-muted-foreground">{item.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Meet Erin / Stratton Wanneroo */}
-      <section className="py-20">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="relative rounded-2xl overflow-hidden border border-border shadow-2xl">
-              <img
-                src={ERIN_IMG}
-                alt="Erin Crofton, Stratton Finance Consultant in Wanneroo, Perth"
-                className="w-full h-full object-cover aspect-[4/3]"
-                loading="lazy"
-              />
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background/95 to-transparent p-6">
-                <p className="text-white font-bold text-lg">Erin Crofton</p>
-                <p className="text-sm text-primary">Finance Consultant · Stratton Finance Wanneroo</p>
-              </div>
-            </div>
+            {/* About copy */}
             <div>
-              <h2 className="text-4xl md:text-5xl font-heading tracking-wider mb-5 text-white">
-                YOUR LOCAL <span className="text-primary">STRATTON</span> EXPERT
+              <h2 className="text-3xl md:text-4xl font-heading tracking-wider mb-6 text-white">
+                ABOUT STRATTON FINANCE:
               </h2>
-              <p className="text-muted-foreground mb-5 leading-relaxed">
-                Based in Wanneroo, Perth, <strong className="text-white">Erin Crofton</strong> is your dedicated Stratton
-                Finance consultant. She does the legwork — comparing 40+ lenders to secure a sharp rate, handling the
-                paperwork, and guiding you from enquiry to approval, often on the same day.
-              </p>
-              <ul className="space-y-3 mb-8">
-                {[
-                  "Personalised service from a real, local broker",
-                  "Honest advice with no obligation to proceed",
-                  "Finance for any budget — from $5,000 to $100,000+",
-                ].map((point, i) => (
-                  <li key={i} className="flex items-start gap-3 text-muted-foreground">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" /> {point}
-                  </li>
-                ))}
+              <ul className="space-y-5">
+                <li className="flex items-start gap-3 text-muted-foreground leading-relaxed">
+                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span>Expert brokers providing a <strong className="text-white">personalised service</strong> — they understand your unique finance needs and explore options right for you</span>
+                </li>
+                <li className="flex items-start gap-3 text-muted-foreground leading-relaxed">
+                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span>Access to a select panel of <strong className="text-white">40+ lenders</strong> — this allows Stratton access to competitive interest rates and loan terms that could suit your needs</span>
+                </li>
+                <li className="flex items-start gap-3 text-muted-foreground leading-relaxed">
+                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span>Market-leading knowledge and service — with over <strong className="text-white">150,000 customers</strong> and <strong className="text-white">5-star reviews</strong> from more than 2,500 people on ProductReview.com.au, you're accessing a premium level of service</span>
+                </li>
               </ul>
-              <div className="flex flex-wrap gap-3">
-                <a href="tel:0894469893">
-                  <Button variant="outline" className="h-12 rounded-xl gap-2 border-border" data-testid="button-call-erin">
-                    <Phone className="w-4 h-4 text-primary" /> Call Erin: (08) 9446 9893
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Award-Winning Broker ───────────────────────────────────── */}
+      <section className="py-16">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-heading tracking-wider mb-5 text-white">
+                AWARD-WINNING BROKER
+              </h2>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Stratton Finance has been awarded <strong className="text-white">Best Car Loans 2021–2025</strong> (ProductReview) and{" "}
+                <strong className="text-white">Best Large-Size Brokerage 2023–2024 &amp; Best Car Loans 2025</strong> (WeMoney). With a 4.8/5-star rating from 2,500+ reviews on ProductReview.com.au and more than 150,000 satisfied customers, it is no surprise that Stratton Finance is recognised as a leading asset broker in the market.
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                If you're looking to finance your next purchase, give Erin Crofton at Stratton Finance a call on{" "}
+                <a href="tel:0894469893" className="text-primary font-semibold hover:underline">(08) 9446 9893</a>{" "}
+                or get an instant quote with Stratton Finance now.
+              </p>
+              <div className="flex flex-wrap gap-3 mt-6">
+                <a href="#enquire">
+                  <Button className="h-11 px-6 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold tracking-wider">
+                    GET A QUOTE TODAY
                   </Button>
                 </a>
                 <a href="https://www.strattonfinance.com.au/wanneroo" target="_blank" rel="noopener noreferrer">
-                  <Button className="h-12 rounded-xl gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
+                  <Button variant="outline" className="h-11 px-5 rounded-xl gap-2 border-border">
                     Visit Stratton Wanneroo <ExternalLink className="w-4 h-4" />
                   </Button>
                 </a>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Loan types with imagery */}
-      <section className="py-20 bg-secondary/30 border-y border-border">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-heading tracking-wider mb-4 text-white">WHAT CAN STRATTON HELP WITH?</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">From your next car to growing your business — Stratton Finance has a loan for it.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { img: CAR_IMG, icon: <Car className="w-6 h-6 text-primary" />, title: "Car Finance", desc: "New, used, or prestige — Stratton finds you the best car loan rate from 40+ lenders, with a simple online process and fast approval." },
-              { img: PERSONAL_IMG, icon: <Banknote className="w-6 h-6 text-primary" />, title: "Personal Loans", desc: "Cash for a renovation, holiday, wedding, or debt consolidation — a competitive personal loan with flexible terms." },
-              { img: COMMERCIAL_IMG, icon: <Building2 className="w-6 h-6 text-primary" />, title: "Commercial & Asset Finance", desc: "Business equipment, vehicles and asset finance for sole traders through to large enterprises." },
-            ].map((item, i) => (
-              <Card key={i} className="bg-card border-border hover:border-primary/40 transition-colors overflow-hidden p-0">
-                <div className="relative h-44 overflow-hidden">
-                  <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" loading="lazy" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
-                  <div className="absolute bottom-3 left-3 bg-primary/20 border border-primary/30 rounded-lg p-2 backdrop-blur-sm">
-                    {item.icon}
-                  </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-card border border-border rounded-2xl p-6 text-center">
+                <p className="text-4xl font-heading text-primary mb-1">4.8/5</p>
+                <div className="flex justify-center gap-0.5 mb-2">
+                  <Star className="w-4 h-4 fill-primary text-primary" />
+                  <Star className="w-4 h-4 fill-primary text-primary" />
+                  <Star className="w-4 h-4 fill-primary text-primary" />
+                  <Star className="w-4 h-4 fill-primary text-primary" />
+                  <Star className="w-4 h-4 fill-primary text-primary" />
                 </div>
-                <CardContent className="p-6">
-                  <CardTitle className="text-white mb-3">{item.title}</CardTitle>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-                </CardContent>
-              </Card>
-            ))}
+                <p className="text-xs text-muted-foreground">2,500+ reviews · ProductReview</p>
+              </div>
+              <div className="bg-card border border-border rounded-2xl p-6 text-center">
+                <p className="text-4xl font-heading text-primary mb-1">150K+</p>
+                <p className="text-xs text-muted-foreground mt-1">Satisfied customers</p>
+              </div>
+              <div className="bg-card border border-border rounded-2xl p-6 text-center">
+                <p className="text-4xl font-heading text-primary mb-1">40+</p>
+                <p className="text-xs text-muted-foreground mt-1">Accredited lenders</p>
+              </div>
+              <div className="bg-card border border-border rounded-2xl p-6 text-center">
+                <p className="text-4xl font-heading text-primary mb-1">$8B+</p>
+                <p className="text-xs text-muted-foreground mt-1">Finance funded since 1998</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Enquiry form */}
-      <section className="py-20">
-        <div className="container mx-auto px-4 max-w-3xl">
+      {/* ── How Stratton Finance Can Help You ─────────────────────── */}
+      <section className="py-16 bg-secondary/30 border-y border-border">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <h2 className="text-3xl md:text-4xl font-heading tracking-wider text-center mb-10 text-white">
+            HOW STRATTON FINANCE CAN HELP YOU
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-card border border-border rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-3 tracking-wide">COMPARE RATES</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                A dedicated finance broker can assist you explore loan interest rate and repayment options from a panel of over 40 lenders.
+              </p>
+            </div>
+            <div className="bg-card border border-primary/30 rounded-2xl p-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/40 via-primary to-primary/40" />
+              <h3 className="text-lg font-bold text-white mb-3 tracking-wide">APPLY</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Your dedicated Stratton broker will get to know you and your situation, and complete your application based on your financial details, providing tailored quotes. When you're ready, we'll submit your application to your preferred lender and provide clear next steps.
+              </p>
+            </div>
+            <div className="bg-card border border-border rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-3 tracking-wide">BUYING</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                If approved, we can assist with contract walkthroughs and help manage the settlement process (if applicable), leading you to the exciting moment of supporting your purchase.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Enquiry Form ──────────────────────────────────────────── */}
+      <section id="enquire" className="py-20">
+        <div className="container mx-auto px-4 max-w-2xl">
           <div className="text-center mb-10">
-            <h2 className="text-4xl md:text-5xl font-heading tracking-wider mb-4 text-white">GET A FREE FINANCE QUOTE</h2>
-            <p className="text-muted-foreground">Fill in the form below and Erin from Stratton Finance will be in touch within one business day.</p>
+            <div className="bg-white rounded-xl p-5 inline-flex items-center justify-center mb-6 shadow-lg">
+              <img
+                src={STRATTON_LOGO}
+                alt="Stratton Finance"
+                className="h-10 w-auto object-contain"
+                crossOrigin="anonymous"
+              />
+            </div>
+            <h2 className="text-3xl md:text-4xl font-heading tracking-wider mb-3 text-white">
+              GET FINANCE READY TODAY — ENQUIRE NOW
+            </h2>
           </div>
 
           {formSubmitted ? (
@@ -281,96 +277,88 @@ export default function Finance() {
               <h3 className="text-2xl font-heading tracking-wider text-white mb-3">ENQUIRY RECEIVED!</h3>
               <p className="text-muted-foreground">
                 Thanks! Erin from Stratton Finance will contact you within one business day.
-                For urgent enquiries call <a href="tel:0894469893" className="text-primary font-semibold hover:underline">(08) 9446 9893</a>.
+                For urgent enquiries call{" "}
+                <a href="tel:0894469893" className="text-primary font-semibold hover:underline">(08) 9446 9893</a>.
               </p>
             </div>
           ) : (
-            <div className="bg-card border border-border rounded-2xl p-8 shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
-              <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+              <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label htmlFor="fin-first" className="text-muted-foreground">First Name *</Label>
-                    <Input id="fin-first" name="firstName" placeholder="John" required className="bg-background h-12" data-testid="input-finance-first-name" />
+                    <Label htmlFor="fin-first" className="text-muted-foreground text-sm">First Name *</Label>
+                    <Input id="fin-first" name="firstName" required className="bg-background h-11" data-testid="input-finance-first-name" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="fin-last" className="text-muted-foreground">Last Name *</Label>
-                    <Input id="fin-last" name="lastName" placeholder="Smith" required className="bg-background h-12" data-testid="input-finance-last-name" />
+                    <Label htmlFor="fin-last" className="text-muted-foreground text-sm">Last Name *</Label>
+                    <Input id="fin-last" name="lastName" required className="bg-background h-11" data-testid="input-finance-last-name" />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label htmlFor="fin-phone" className="text-muted-foreground">Phone Number *</Label>
-                    <Input id="fin-phone" name="phone" type="tel" placeholder="04xx xxx xxx" required className="bg-background h-12" data-testid="input-finance-phone" />
+                    <Label htmlFor="fin-email" className="text-muted-foreground text-sm">Email *</Label>
+                    <Input id="fin-email" name="email" type="email" required className="bg-background h-11" data-testid="input-finance-email" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="fin-email" className="text-muted-foreground">Email Address *</Label>
-                    <Input id="fin-email" name="email" type="email" placeholder="john@example.com" required className="bg-background h-12" data-testid="input-finance-email" />
+                    <Label htmlFor="fin-phone" className="text-muted-foreground text-sm">Phone *</Label>
+                    <Input id="fin-phone" name="phone" type="tel" required className="bg-background h-11" data-testid="input-finance-phone" />
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="fin-type" className="text-muted-foreground">Finance Type *</Label>
-                    <Select name="financeType" required>
-                      <SelectTrigger id="fin-type" className="bg-background h-12">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="car">Car Finance</SelectItem>
-                        <SelectItem value="personal">Personal Loan</SelectItem>
-                        <SelectItem value="commercial">Commercial / Business</SelectItem>
-                        <SelectItem value="asset">Asset Finance</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="fin-amount" className="text-muted-foreground">Loan Amount (approx) *</Label>
-                    <Select name="loanAmount" required>
-                      <SelectTrigger id="fin-amount" className="bg-background h-12">
-                        <SelectValue placeholder="Select amount" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="5-10k">$5,000 – $10,000</SelectItem>
-                        <SelectItem value="10-25k">$10,000 – $25,000</SelectItem>
-                        <SelectItem value="25-50k">$25,000 – $50,000</SelectItem>
-                        <SelectItem value="50-100k">$50,000 – $100,000</SelectItem>
-                        <SelectItem value="100k+">$100,000+</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fin-postcode" className="text-muted-foreground text-sm">Postcode *</Label>
+                  <Input id="fin-postcode" name="postcode" required maxLength={4} className="bg-background h-11 max-w-[180px]" data-testid="input-finance-postcode" />
                 </div>
-                <Button type="submit" size="lg" className="w-full h-14 text-lg font-bold tracking-wider rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_14px_rgba(245,185,66,0.25)] transition-all hover:-translate-y-0.5" data-testid="button-finance-submit">
-                  SUBMIT ENQUIRY — FREE, NO OBLIGATION
+                <div className="space-y-2">
+                  <Label htmlFor="fin-message" className="text-muted-foreground text-sm">Message</Label>
+                  <Textarea id="fin-message" name="message" rows={4} className="bg-background resize-none" placeholder="Tell us what you're looking to finance (optional)" data-testid="input-finance-message" />
+                </div>
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(e) => setConsent(e.target.checked)}
+                    className="mt-1 w-4 h-4 accent-primary shrink-0"
+                    required
+                    data-testid="checkbox-finance-consent"
+                  />
+                  <span className="text-xs text-muted-foreground leading-relaxed group-hover:text-foreground transition-colors">
+                    Select to consent to Stratton Finance's brokers contacting you regarding your enquiry. Your information will be handled in accordance with Stratton Finance's{" "}
+                    <a href="https://www.strattonfinance.com.au/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Privacy Policy</a>.
+                  </span>
+                </label>
+                <Button
+                  type="submit"
+                  disabled={!consent || submitting}
+                  size="lg"
+                  className="w-full h-12 font-bold tracking-wider rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_14px_rgba(245,185,66,0.25)] disabled:opacity-50"
+                  data-testid="button-finance-submit"
+                >
+                  {submitting ? "SUBMITTING..." : "SUBMIT"}
                 </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                  Your details are passed securely to Stratton Finance (ACL 364340). By submitting you agree to be contacted regarding your finance enquiry.
-                </p>
               </form>
             </div>
           )}
         </div>
       </section>
 
-      {/* Trust bar */}
-      <section className="py-16 bg-primary text-primary-foreground">
+      {/* ── Important Information ─────────────────────────────────── */}
+      <section className="py-10 border-t border-border">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { icon: <Star className="w-8 h-8" />, title: "Top Rated", sub: "Leading finance broker" },
-              { icon: <Shield className="w-8 h-8" />, title: "ACL Licensed", sub: "ACL 364340" },
-              { icon: <CheckCircle2 className="w-8 h-8" />, title: "AFCA Member", sub: "Dispute resolution" },
-              { icon: <Banknote className="w-8 h-8" />, title: "40+ Lenders", sub: "Sharp rates" },
-            ].map((item, i) => (
-              <div key={i} className="flex flex-col items-center gap-2">
-                {item.icon}
-                <p className="font-bold">{item.title}</p>
-                <p className="text-sm opacity-80">{item.sub}</p>
-              </div>
-            ))}
+          <p className="text-xs font-semibold text-white mb-2 uppercase tracking-wide">Important Information</p>
+          <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+            All applications for credit are subject to lender credit assessment and eligibility criteria. Terms, conditions, fees and charges apply. Stratton Finance Pty Ltd Australian Credit Licence 364340.
+          </p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            MissingCash (ABN 52 347 989 391) may receive a financial benefit for any referrals to Stratton Finance if your loan settles with one of their panel lenders.
+          </p>
+          <div className="flex flex-wrap items-center gap-4 mt-6 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5 text-primary" /> ACL 364340</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-primary" /> FBAA Member 103514</span>
+            <span className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5 text-primary" /> Best Car Loans 2021–2026 · ProductReview</span>
           </div>
         </div>
       </section>
+
     </div>
   );
 }
