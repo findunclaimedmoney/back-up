@@ -72,3 +72,37 @@ export const MIA_SYSTEM_PROMPT = `You are Mia, the friendly AI assistant for Mis
 - Don't give regulated financial, legal, or tax advice. For finance specifics, refer to Stratton Finance (Erin Crofton). For tax/super specifics, refer to the ATO.
 - Don't promise outcomes or specific amounts. Stay encouraging but honest.
 - Keep the conversation focused on MissingCash, unclaimed money, crypto recovery, and Stratton Finance.`;
+
+/**
+ * Deterministic, no-AI fallback responder. Used when the AI backend is unavailable
+ * so Mia ALWAYS returns a useful answer instead of an error. Matches simple keywords
+ * on the latest user message and returns the most relevant canned answer.
+ */
+export function getMiaFallback(messages: { role: string; content: string }[]): string {
+  const lastUser = [...messages].reverse().find((m) => m.role === "user");
+  const text = (lastUser?.content ?? "").toLowerCase();
+  const has = (...words: string[]) => words.some((w) => text.includes(w));
+
+  if (has("stratton", "loan", "finance", "car", "vehicle", "borrow", "lend", "broker", "interest rate", "repayment")) {
+    return "For finance, we partner with Stratton Finance — one of Australia's leading brokers, with access to 40+ lenders for competitive rates. They handle car finance (new, used, prestige), personal loans, and commercial & asset finance, often with same-day approval. Your consultant is Erin Crofton in Wanneroo, Perth (ACL 364340, AFCA & FBAA member). For a free, no-obligation quote, use the form on our Finance page or call Erin on (08) 9446 9893.";
+  }
+  if (has("crypto", "bitcoin", "wallet", "seed phrase", "exchange", "ledger")) {
+    return "We help people understand how to recover lost or dormant cryptocurrency — old exchange accounts, forgotten seed phrases, or old hardware wallets. One important warning: never pay an upfront fee to anyone promising to recover your crypto, as that's a common scam. See our Lost Crypto page for guidance, and you can reach legitimate help via ASIC MoneySmart and AFCA.";
+  }
+  if (has("free", "cost", "fee", "charge", "price", "$", "pay")) {
+    return "Searching for unclaimed money on MissingCash is 100% free. If you find a potential match, we offer an optional step-by-step claims guide for a one-off $4.99 — but the claim itself is always lodged by you directly with the agency, and government agencies never charge to release your own money.";
+  }
+  if (has("how", "search", "find", "start", "begin", "look")) {
+    return "It's easy: on our homepage, enter your first and last name (optionally your state and birth year) and we'll scan national databases — the ATO, ASIC, state registers and more. You'll see any potential matches, then can use our guide to claim. Searching is 100% free and we don't store your details.";
+  }
+  if (has("contact", "support", "email", "phone", "help", "reach", "speak")) {
+    return "You can reach our team at support@missingcash.com.au (we usually reply within 1–2 business days) or via the Contact page form. For finance enquiries, use the Finance page form or call Erin Crofton at Stratton Finance on (08) 9446 9893.";
+  }
+  if (has("privacy", "data", "secure", "store", "personal information")) {
+    return "Your privacy is protected — we don't store your search queries or personal data; everything is processed instantly. You can read the full details on our Privacy page, or email support@missingcash.com.au for any data request.";
+  }
+  if (has("government", "scam", "legit", "real", "trust", "who are you")) {
+    return "MissingCash is a private Australian service (ABN 52 347 989 391), not a government agency. We aggregate publicly available government register information and provide guides to help you claim money that's rightfully yours. Searching is free, and you always lodge the actual claim yourself with the relevant agency.";
+  }
+  return "I can help you search for unclaimed money held by the ATO, ASIC, banks and state registers — it's 100% free. I can also walk you through claiming it, or connect you with our finance partner Stratton Finance for car, personal or business loans. What would you like to do? You can also reach our team at support@missingcash.com.au.";
+}

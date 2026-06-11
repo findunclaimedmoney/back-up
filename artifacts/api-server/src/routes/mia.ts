@@ -1,7 +1,7 @@
 import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { MiaChatBody } from "@workspace/api-zod";
 import { openai } from "@workspace/integrations-openai-ai-server";
-import { MIA_SYSTEM_PROMPT } from "../lib/mia-knowledge";
+import { MIA_SYSTEM_PROMPT, getMiaFallback } from "../lib/mia-knowledge";
 
 const router: IRouter = Router();
 
@@ -50,8 +50,8 @@ router.post("/mia/chat", rateLimit, async (req, res): Promise<void> => {
     }
   });
 
-  try {
-    const stream = await openai.chat.completions.create(
+  const createStream = () =>
+    openai.chat.completions.create(
       {
         model: "gpt-5.4",
         max_completion_tokens: 8192,
@@ -64,27 +64,63 @@ router.post("/mia/chat", rateLimit, async (req, res): Promise<void> => {
       { signal: controller.signal },
     );
 
-    for await (const chunk of stream) {
-      if (clientGone) break;
-      const content = chunk.choices[0]?.delta?.content;
-      if (content) {
-        res.write(`data: ${JSON.stringify({ content })}\n\n`);
-      }
+  // Stream a deterministic, knowledge-based answer so Mia ALWAYS responds usefully,
+  // even when the AI backend is unavailable. Sends it in small chunks to mimic typing.
+  const streamFallback = () => {
+    if (clientGone || res.writableEnded) return;
+    const answer = getMiaFallback(parsed.data.messages);
+    for (const word of answer.split(" ")) {
+      if (clientGone) return;
+      res.write(`data: ${JSON.stringify({ content: word + " " })}\n\n`);
     }
-
     if (!clientGone) {
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
     }
+  };
+
+  try {
+    // One retry on transient AI failure before falling back to the knowledge base.
+    let stream;
+    try {
+      stream = await createStream();
+    } catch (firstErr) {
+      if (clientGone) return;
+      req.log.warn({ err: firstErr }, "Mia AI call failed, retrying once");
+      stream = await createStream();
+    }
+
+    let streamedAny = false;
+    for await (const chunk of stream) {
+      if (clientGone) break;
+      const content = chunk.choices[0]?.delta?.content;
+      if (content) {
+        streamedAny = true;
+        res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      }
+    }
+
+    if (clientGone) return;
+
+    // AI returned nothing usable — serve the knowledge-based answer instead of an empty reply.
+    if (!streamedAny) {
+      req.log.warn("Mia AI returned empty stream, using fallback");
+      streamFallback();
+      return;
+    }
+
+    res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+    res.end();
   } catch (err) {
     if (clientGone) return;
-    req.log.error({ err }, "Mia chat stream failed");
+    req.log.error({ err }, "Mia chat stream failed, using knowledge fallback");
+    // Headers are already sent (SSE started) or not — either way, deliver a useful answer.
     if (!res.headersSent) {
-      res.status(500).json({ error: "Mia is unavailable right now." });
-    } else {
-      res.write(`data: ${JSON.stringify({ error: "Mia is unavailable right now." })}\n\n`);
-      res.end();
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
     }
+    streamFallback();
   }
 });
 

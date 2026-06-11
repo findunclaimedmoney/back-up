@@ -10,7 +10,10 @@ interface Message {
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 const AVATAR = `${import.meta.env.BASE_URL}mia-avatar.png`;
-const AVATAR_VIDEO = `${import.meta.env.BASE_URL}mia-welcome.mp4`;
+const AVATAR_VIDEOS = [
+  `${import.meta.env.BASE_URL}mia-welcome.mp4`,
+  `${import.meta.env.BASE_URL}mia-welcome-backup.mp4`,
+];
 
 const WELCOME =
   "Hi, I'm Mia — your MissingCash assistant. I can help you search for unclaimed money, walk you through the claim process, or answer questions about finance with our partner Stratton Finance. What would you like to know?";
@@ -110,8 +113,10 @@ function MiaAvatar({
 function MiaWelcomeVideo({ onUnavailable }: { onUnavailable: () => void }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(false);
+  // Try each video source in order; only fall back to the static avatar once all fail.
+  const [srcIndex, setSrcIndex] = useState(0);
 
-  useEffect(() => {
+  const tryPlay = useCallback(() => {
     const v = ref.current;
     if (!v) return;
     v.muted = false;
@@ -119,16 +124,29 @@ function MiaWelcomeVideo({ onUnavailable }: { onUnavailable: () => void }) {
       // Autoplay-with-sound blocked — fall back to muted playback and offer a tap-to-unmute.
       v.muted = true;
       setMuted(true);
-      v.play().catch(() => {
-        // Even muted playback was rejected — drop back to the static avatar.
-        onUnavailable();
-      });
+      v.play().catch(() => {});
     });
+  }, []);
+
+  useEffect(() => {
+    tryPlay();
+    const v = ref.current;
     return () => {
-      v.pause();
-      v.currentTime = 0;
+      if (v) {
+        v.pause();
+        v.currentTime = 0;
+      }
     };
-  }, [onUnavailable]);
+  }, [tryPlay, srcIndex]);
+
+  const handleError = () => {
+    if (srcIndex < AVATAR_VIDEOS.length - 1) {
+      setMuted(false);
+      setSrcIndex((i) => i + 1); // try the backup video
+    } else {
+      onUnavailable(); // every video source failed — show the static avatar
+    }
+  };
 
   const enableSound = () => {
     const v = ref.current;
@@ -148,11 +166,12 @@ function MiaWelcomeVideo({ onUnavailable }: { onUnavailable: () => void }) {
       />
       <video
         ref={ref}
-        src={AVATAR_VIDEO}
+        key={srcIndex}
+        src={AVATAR_VIDEOS[srcIndex]}
         playsInline
         autoPlay
         aria-label="Mia greets you and explains how MissingCash helps find unclaimed money"
-        onError={onUnavailable}
+        onError={handleError}
         className="relative w-full h-full object-cover rounded-full ring-2 ring-primary/40"
       />
       {muted && (
