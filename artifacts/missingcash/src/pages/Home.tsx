@@ -1,10 +1,12 @@
 import { useState } from "react";
+import UnclaimedTicker from "@/components/UnclaimedTicker";
+import EmailAlertSignup from "@/components/EmailAlertSignup";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Loader2, CheckCircle2, AlertCircle, FileText, ChevronRight } from "lucide-react";
+import { Search, Loader2, CheckCircle2, AlertCircle, FileText, ChevronRight, Bell } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { usePageSEO } from "@/hooks/use-page-seo";
@@ -65,12 +67,15 @@ export default function Home() {
               Banks, the ATO & ASIC are holding your money — waiting for you to claim it.
             </p>
             
-            <div className="inline-flex items-center gap-3 bg-secondary border border-border px-5 py-2.5 rounded-full mb-12 shadow-sm">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-              </span>
-              <span className="text-sm font-medium tracking-wide">Total Unclaimed In Australia <strong className="text-white">$2,600,000,000+</strong></span>
+            <div className="inline-flex flex-col items-center gap-1 bg-secondary border border-border px-6 py-3 rounded-2xl mb-12 shadow-sm">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </span>
+                <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">Live — Total Unclaimed in Australia</span>
+              </div>
+              <UnclaimedTicker />
             </div>
             
             {/* Search Card */}
@@ -295,6 +300,22 @@ export default function Home() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Email Alert Signup */}
+      <section className="py-16 border-t border-border">
+        <div className="container mx-auto px-4 max-w-2xl text-center">
+          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-1.5 text-sm text-primary font-medium mb-5">
+            <Bell className="w-4 h-4" /> Weekly Money Alerts
+          </div>
+          <h2 className="text-3xl font-heading tracking-wider text-white mb-3">GET ALERTED WHEN<br /><span className="text-primary">NEW MONEY IS FOUND</span></h2>
+          <p className="text-muted-foreground mb-8 leading-relaxed">
+            New unclaimed money is added to government databases every week. Get a free weekly alert when names matching yours appear in your state's registers.
+          </p>
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <EmailAlertSignup />
           </div>
         </div>
       </section>

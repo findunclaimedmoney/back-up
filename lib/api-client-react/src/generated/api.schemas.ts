@@ -66,6 +66,31 @@ export interface FinanceEnquiryInput {
   message?: string;
 }
 
+export type EmailAlertSubscribeInputState = typeof EmailAlertSubscribeInputState[keyof typeof EmailAlertSubscribeInputState];
+
+
+export const EmailAlertSubscribeInputState = {
+  NSW: 'NSW',
+  VIC: 'VIC',
+  QLD: 'QLD',
+  WA: 'WA',
+  SA: 'SA',
+  TAS: 'TAS',
+  ACT: 'ACT',
+  NT: 'NT',
+} as const;
+
+export interface EmailAlertSubscribeInput {
+  email: string;
+  firstName?: string;
+  state?: EmailAlertSubscribeInputState;
+}
+
+export interface EmailAlertSubscribeResult {
+  success: boolean;
+  error?: string;
+}
+
 export type SearchSubmitInputState = typeof SearchSubmitInputState[keyof typeof SearchSubmitInputState];
 
 

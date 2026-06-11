@@ -80,6 +80,28 @@ paths:
           description: Invalid request body
         "500":
           description: Failed to process enquiry
+  /alerts/subscribe:
+    post:
+      operationId: alertsSubscribe
+      tags: [alerts]
+      summary: Subscribe to weekly unclaimed money alerts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailAlertSubscribeInput"
+      responses:
+        "201":
+          description: Subscribed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailAlertSubscribeResult"
+        "400":
+          description: Invalid request body
+        "500":
+          description: Failed to subscribe
   /search/submit:
     post:
       operationId: searchSubmit
@@ -170,6 +192,26 @@ components:
           minLength: 4
           maxLength: 4
         message:
+          type: string
+    EmailAlertSubscribeInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        state:
+          type: string
+          enum: [NSW, VIC, QLD, WA, SA, TAS, ACT, NT]
+    EmailAlertSubscribeResult:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        error:
           type: string
     SearchSubmitInput:
       type: object

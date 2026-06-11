@@ -73,6 +73,16 @@ export const FinanceEnquiryResponse = zod.object({
 
 
 /**
+ * @summary Subscribe to weekly unclaimed money alerts
+ */
+export const AlertsSubscribeBody = zod.object({
+  "email": zod.string().email(),
+  "firstName": zod.string().optional(),
+  "state": zod.enum(['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']).optional()
+})
+
+
+/**
  * Saves a user's personal details so Mia can search all Australian unclaimed money databases on their behalf. Returns the created submission ID.
 
  * @summary Submit a money search request

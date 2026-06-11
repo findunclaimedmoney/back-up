@@ -6,6 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './emailAlertSubscribeInput';
+export * from './emailAlertSubscribeInputState';
+export * from './emailAlertSubscribeResult';
 export * from './financeEnquiryInput';
 export * from './financeEnquiryInputLoanType';
 export * from './financeEnquiryResult';

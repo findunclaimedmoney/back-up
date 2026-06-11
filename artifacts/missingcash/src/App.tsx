@@ -13,6 +13,9 @@ import Privacy from "@/pages/Privacy";
 import Guides from "@/pages/Guides";
 import ThankYou from "@/pages/ThankYou";
 import FindMyMoney from "@/pages/FindMyMoney";
+import AustraliaMap from "@/pages/AustraliaMap";
+import DeceasedEstate from "@/pages/DeceasedEstate";
+import LotteryChecker from "@/pages/LotteryChecker";
 
 function Router() {
   return (
@@ -25,6 +28,9 @@ function Router() {
         <Route path="/privacy" component={Privacy} />
         <Route path="/guides" component={Guides} />
         <Route path="/find-my-money" component={FindMyMoney} />
+        <Route path="/unclaimed-money-map" component={AustraliaMap} />
+        <Route path="/deceased-estate" component={DeceasedEstate} />
+        <Route path="/lottery-checker" component={LotteryChecker} />
         <Route path="/thank-you/:guide" component={ThankYou} />
         <Route component={NotFound} />
       </Switch>

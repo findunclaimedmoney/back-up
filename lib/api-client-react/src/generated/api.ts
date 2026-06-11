@@ -20,6 +20,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  EmailAlertSubscribeInput,
+  EmailAlertSubscribeResult,
   FinanceEnquiryInput,
   FinanceEnquiryResult,
   HealthStatus,
@@ -262,6 +264,77 @@ export const useFinanceEnquiry = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getFinanceEnquiryMutationOptions(options));
+    }
+
+export const getAlertsSubscribeUrl = () => {
+
+
+
+
+  return `/api/alerts/subscribe`
+}
+
+/**
+ * @summary Subscribe to weekly unclaimed money alerts
+ */
+export const alertsSubscribe = async (emailAlertSubscribeInput: EmailAlertSubscribeInput, options?: RequestInit): Promise<EmailAlertSubscribeResult> => {
+
+  return customFetch<EmailAlertSubscribeResult>(getAlertsSubscribeUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      emailAlertSubscribeInput,)
+  }
+);}
+
+
+
+
+export const getAlertsSubscribeMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof alertsSubscribe>>, TError,{data: BodyType<EmailAlertSubscribeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof alertsSubscribe>>, TError,{data: BodyType<EmailAlertSubscribeInput>}, TContext> => {
+
+const mutationKey = ['alertsSubscribe'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof alertsSubscribe>>, {data: BodyType<EmailAlertSubscribeInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  alertsSubscribe(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AlertsSubscribeMutationResult = NonNullable<Awaited<ReturnType<typeof alertsSubscribe>>>
+    export type AlertsSubscribeMutationBody = BodyType<EmailAlertSubscribeInput>
+    export type AlertsSubscribeMutationError = ErrorType<void>
+
+    /**
+ * @summary Subscribe to weekly unclaimed money alerts
+ */
+export const useAlertsSubscribe = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof alertsSubscribe>>, TError,{data: BodyType<EmailAlertSubscribeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof alertsSubscribe>>,
+        TError,
+        {data: BodyType<EmailAlertSubscribeInput>},
+        TContext
+      > => {
+      return useMutation(getAlertsSubscribeMutationOptions(options));
     }
 
 export const getSearchSubmitUrl = () => {
