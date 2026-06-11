@@ -5,8 +5,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { usePageSEO } from "@/hooks/use-page-seo";
 
 export default function Contact() {
+  usePageSEO({
+    title: "Contact MissingCash | Unclaimed Money Support Australia",
+    description:
+      "Get in touch with the MissingCash team for help finding or claiming unclaimed money in Australia. Email support@missingcash.com.au — we typically reply within one business day.",
+    keywords:
+      "contact MissingCash, unclaimed money help, MissingCash support, unclaimed money enquiry Australia",
+    canonical: "https://www.missingcash.com.au/contact",
+  });
+
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

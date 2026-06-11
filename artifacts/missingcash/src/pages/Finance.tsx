@@ -1,13 +1,71 @@
-import { Car, Home, Banknote, CheckCircle2, ExternalLink, Phone, Shield, Star } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Car, Banknote, Building2, CheckCircle2, ExternalLink, Phone, Shield, Star, MapPin, Clock, TrendingDown, Users } from "lucide-react";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePageSEO } from "@/hooks/use-page-seo";
+
+const HERO_IMG =
+  "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1400&q=80";
+const ERIN_IMG =
+  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=80";
+const CAR_IMG =
+  "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80";
+const PERSONAL_IMG =
+  "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80";
+const COMMERCIAL_IMG =
+  "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80";
 
 export default function Finance() {
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  usePageSEO({
+    title: "Stratton Finance Wanneroo, Perth | Car Loans & Personal Finance — MissingCash",
+    description:
+      "Get competitive car loans, personal loans and commercial finance through Stratton Finance Wanneroo. Speak with finance consultant Erin Crofton (08) 9446 9893. ACL 364340 · AFCA & FBAA member · access to 40+ lenders. Free, no-obligation quote.",
+    keywords:
+      "Stratton Finance, Stratton Finance Wanneroo, Stratton Finance Perth, Erin Crofton, car loans Perth, car finance Perth, personal loans WA, commercial finance Perth, asset finance, finance broker Perth, MissingCash finance",
+    canonical: "https://www.missingcash.com.au/finance",
+  });
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "finance-jsonld";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FinancialService",
+      name: "Stratton Finance Wanneroo (via MissingCash)",
+      description:
+        "Car loans, personal loans, commercial and asset finance from Stratton Finance, one of Australia's leading finance brokers with access to 40+ lenders.",
+      url: "https://www.missingcash.com.au/finance",
+      telephone: "+61894469893",
+      areaServed: "AU",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Wanneroo",
+        addressRegion: "WA",
+        addressCountry: "AU",
+      },
+      employee: {
+        "@type": "Person",
+        name: "Erin Crofton",
+        jobTitle: "Finance Consultant",
+      },
+      makesOffer: [
+        { "@type": "Offer", name: "Car Finance" },
+        { "@type": "Offer", name: "Personal Loans" },
+        { "@type": "Offer", name: "Commercial Finance" },
+        { "@type": "Offer", name: "Asset Finance" },
+      ],
+    });
+    document.head.appendChild(script);
+    return () => {
+      document.getElementById("finance-jsonld")?.remove();
+    };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,27 +76,43 @@ export default function Finance() {
     <div className="w-full">
       {/* Hero */}
       <section className="relative py-16 md:py-24 overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <img
+            src={HERO_IMG}
+            alt="Stratton Finance car loans and personal finance in Perth"
+            className="w-full h-full object-cover opacity-20"
+            loading="eager"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/90 to-background" />
+        </div>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
-        <div className="container mx-auto px-4 relative z-10 max-w-5xl">
+        <div className="container mx-auto px-4 relative z-10 max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center justify-center rounded-full border border-border bg-secondary/50 px-4 py-1.5 mb-8">
                 <span className="text-xs font-semibold tracking-wide text-muted-foreground flex items-center gap-2">
-                  <Banknote className="w-3.5 h-3.5 text-primary" /> FINANCE PARTNER
+                  <Banknote className="w-3.5 h-3.5 text-primary" /> OFFICIAL FINANCE PARTNER · STRATTON FINANCE
                 </span>
               </div>
               <h1 className="text-5xl md:text-7xl font-heading tracking-wider mb-6 text-white leading-none">
-                SMART <span className="text-primary">FINANCE</span> OPTIONS
+                FINANCE WITH <span className="text-primary">STRATTON</span>
               </h1>
-              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                Found your missing cash? Put it to work. Our trusted finance partner Stratton Finance can help you secure a competitive loan — whether it's for a car, home, or investment.
+              <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                MissingCash has partnered with <strong className="text-white">Stratton Finance</strong> — one of
+                Australia's most awarded finance brokers. Whether you've just found your missing cash or simply need a
+                great rate, get matched from <strong className="text-white">40+ lenders</strong> and approved fast.
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 mb-8">
                 {["Car Loans", "Personal Loans", "Commercial Finance", "Asset Finance"].map((tag, i) => (
                   <span key={i} className="px-3 py-1.5 rounded-full bg-secondary border border-border text-sm text-muted-foreground font-medium">
                     {tag}
                   </span>
                 ))}
+              </div>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-primary" /> Wanneroo, Perth WA</span>
+                <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-primary" /> Same-day approvals</span>
+                <span className="flex items-center gap-1.5"><Shield className="w-4 h-4 text-primary" /> ACL 364340</span>
               </div>
             </div>
 
@@ -57,8 +131,8 @@ export default function Finance() {
 
               <div className="space-y-3 mb-6">
                 {[
-                  "Australia's #1 rated car finance broker",
-                  "Access to 40+ lenders for best rates",
+                  "One of Australia's leading car finance brokers",
+                  "Access to 40+ lenders for the best rates",
                   "Fast approval — same day in most cases",
                   "Expert broker: Erin Crofton, Finance Consultant",
                 ].map((point, i) => (
@@ -77,11 +151,7 @@ export default function Finance() {
                 </a>
               </div>
 
-              <a
-                href="https://www.strattonfinance.com.au/wanneroo"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href="https://www.strattonfinance.com.au/wanneroo" target="_blank" rel="noopener noreferrer">
                 <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold tracking-wider h-12 rounded-xl shadow-[0_4px_14px_rgba(245,185,66,0.25)] gap-2" data-testid="button-stratton-direct">
                   Get a Quote Now <ExternalLink className="w-4 h-4" />
                 </Button>
@@ -91,22 +161,102 @@ export default function Finance() {
         </div>
       </section>
 
-      {/* Loan types */}
+      {/* Stats bar */}
+      <section className="border-y border-border bg-secondary/30">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
+            {[
+              { icon: <Users className="w-6 h-6 text-primary" />, stat: "40+", label: "Lenders compared" },
+              { icon: <TrendingDown className="w-6 h-6 text-primary" />, stat: "Low", label: "Competitive rates" },
+              { icon: <Clock className="w-6 h-6 text-primary" />, stat: "Same day", label: "Approvals" },
+              { icon: <Star className="w-6 h-6 text-primary" />, stat: "Top rated", label: "Finance broker" },
+            ].map((item, i) => (
+              <div key={i} className="flex flex-col items-center gap-1.5 py-8 px-2 text-center">
+                {item.icon}
+                <p className="text-2xl md:text-3xl font-heading tracking-wider text-white">{item.stat}</p>
+                <p className="text-xs md:text-sm text-muted-foreground">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Meet Erin / Stratton Wanneroo */}
+      <section className="py-20">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="relative rounded-2xl overflow-hidden border border-border shadow-2xl">
+              <img
+                src={ERIN_IMG}
+                alt="Erin Crofton, Stratton Finance Consultant in Wanneroo, Perth"
+                className="w-full h-full object-cover aspect-[4/3]"
+                loading="lazy"
+              />
+              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background/95 to-transparent p-6">
+                <p className="text-white font-bold text-lg">Erin Crofton</p>
+                <p className="text-sm text-primary">Finance Consultant · Stratton Finance Wanneroo</p>
+              </div>
+            </div>
+            <div>
+              <h2 className="text-4xl md:text-5xl font-heading tracking-wider mb-5 text-white">
+                YOUR LOCAL <span className="text-primary">STRATTON</span> EXPERT
+              </h2>
+              <p className="text-muted-foreground mb-5 leading-relaxed">
+                Based in Wanneroo, Perth, <strong className="text-white">Erin Crofton</strong> is your dedicated Stratton
+                Finance consultant. She does the legwork — comparing 40+ lenders to secure a sharp rate, handling the
+                paperwork, and guiding you from enquiry to approval, often on the same day.
+              </p>
+              <ul className="space-y-3 mb-8">
+                {[
+                  "Personalised service from a real, local broker",
+                  "Honest advice with no obligation to proceed",
+                  "Finance for any budget — from $5,000 to $100,000+",
+                ].map((point, i) => (
+                  <li key={i} className="flex items-start gap-3 text-muted-foreground">
+                    <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" /> {point}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex flex-wrap gap-3">
+                <a href="tel:0894469893">
+                  <Button variant="outline" className="h-12 rounded-xl gap-2 border-border" data-testid="button-call-erin">
+                    <Phone className="w-4 h-4 text-primary" /> Call Erin: (08) 9446 9893
+                  </Button>
+                </a>
+                <a href="https://www.strattonfinance.com.au/wanneroo" target="_blank" rel="noopener noreferrer">
+                  <Button className="h-12 rounded-xl gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
+                    Visit Stratton Wanneroo <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Loan types with imagery */}
       <section className="py-20 bg-secondary/30 border-y border-border">
-        <div className="container mx-auto px-4 max-w-5xl">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-heading tracking-wider mb-4 text-white">WHAT CAN STRATTON HELP WITH?</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">From your next car to growing your business — Stratton Finance has a loan for it.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: <Car className="w-8 h-8 text-primary" />, title: "Car Finance", desc: "New, used, or prestige — Stratton finds you the best car loan rate from 40+ lenders. Simple online process with fast approval." },
-              { icon: <Banknote className="w-8 h-8 text-primary" />, title: "Personal Loans", desc: "Need cash for a renovation, holiday, or debt consolidation? Get a competitive personal loan with flexible terms." },
-              { icon: <Home className="w-8 h-8 text-primary" />, title: "Commercial Finance", desc: "Business equipment, vehicles, and asset finance solutions for sole traders through to large enterprises." },
+              { img: CAR_IMG, icon: <Car className="w-6 h-6 text-primary" />, title: "Car Finance", desc: "New, used, or prestige — Stratton finds you the best car loan rate from 40+ lenders, with a simple online process and fast approval." },
+              { img: PERSONAL_IMG, icon: <Banknote className="w-6 h-6 text-primary" />, title: "Personal Loans", desc: "Cash for a renovation, holiday, wedding, or debt consolidation — a competitive personal loan with flexible terms." },
+              { img: COMMERCIAL_IMG, icon: <Building2 className="w-6 h-6 text-primary" />, title: "Commercial & Asset Finance", desc: "Business equipment, vehicles and asset finance for sole traders through to large enterprises." },
             ].map((item, i) => (
-              <Card key={i} className="bg-card border-border hover:border-primary/40 transition-colors text-center p-6">
-                <div className="flex justify-center mb-4">{item.icon}</div>
-                <CardTitle className="text-white mb-3">{item.title}</CardTitle>
-                <CardContent className="p-0">
+              <Card key={i} className="bg-card border-border hover:border-primary/40 transition-colors overflow-hidden p-0">
+                <div className="relative h-44 overflow-hidden">
+                  <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" loading="lazy" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+                  <div className="absolute bottom-3 left-3 bg-primary/20 border border-primary/30 rounded-lg p-2 backdrop-blur-sm">
+                    {item.icon}
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <CardTitle className="text-white mb-3">{item.title}</CardTitle>
                   <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
                 </CardContent>
               </Card>
@@ -115,7 +265,7 @@ export default function Finance() {
         </div>
       </section>
 
-      {/* Enquiry form — Option 1: webform stays on site */}
+      {/* Enquiry form */}
       <section className="py-20">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-center mb-10">
@@ -130,7 +280,7 @@ export default function Finance() {
               </div>
               <h3 className="text-2xl font-heading tracking-wider text-white mb-3">ENQUIRY RECEIVED!</h3>
               <p className="text-muted-foreground">
-                Thanks! Erin from Stratton Finance will contact you within one business day. 
+                Thanks! Erin from Stratton Finance will contact you within one business day.
                 For urgent enquiries call <a href="tel:0894469893" className="text-primary font-semibold hover:underline">(08) 9446 9893</a>.
               </p>
             </div>
@@ -207,10 +357,10 @@ export default function Finance() {
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { icon: <Star className="w-8 h-8" />, title: "Top Rated", sub: "Australia's #1 car finance" },
+              { icon: <Star className="w-8 h-8" />, title: "Top Rated", sub: "Leading finance broker" },
               { icon: <Shield className="w-8 h-8" />, title: "ACL Licensed", sub: "ACL 364340" },
               { icon: <CheckCircle2 className="w-8 h-8" />, title: "AFCA Member", sub: "Dispute resolution" },
-              { icon: <Banknote className="w-8 h-8" />, title: "40+ Lenders", sub: "Best rate guaranteed" },
+              { icon: <Banknote className="w-8 h-8" />, title: "40+ Lenders", sub: "Sharp rates" },
             ].map((item, i) => (
               <div key={i} className="flex flex-col items-center gap-2">
                 {item.icon}

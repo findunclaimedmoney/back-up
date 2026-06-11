@@ -28,8 +28,8 @@ export function usePageSEO({ title, description, keywords, canonical }: PageSEO)
     if (keywords) setMeta("keywords", keywords);
     setMeta("og:title", title, true);
     setMeta("og:description", description, true);
-    setMeta("twitter:title", title, true);
-    setMeta("twitter:description", description, true);
+    setMeta("twitter:title", title);
+    setMeta("twitter:description", description);
 
     if (canonical) {
       let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;

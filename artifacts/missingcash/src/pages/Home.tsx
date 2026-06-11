@@ -7,8 +7,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Loader2, CheckCircle2, AlertCircle, FileText, ChevronRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { usePageSEO } from "@/hooks/use-page-seo";
 
 export default function Home() {
+  usePageSEO({
+    title: "MissingCash | Find Your Unclaimed Money in Australia — Free Search",
+    description:
+      "Search billions in unclaimed money held by the ATO, ASIC, banks and state registers. MissingCash helps Australians find and claim lost super, shares, dividends and dormant accounts. 100% free to search.",
+    keywords:
+      "unclaimed money Australia, missing money, lost super, ASIC unclaimed money, ATO unclaimed super, find lost money, dormant bank accounts, unclaimed dividends, MissingCash",
+    canonical: "https://www.missingcash.com.au/",
+  });
+
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [searchName, setSearchName] = useState("");

@@ -1,0 +1,2 @@
+- [Express 5 SSE disconnect](express-sse-streaming.md) — use res.on('close') not req.on('close') to abort upstream streams; req close fires right after body parse.
+- [Orval barrel name collision](orval-barrel-name-collision.md) — name request-body component schemas `*Input`, never `{OperationId}Body`, or the zod const and TS type clash in the barrel.

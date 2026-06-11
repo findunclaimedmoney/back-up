@@ -2,8 +2,18 @@ import { Bitcoin, Wallet, Search, AlertTriangle, ExternalLink, ShieldCheck, Key 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { usePageSEO } from "@/hooks/use-page-seo";
 
 export default function Crypto() {
+  usePageSEO({
+    title: "Recover Lost Cryptocurrency in Australia | MissingCash",
+    description:
+      "Lost access to old crypto, a forgotten exchange account or hardware wallet? MissingCash explains how Australians can safely trace and recover lost cryptocurrency — and how to avoid recovery scams.",
+    keywords:
+      "lost crypto recovery, recover cryptocurrency Australia, forgotten wallet, lost bitcoin, crypto recovery scam, dormant crypto, MissingCash crypto",
+    canonical: "https://www.missingcash.com.au/crypto",
+  });
+
   return (
     <div className="w-full">
       {/* Hero */}

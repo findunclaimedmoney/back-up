@@ -1,7 +1,16 @@
 import { Shield } from "lucide-react";
 import { Link } from "wouter";
+import { usePageSEO } from "@/hooks/use-page-seo";
 
 export default function Privacy() {
+  usePageSEO({
+    title: "Privacy Policy | MissingCash",
+    description:
+      "How MissingCash collects, uses and protects your information. We do not store your search queries or personal data. Read our full privacy policy.",
+    keywords: "MissingCash privacy policy, data protection, privacy Australia",
+    canonical: "https://www.missingcash.com.au/privacy",
+  });
+
   const lastUpdated = "11 June 2026";
 
   return (

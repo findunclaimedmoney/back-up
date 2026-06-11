@@ -2,6 +2,7 @@ import { ReactNode, useEffect } from "react";
 import { useLocation } from "wouter";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import MiaChat from "@/components/MiaChat";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
@@ -18,6 +19,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
+      <MiaChat />
     </div>
   );
 }

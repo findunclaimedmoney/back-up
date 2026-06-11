@@ -1,6 +1,6 @@
-# [Project name]
+# MissingCash
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An Australian unclaimed-money search service: helps people find money held by the ATO, ASIC, and banks, with guidance on claiming it, a crypto-recovery section, a Stratton-style finance/loans page, and "Mia", a site-wide AI assistant.
 
 ## Run & Operate
 
@@ -22,15 +22,29 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- Frontend (React + Vite + Wouter + Tailwind + shadcn + framer-motion): `artifacts/missingcash/`
+  - Pages: `src/pages/` (Home, Crypto, Finance, Contact, Privacy)
+  - SEO: `src/hooks/use-page-seo.ts` (sets title/description/keywords/OG/Twitter meta per page)
+  - Mia chat widget: `src/components/MiaChat.tsx`, mounted site-wide in `src/components/layout/Layout.tsx`
+- API (Express 5, routed at `/api` via shared proxy): `artifacts/api-server/`
+  - Mia chat route: `src/routes/mia.ts`; system prompt/knowledge: `src/lib/mia-knowledge.ts`
+- API contract (source of truth): `lib/api-spec/openapi.yaml` → codegen into `lib/api-zod` (zod) and `lib/api-client-react` (hooks)
+- OpenAI integration wrapper lib: `lib/integrations-openai-ai-server`
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Mia is a **stateless** assistant: no DB tables for conversations/messages. The client holds history and POSTs the full `messages` array each turn; the server streams a response. SSE endpoints are documented in the OpenAPI spec but have no generated response hook (codegen can't model SSE) — the client parses with `fetch` + manual SSE parsing.
+- Mia uses the Replit OpenAI integration (model `gpt-5.4`, billed to Replit credits) — no user-supplied API key.
+- The public `/mia/chat` endpoint has in-memory per-IP rate limiting (15 req/min) and aborts the upstream stream on real client disconnect (`res.on('close')`).
+- Request-body component schemas in the OpenAPI spec use an `Input` suffix (e.g. `MiaChatInput`) to avoid an orval barrel name collision (see `.agents/memory/orval-barrel-name-collision.md`).
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Home**: hero search-to-find unclaimed money (ATO/ASIC/banks) with trust signals.
+- **Crypto**: lost/inaccessible crypto recovery guidance.
+- **Finance**: Stratton-style loans/finance page (Erin Crofton, Wanneroo/Perth, ACL 364340) with imagery, loan-type cards, FinancialService JSON-LD, and finance-targeted SEO.
+- **Contact / Privacy**: standard support and policy pages.
+- **Mia**: site-wide floating AI assistant — finds unclaimed money, gives claim guidance, handles Stratton finance enquiries, and answers FAQs.
 
 ## User preferences
 

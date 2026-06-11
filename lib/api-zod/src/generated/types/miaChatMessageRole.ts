@@ -5,9 +5,6 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-export interface HealthStatus {
-  status: string;
-}
 
 export type MiaChatMessageRole = typeof MiaChatMessageRole[keyof typeof MiaChatMessageRole];
 
@@ -16,21 +13,3 @@ export const MiaChatMessageRole = {
   user: 'user',
   assistant: 'assistant',
 } as const;
-
-export interface MiaChatMessage {
-  role: MiaChatMessageRole;
-  /**
-     * @minLength 1
-     * @maxLength 4000
-     */
-  content: string;
-}
-
-export interface MiaChatInput {
-  /**
-     * @minItems 1
-     * @maxItems 40
-     */
-  messages: MiaChatMessage[];
-}
-
