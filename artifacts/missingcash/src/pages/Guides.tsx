@@ -9,6 +9,7 @@ const STRIPE = {
   identity: "https://buy.stripe.com/28EcN46686NLdIN8Qg4c80e",
   bundle: "https://buy.stripe.com/cNi14m9ikdc93492rS4c80g",
   miaRecovery: "https://buy.stripe.com/PLACEHOLDER_MIA_RECOVERY",
+  doneForYou: "https://buy.stripe.com/PLACEHOLDER_DONE_FOR_YOU",
 };
 
 const guides = [
@@ -111,13 +112,61 @@ export default function Guides() {
         </div>
       </section>
 
-      {/* Mia Speed Recovery — hero product */}
+      {/* Done For You — top-tier hero product */}
+      <section className="pb-4">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="relative rounded-2xl border-2 border-primary/60 p-8 bg-gradient-to-br from-primary/10 via-background to-primary/5 shadow-[0_0_60px_rgba(245,185,66,0.12)] overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-[#00C1D5] to-primary" />
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-5 py-1.5 rounded-full tracking-wider">
+              ⭐ BEST VALUE · DONE FOR YOU
+            </div>
+
+            <div className="flex flex-col md:flex-row items-center gap-8 mt-2">
+              <div className="text-7xl shrink-0">🔍</div>
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-3xl font-heading tracking-wider text-white mb-1">DONE FOR YOU SEARCH</h2>
+                <p className="text-lg font-semibold text-primary mb-3">You pay once. We search everything. You get the results.</p>
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Our team searches all 8 Australian unclaimed money databases on your behalf and emails you a full results report within 48 hours. You don't have to click anything, navigate any government site, or spend a single minute searching.
+                </p>
+                <ul className="space-y-1.5 mb-6 text-sm text-left">
+                  {[
+                    "We search ATO, ASIC/MoneySmart, all 6 state revenue offices",
+                    "We check rental bond authorities, share registries, and lotteries",
+                    "Full results report emailed to you within 48 hours",
+                    "Includes claim instructions for every dollar we find",
+                    "Mia available for unlimited follow-up questions",
+                  ].map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-muted-foreground">
+                      <span className="text-primary mt-0.5 shrink-0">✓</span> {f}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <div>
+                    <span className="text-4xl font-bold text-primary">$149</span>
+                    <span className="text-sm text-muted-foreground ml-2">one-time · results within 48 hours</span>
+                  </div>
+                  <a href={STRIPE.doneForYou} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                    <Button className="w-full h-14 px-8 text-lg font-bold tracking-wider rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_4px_20px_rgba(245,185,66,0.4)]">
+                      ⭐ Do It For Me — $149
+                    </Button>
+                  </a>
+                </div>
+                <p className="text-xs text-muted-foreground mt-3">🔒 Secure via Stripe · You'll be asked for your details after payment · 48-hour turnaround guaranteed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mia Speed Recovery — guided hero product */}
       <section className="pb-6">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="relative rounded-2xl border-2 border-[#00C1D5]/50 p-8 bg-gradient-to-br from-[#00C1D5]/10 via-background to-primary/5 shadow-[0_0_60px_rgba(0,193,213,0.12)] overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#00C1D5] via-primary to-[#00C1D5]" />
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00C1D5] text-white text-xs font-bold px-5 py-1.5 rounded-full tracking-wider">
-              ⚡ FASTEST · MOST POPULAR
+              ⚡ INSTANT · GUIDED BY MIA
             </div>
 
             <div className="flex flex-col md:flex-row items-center gap-8 mt-2">

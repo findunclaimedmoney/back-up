@@ -206,30 +206,41 @@ export default function Home() {
                 </div>
                 
                 <div className="space-y-3">
-                  {/* Mia Speed Recovery — premium option */}
-                  <div className="bg-gradient-to-br from-[#00C1D5]/10 to-primary/10 border-2 border-[#00C1D5]/40 rounded-xl p-5 text-center relative overflow-hidden">
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00C1D5] text-white text-xs font-bold px-4 py-1 rounded-full tracking-wider">⚡ FASTEST OPTION</div>
-                    <h4 className="font-heading text-xl mb-1 text-white mt-2">MIA SPEED RECOVERY</h4>
-                    <p className="text-sm font-semibold text-[#00C1D5] mb-1">Months of searching → done in minutes.</p>
+                  {/* Done For You — top tier */}
+                  <div className="bg-gradient-to-br from-primary/15 to-primary/5 border-2 border-primary/50 rounded-xl p-5 text-center relative overflow-hidden">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-4 py-1 rounded-full tracking-wider">⭐ BEST VALUE</div>
+                    <h4 className="font-heading text-xl mb-1 text-white mt-2">DONE FOR YOU</h4>
+                    <p className="text-sm font-semibold text-primary mb-1">We search every database. You do nothing.</p>
                     <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                      Mia guides you live through every database — ATO, ASIC, myGov, and all state registers — right now, in one conversation.
+                      Our team searches all 8 Australian databases for you and emails your full results within 48 hours.
                     </p>
-                    <a href="https://buy.stripe.com/PLACEHOLDER_MIA_RECOVERY" target="_blank" rel="noopener noreferrer">
-                      <Button size="lg" className="w-full h-14 text-lg font-bold tracking-wider rounded-xl bg-[#00C1D5] text-white hover:bg-[#00C1D5]/90 shadow-[0_4px_14px_rgba(0,193,213,0.4)] transition-all">
-                        GET MIA TO GUIDE ME — $99
+                    <a href="https://buy.stripe.com/PLACEHOLDER_DONE_FOR_YOU" target="_blank" rel="noopener noreferrer">
+                      <Button size="lg" className="w-full h-14 text-lg font-bold tracking-wider rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_14px_rgba(245,185,66,0.4)] transition-all" data-testid="button-done-for-you">
+                        DO IT FOR ME — $149
                       </Button>
                     </a>
-                    <p className="text-xs text-muted-foreground mt-2">🔒 Secure via Stripe · Mia activates instantly after payment</p>
+                    <p className="text-xs text-muted-foreground mt-2">🔒 Secure via Stripe · Results emailed within 48 hours</p>
+                  </div>
+                  {/* Mia Speed Recovery — guided option */}
+                  <div className="bg-gradient-to-br from-[#00C1D5]/10 to-primary/5 border border-[#00C1D5]/30 rounded-xl p-4 text-center relative overflow-hidden">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00C1D5] text-white text-xs font-bold px-4 py-1 rounded-full tracking-wider">⚡ INSTANT</div>
+                    <h4 className="font-heading text-lg mb-1 text-white mt-2">MIA SPEED RECOVERY</h4>
+                    <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                      Mia guides you live through every database right now, step by step.
+                    </p>
+                    <a href="https://buy.stripe.com/PLACEHOLDER_MIA_RECOVERY" target="_blank" rel="noopener noreferrer">
+                      <Button size="lg" className="w-full h-11 text-base font-bold tracking-wider rounded-xl bg-[#00C1D5] text-white hover:bg-[#00C1D5]/90 transition-all">
+                        GUIDE ME NOW — $99
+                      </Button>
+                    </a>
                   </div>
                   {/* Guide — self-service option */}
-                  <div className="bg-primary/10 border border-primary/30 rounded-xl p-5 text-center">
-                    <h4 className="font-heading text-lg mb-1 text-primary">DIY CLAIM GUIDE</h4>
-                    <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                      Step-by-step PDF guide — do it yourself at your own pace.
-                    </p>
+                  <div className="bg-card border border-border rounded-xl p-4 text-center">
+                    <h4 className="font-heading text-base mb-1 text-primary">DIY CLAIM GUIDE</h4>
+                    <p className="text-xs text-muted-foreground mb-3">PDF guide — do it yourself at your own pace.</p>
                     <a href="https://buy.stripe.com/6oUbJ0eCE4FDbAFaYo4c800" target="_blank" rel="noopener noreferrer">
-                      <Button size="lg" variant="outline" className="w-full h-12 text-base font-bold tracking-wider rounded-xl border-primary/40 text-primary hover:bg-primary/10 transition-all" data-testid="button-claim-money">
-                        GET THE CLAIM GUIDE — $4.99
+                      <Button size="sm" variant="outline" className="w-full border-border text-muted-foreground hover:text-white transition-all" data-testid="button-claim-money">
+                        GET THE GUIDE — $4.99
                       </Button>
                     </a>
                   </div>

@@ -90,12 +90,15 @@ const MIA_GUIDANCE: Record<string, string> = {
   identity: "You've taken the right step getting the Identity Theft Recovery Guide. I'm Mia and I'm here to help you right now. Has the identity theft already happened, or are you trying to prevent it? I'll guide you through the exact steps based on your situation.",
   bundle: "You've got the complete MissingCash library — fantastic! I'm Mia and I'm here to help you use every guide. What's most urgent for you right now — finding unclaimed money, recovering crypto, protecting your phone, or dealing with identity theft? Let's start there.",
   "mia-recovery": "Welcome to your MissingCash Speed Recovery service! I'm Mia — your personal recovery guide. I'm going to walk you through finding and claiming every dollar of your unclaimed money right now, personally and step by step. To get started, what's your full name and which Australian state are you in?",
+  "done-for-you": "Fantastic — your Done For You search is confirmed! I'm Mia. Our team will search all 8 Australian databases for you and email your full results within 48 hours. To make sure we search the right records, can I get your full legal name and which state you live in?",
 };
 
 export default function ThankYou() {
   const [, params] = useRoute("/thank-you/:guide");
   const guide = params?.guide ?? "missingcash";
   const isMiaRecovery = guide === "mia-recovery";
+  const isDoneForYou = guide === "done-for-you";
+
   const config = isMiaRecovery
     ? {
         title: "Mia is Ready to Guide You!",
@@ -108,10 +111,22 @@ export default function ThankYou() {
           "Follow Mia's step-by-step instructions to complete your claim",
         ],
       }
+    : isDoneForYou
+    ? {
+        title: "Your Done For You Search is Confirmed!",
+        subtitle: "Our team will search all 8 Australian unclaimed money databases for you and email your full results report within 48 hours.",
+        note: "Mia is opening now to collect your details · Results within 48 hours",
+        downloads: [] as { label: string; file: string; color: string }[],
+        steps: [
+          "Tell Mia your full name and state so we search the right records",
+          "Our team searches ATO, ASIC, all state registers, bonds, and lotteries",
+          "You receive a full results report by email within 48 hours — with claim instructions for every dollar found",
+        ],
+      }
     : (configs[guide] ?? configs.missingcash);
 
   usePageSEO({
-    title: `${isMiaRecovery ? "Mia Speed Recovery" : config.title} — MissingCash`,
+    title: `${isMiaRecovery ? "Mia Speed Recovery" : isDoneForYou ? "Done For You Search Confirmed" : config.title} — MissingCash`,
     description: config.subtitle,
   });
 
@@ -137,18 +152,31 @@ export default function ThankYou() {
           <p className="text-muted-foreground leading-relaxed">{config.subtitle}</p>
         </div>
 
-        {/* Download buttons */}
-        <div className="bg-card border border-border rounded-2xl p-6 mb-6 space-y-3">
-          {config.downloads.map((dl) => (
-            <a key={dl.file} href={dl.file} download>
-              <Button className={`w-full h-14 text-base font-bold tracking-wider rounded-xl flex items-center gap-2 mb-2 ${dl.color}`}>
-                <Download className="w-5 h-5" />
-                {dl.label}
-              </Button>
-            </a>
-          ))}
-          <p className="text-center text-xs text-muted-foreground pt-1">{config.note}</p>
-        </div>
+        {/* Download buttons — only for guide products */}
+        {config.downloads.length > 0 && (
+          <div className="bg-card border border-border rounded-2xl p-6 mb-6 space-y-3">
+            {config.downloads.map((dl) => (
+              <a key={dl.file} href={dl.file} download>
+                <Button className={`w-full h-14 text-base font-bold tracking-wider rounded-xl flex items-center gap-2 mb-2 ${dl.color}`}>
+                  <Download className="w-5 h-5" />
+                  {dl.label}
+                </Button>
+              </a>
+            ))}
+            <p className="text-center text-xs text-muted-foreground pt-1">{config.note}</p>
+          </div>
+        )}
+
+        {/* Service confirmation card — for Mia Recovery and Done For You */}
+        {(isMiaRecovery || isDoneForYou) && (
+          <div className={`border rounded-2xl p-6 mb-6 text-center ${isDoneForYou ? "bg-primary/10 border-primary/30" : "bg-[#00C1D5]/10 border-[#00C1D5]/30"}`}>
+            <p className="text-4xl mb-3">{isDoneForYou ? "🔍" : "🤖"}</p>
+            <p className={`font-bold text-lg mb-1 ${isDoneForYou ? "text-primary" : "text-[#00C1D5]"}`}>
+              {isDoneForYou ? "Our team is on it" : "Mia is activating now"}
+            </p>
+            <p className="text-xs text-muted-foreground">{config.note}</p>
+          </div>
+        )}
 
         {/* Next steps */}
         <div className="bg-card border border-border rounded-2xl p-6 mb-6">
