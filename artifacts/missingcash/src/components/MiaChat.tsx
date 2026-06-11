@@ -209,6 +209,17 @@ export default function MiaChat() {
     if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
+  // Allow any page to open Mia by dispatching: window.dispatchEvent(new CustomEvent('mia:open', { detail: { message } }))
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setOpen(true);
+      const msg = (e as CustomEvent<{ message?: string }>).detail?.message;
+      if (msg) setTimeout(() => inputRef.current && (inputRef.current.value = msg), 150);
+    };
+    window.addEventListener("mia:open", handler);
+    return () => window.removeEventListener("mia:open", handler);
+  }, []);
+
   const handleVideoUnavailable = useCallback(() => setVideoOk(false), []);
 
   const sendMessage = useCallback(
