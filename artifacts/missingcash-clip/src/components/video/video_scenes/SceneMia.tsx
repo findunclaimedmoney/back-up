@@ -22,8 +22,8 @@ export function SceneMia({ muted = false }: SceneMiaProps) {
     >
       <div className="relative flex items-center justify-center w-full h-full">
 
-        {/* Mia talking head video */}
-        <div className="relative h-full aspect-[9/16] max-h-full overflow-hidden">
+        {/* Mia talking head video — square crop, centred left */}
+        <div className="relative h-full aspect-square max-h-full overflow-hidden">
           <div className="absolute inset-0 z-10 bg-gradient-to-r from-[var(--color-bg-dark)] via-transparent to-[var(--color-bg-dark)] opacity-60 pointer-events-none" />
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-[var(--color-bg-dark)] via-transparent to-transparent opacity-70 pointer-events-none" />
           <video
