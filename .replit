@@ -11,6 +11,104 @@ env = { "CI" = "true" }
 [workflows]
 runButton = "Project"
 
+[[workflows.workflow]]
+name = "artifacts/missingcash-clip: web"
+author = "agent"
+mode = "sequential"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+artifactId = "artifacts/missingcash-clip"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/missingcash-clip run dev"
+cwd = "./artifacts/missingcash-clip"
+waitForPort = 19493
+router = "path"
+
+[workflows.workflow.tasks.env]
+PORT = "19493"
+BASE_PATH = "/missingcash-clip/"
+
+[[workflows.workflow]]
+name = "artifacts/missingcash-deck: web"
+author = "agent"
+mode = "sequential"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+artifactId = "artifacts/missingcash-deck"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/missingcash-deck run dev"
+cwd = "./artifacts/missingcash-deck"
+waitForPort = 25124
+router = "path"
+
+[workflows.workflow.tasks.env]
+PORT = "25124"
+BASE_PATH = "/missingcash-deck/"
+
+[[workflows.workflow]]
+name = "artifacts/missingcash: web"
+author = "agent"
+mode = "sequential"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+artifactId = "artifacts/missingcash"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/missingcash run dev"
+cwd = "./artifacts/missingcash"
+waitForPort = 23246
+router = "path"
+
+[workflows.workflow.tasks.env]
+PORT = "23246"
+BASE_PATH = "/"
+
+[[workflows.workflow]]
+name = "artifacts/api-server: API Server"
+author = "agent"
+mode = "sequential"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+artifactId = "3B4_FFSkEVBkAeYMFRJ2e"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/api-server run dev"
+cwd = "./artifacts/api-server"
+waitForPort = 8080
+
+[workflows.workflow.tasks.env]
+PORT = "8080"
+
+[[workflows.workflow]]
+name = "artifacts/mockup-sandbox: Component Preview Server"
+author = "agent"
+mode = "sequential"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+artifactId = "XegfDyZt7HqfW2Bb8Ghoy"
+isCanvasWorkflow = true
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/mockup-sandbox run dev"
+cwd = "./artifacts/mockup-sandbox"
+waitForPort = 8081
+
+[workflows.workflow.tasks.env]
+PORT = "8081"
+BASE_PATH = "/__mockup"
+
 [agent]
 stack = "PNPM_WORKSPACE"
 expertMode = true
@@ -20,24 +118,20 @@ path = "scripts/post-merge.sh"
 timeoutMs = 20000
 
 [[ports]]
-localPort = 8080
-externalPort = 80
-
-[[ports]]
 localPort = 8081
 externalPort = 8081
 
 [[ports]]
 localPort = 19493
-externalPort = 3001
-
-[[ports]]
-localPort = 23246
 externalPort = 3000
 
 [[ports]]
+localPort = 23246
+externalPort = 3001
+
+[[ports]]
 localPort = 25124
-externalPort = 3002
+externalPort = 80
 
 [userenv]
 
