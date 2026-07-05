@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { getCompanion } from "@/lib/companions";
 import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
-import { Sparkles, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 const SUGGESTIONS = [
   "Hey, how's your day going?",
@@ -13,28 +13,90 @@ const SUGGESTIONS = [
   "I want to get something off my chest",
 ];
 
+// After every reply, silently extract memorable facts in the background
+async function extractMemories(companionId, recentExchange, existingMemories) {
+  const existingKeys = existingMemories.map((m) => m.key).join(", ");
+  const prompt = `You are a memory extraction system for a personal AI companion named ${companionId}.
+
+Read this conversation exchange and extract any facts worth remembering long-term about the user — things like their name, job, relationships, struggles, places, pets, hobbies, fears, goals, or recurring themes.
+
+Only extract facts that are clearly stated, not assumed. Skip anything vague or trivial.
+Do NOT re-extract facts already covered by these existing memory keys: ${existingKeys || "none yet"}.
+
+Return JSON like:
+{
+  "memories": [
+    { "key": "short_label", "value": "what to remember about the user" }
+  ]
+}
+
+Return an empty array if nothing new is worth saving.
+
+Exchange:
+${recentExchange}`;
+
+  try {
+    const result = await base44.integrations.Core.InvokeLLM({
+      prompt,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          memories: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                key: { type: "string" },
+                value: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const memories = result?.memories || [];
+    for (const mem of memories) {
+      if (!mem.key || !mem.value) continue;
+      // Upsert: if key exists, update it; otherwise create
+      const existing = existingMemories.find((m) => m.key === mem.key);
+      if (existing) {
+        await base44.entities.Memory.update(existing.id, { value: mem.value });
+      } else {
+        await base44.entities.Memory.create({
+          companion_id: companionId,
+          key: mem.key,
+          value: mem.value,
+        });
+      }
+    }
+    return memories;
+  } catch (err) {
+    console.error("Memory extraction failed:", err);
+    return [];
+  }
+}
+
 export default function Chat() {
   const { companionId } = useParams();
   const navigate = useNavigate();
   const companion = getCompanion(companionId);
 
   const [messages, setMessages] = useState([]);
+  const [memories, setMemories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [thinking, setThinking] = useState(false);
   const bottomRef = useRef(null);
 
-  const loadMessages = useCallback(async () => {
-    if (!companion) {
-      setLoading(false);
-      return;
-    }
+  const loadData = useCallback(async () => {
+    if (!companion) { setLoading(false); return; }
     try {
-      const data = await base44.entities.Message.filter(
-        { companion_id: companion.id },
-        "-created_date",
-        200
-      );
-      setMessages([...data].reverse());
+      const [msgData, memData] = await Promise.all([
+        base44.entities.Message.filter({ companion_id: companion.id }, "-created_date", 200),
+        base44.entities.Memory.filter({ companion_id: companion.id }),
+      ]);
+      setMessages([...msgData].reverse());
+      setMemories(memData);
     } catch (err) {
       console.error(err);
     } finally {
@@ -42,9 +104,7 @@ export default function Chat() {
     }
   }, [companion]);
 
-  useEffect(() => {
-    loadMessages();
-  }, [loadMessages]);
+  useEffect(() => { loadData(); }, [loadData]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -54,41 +114,52 @@ export default function Chat() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-background text-foreground">
         <p className="text-muted-foreground mb-4">Companion not found.</p>
-        <button
-          onClick={() => navigate("/")}
-          className="text-primary hover:underline"
-        >
+        <button onClick={() => navigate("/")} className="text-primary hover:underline">
           Back home
         </button>
       </div>
     );
   }
 
-  const handleSend = async (text) => {
-    const userMsg = { role: "user", content: text, companion_id: companion.id };
-    setMessages((prev) => [...prev, userMsg]);
-    setThinking(true);
+  const buildPrompt = (history, mems) => {
+    const memoryBlock =
+      mems.length > 0
+        ? `\n\n--- What you remember about this person ---\n${mems
+            .map((m) => `• ${m.key}: ${m.value}`)
+            .join("\n")}`
+        : "";
 
-    try {
-      await base44.entities.Message.create(userMsg);
-
-      const history = [...messages, userMsg]
-        .slice(-20)
-        .map((m) => `${m.role === "user" ? "Me" : companion.name}: ${m.content}`)
-        .join("\n");
-
-      const prompt = `${companion.personality}
+    return `${companion.personality}${memoryBlock}
 
 --- Conversation so far ---
 ${history}
 
 Respond as ${companion.name}. Reply with only your message — no prefix, no quotes.`;
+  };
 
-      const result = await base44.integrations.Core.InvokeLLM({ prompt });
+  const handleSend = async (text) => {
+    const userMsg = { role: "user", content: text, companion_id: companion.id };
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
+    setThinking(true);
+
+    try {
+      await base44.entities.Message.create(userMsg);
+
+      const history = updatedMessages
+        .slice(-20)
+        .map((m) => `${m.role === "user" ? "Me" : companion.name}: ${m.content}`)
+        .join("\n");
+
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: buildPrompt(history, memories),
+      });
+
       const replyText =
         typeof result === "string"
           ? result
           : result?.output || result?.response || JSON.stringify(result);
+
       const reply = {
         role: "assistant",
         content: replyText.trim(),
@@ -97,6 +168,22 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
 
       setMessages((prev) => [...prev, reply]);
       await base44.entities.Message.create(reply);
+
+      // Extract memories in the background — don't await, don't block UI
+      const recentExchange = `Me: ${text}\n${companion.name}: ${replyText.trim()}`;
+      extractMemories(companion.id, recentExchange, memories).then((newMems) => {
+        if (newMems.length > 0) {
+          setMemories((prev) => {
+            const updated = [...prev];
+            for (const nm of newMems) {
+              const idx = updated.findIndex((m) => m.key === nm.key);
+              if (idx >= 0) updated[idx] = { ...updated[idx], value: nm.value };
+              else updated.push({ companion_id: companion.id, ...nm });
+            }
+            return updated;
+          });
+        }
+      });
     } catch (err) {
       console.error(err);
       setMessages((prev) => [
@@ -113,11 +200,9 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
   };
 
   const handleClear = async () => {
-    if (!confirm("Clear your entire conversation? This can't be undone.")) return;
+    if (!confirm("Clear your conversation? Memories are kept.")) return;
     try {
-      await base44.entities.Message.deleteMany({
-        companion_id: companion.id,
-      });
+      await base44.entities.Message.deleteMany({ companion_id: companion.id });
       setMessages([]);
     } catch (err) {
       console.error(err);
@@ -158,14 +243,21 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
               </div>
             </div>
           </div>
-          {hasMessages && (
-            <button
-              onClick={handleClear}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted"
-            >
-              Clear
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {memories.length > 0 && (
+              <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-muted" title={memories.map(m => `${m.key}: ${m.value}`).join('\n')}>
+                {memories.length} {memories.length === 1 ? "memory" : "memories"}
+              </span>
+            )}
+            {hasMessages && (
+              <button
+                onClick={handleClear}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted"
+              >
+                Clear
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -184,10 +276,12 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
                 className="w-20 h-20 rounded-full object-cover mb-5 shadow-lg"
               />
               <h2 className="font-heading text-2xl font-semibold mb-2">
-                Hi, I'm {companion.name}
+                {memories.length > 0 ? `Good to see you again` : `Hi, I'm ${companion.name}`}
               </h2>
               <p className="text-muted-foreground text-[15px] max-w-xs leading-relaxed mb-8">
-                {companion.subtitle}. {companion.description}
+                {memories.length > 0
+                  ? `${companion.name} remembers you. Pick up where you left off.`
+                  : `${companion.subtitle}. ${companion.description}`}
               </p>
               <div className="flex flex-col gap-2 w-full max-w-sm">
                 {SUGGESTIONS.map((s) => (

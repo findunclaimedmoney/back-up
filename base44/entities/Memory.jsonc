@@ -1,0 +1,23 @@
+{
+  "name": "Memory",
+  "type": "object",
+  "properties": {
+    "companion_id": {
+      "type": "string",
+      "description": "Which companion this memory belongs to"
+    },
+    "key": {
+      "type": "string",
+      "description": "Short label for the memory (e.g. 'sister', 'job_stress', 'hometown')"
+    },
+    "value": {
+      "type": "string",
+      "description": "What Mia learned and should remember"
+    }
+  },
+  "required": [
+    "companion_id",
+    "key",
+    "value"
+  ]
+}
