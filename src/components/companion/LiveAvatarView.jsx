@@ -14,6 +14,7 @@ export default function LiveAvatarView({ companion, onClose }) {
         const res = await base44.functions.invoke("liveavatarEmbed", {
           companion_name: companion.name,
           personality: companion.personality,
+          avatar_id: companion.avatar_id || null,
         });
         if (cancelled) return;
         if (res.data?.error) throw new Error(res.data.error);

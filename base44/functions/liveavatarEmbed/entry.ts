@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    const { companion_name, personality } = body;
+    const { companion_name, personality, avatar_id: preferredAvatarId } = body;
 
     if (!companion_name || !personality) {
       return Response.json({ error: 'companion_name and personality are required' }, { status: 400 });
@@ -51,8 +51,9 @@ Deno.serve(async (req) => {
 
     if (!contextId) return Response.json({ error: 'Failed to create LiveAvatar context' }, { status: 500 });
 
-    // 2. Find an available avatar — check user avatars first (custom, must be active), then presets
-    let avatarId;
+    // 2. Find an available avatar — use preferred if provided, else check user avatars (active), then presets
+    let avatarId = preferredAvatarId;
+    if (!avatarId) {
     const userAvatarsRes = await fetch(`${LA_API}/v1/avatars`, { headers });
     const userAvatarsData = await userAvatarsRes.json();
     const userAvatarList = userAvatarsData.data?.results || userAvatarsData.data || [];
@@ -67,6 +68,7 @@ Deno.serve(async (req) => {
       const publicList = publicData.data?.results || publicData.data || [];
       const firstPreset = publicList.find((a) => a.avatar_id || a.id);
       avatarId = firstPreset?.avatar_id || firstPreset?.id;
+    }
     }
 
     if (!avatarId) return Response.json({ error: 'No avatars available. Create one at app.liveavatar.com' }, { status: 500 });

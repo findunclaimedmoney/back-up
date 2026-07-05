@@ -52,7 +52,7 @@ export default function Home() {
 
       {/* Companion cards */}
       <section className="px-6 pb-24">
-        <div className="max-w-sm mx-auto space-y-6">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {COMPANIONS.map((c) => (
             <Link
               key={c.id}
@@ -115,7 +115,7 @@ export default function Home() {
           ))}
 
           {/* Create your own */}
-          <div className="block group relative overflow-hidden rounded-[2rem] border border-dashed border-border bg-card/30 transition-all hover:border-primary/40">
+          <div className="sm:col-span-2 lg:col-span-1 block group relative overflow-hidden rounded-[2rem] border border-dashed border-border bg-card/30 transition-all hover:border-primary/40">
             <div className="p-8 text-center">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted border border-border mb-5">
                 <Plus className="w-7 h-7 text-muted-foreground" />
@@ -124,7 +124,7 @@ export default function Home() {
                 Create your own
               </h2>
               <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                Upload a photo and bring them to life
+                Upload a photo and bring them to life — ready in 24 hours
               </p>
             </div>
           </div>
