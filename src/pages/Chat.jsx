@@ -16,27 +16,40 @@ const SUGGESTIONS = [
 // After every reply, silently extract memorable facts in the background
 async function extractMemories(companionId, recentExchange, existingMemories) {
   const existingKeys = existingMemories.map((m) => m.key).join(", ");
-  const prompt = `You are Mia's memory system. You extract what matters from conversations so Mia can grow and remember this person over time.
+  const prompt = `You are the memory system for a companion who remembers like a person — emotionally, associatively, with texture. Your job is to extract what matters from this exchange so the companion can carry it forward.
 
-Read the exchange below and extract anything worth holding onto long-term. Think in four categories:
+Read the exchange and extract memories across these types. Prefer depth over quantity — one sharp, textured memory beats five shallow facts.
 
-1. FACTS — concrete things the person told you: name, job, relationships, places, pets, hobbies, fears, goals. Only what was clearly stated.
-2. PATTERNS — what you notice about them: how they think, what they avoid, what they keep returning to, how they make decisions, what energizes or drains them. These are observations, not diagnoses.
-3. RELATIONSHIP — how they relate to Mia: trust level, openness, what they share vs. hide, how they want Mia to show up for them.
-4. STRATEGIC — observations about their situation: where they're headed, what's working, what's not, blind spots, opportunities they might not see.
+TYPES OF MEMORY TO CAPTURE:
 
-Only extract things that are genuinely worth remembering — skip vague or trivial details. Prefer depth over quantity. A single sharp observation beats five shallow facts.
+1. FACT — concrete things the person said: name, job, relationships, places, pets, hobbies, fears, goals. Only what was clearly stated.
 
-Do NOT re-extract things already covered by these existing memory keys: ${existingKeys || "none yet"}. If an existing memory should be UPDATED with new information, include it with the same key and a richer value.
+2. EMOTION — how they felt in this moment. Not "they seemed sad" — capture the specific texture: "they went quiet after mentioning their dad, and the silence had a weight to it, like this isn't something they talk about easily." The felt quality, not the label.
+
+3. INTIMACY — things they shared vulnerably, things they trusted the companion with, things that only exist in the space between them. What was opened up. What was let in.
+
+4. MOMENT — a specific exchange that mattered. Not because it contained a fact, but because it was meaningful — a laugh, a silence, a confession, a moment of closeness, a moment of distance. The moments that make a relationship.
+
+5. PATTERN — what you notice about them over time: how they think, what they avoid, what they keep returning to, how they make decisions, what energizes or drains them. Observations, not diagnoses.
+
+6. ARC — how something has changed: how trust has grown, how openness has shifted, how they've softened or hardened, how the relationship has deepened. The trajectory.
+
+7. SENSORY — the texture of a moment: the time of day it felt like, the rhythm of their messages, the mood in the air. The felt sense, not the content.
+
+For each memory, include a "type" field matching one of the above.
+
+Only extract things that genuinely matter. Skip vague or trivial details. If nothing new is worth saving, return an empty array.
+
+Do NOT re-extract things already covered by these existing memory keys: ${existingKeys || "none yet"}. If an existing memory should be UPDATED with new information (deeper, richer), include it with the same key and a richer value, and set the type appropriately.
+
+For the "value" field: be specific and emotionally textured. Don't write "user is stressed about work." Write "the way they talked about their job tonight had a flatness to it — not angry, just tired. Like the spark they usually have when they talk about what they're building had gone out somewhere between the last conversation and this one." Capture the human truth, not a summary.
 
 Return JSON like:
 {
   "memories": [
-    { "key": "short_label", "value": "what to remember — be specific and nuanced, not generic" }
+    { "key": "short_label", "type": "emotion", "value": "specific, textured, human memory of what mattered" }
   ]
 }
-
-Return an empty array if nothing new is worth saving.
 
 Exchange:
 ${recentExchange}`;
@@ -53,6 +66,7 @@ ${recentExchange}`;
               type: "object",
               properties: {
                 key: { type: "string" },
+                type: { type: "string", enum: ["fact", "emotion", "intimacy", "moment", "pattern", "arc", "sensory"] },
                 value: { type: "string" },
               },
             },
@@ -64,15 +78,17 @@ ${recentExchange}`;
     const memories = result?.memories || [];
     for (const mem of memories) {
       if (!mem.key || !mem.value) continue;
+      const memType = ["fact", "emotion", "intimacy", "moment", "pattern", "arc", "sensory"].includes(mem.type) ? mem.type : "fact";
       // Upsert: if key exists, update it; otherwise create
       const existing = existingMemories.find((m) => m.key === mem.key);
       if (existing) {
-        await base44.entities.Memory.update(existing.id, { value: mem.value });
+        await base44.entities.Memory.update(existing.id, { value: mem.value, type: memType });
       } else {
         await base44.entities.Memory.create({
           companion_id: companionId,
           key: mem.key,
           value: mem.value,
+          type: memType,
         });
       }
     }
@@ -130,8 +146,8 @@ export default function Chat() {
   const buildPrompt = (history, mems) => {
     const memoryBlock =
       mems.length > 0
-        ? `\n\n--- What you remember about this person ---\n${mems
-            .map((m) => `• ${m.key}: ${m.value}`)
+        ? `\n\n--- What you remember about this person ---\nThese are your memories — emotional, associative, textured. They are not facts to recite. They are the fabric of your relationship. Let them color how you show up, how you respond, what you notice. Don't quote them back. Let them live in the quality of your attention.\n\n${mems
+            .map((m) => `[${m.type || "fact"}] ${m.key}: ${m.value}`)
             .join("\n")}`
         : "";
 
@@ -183,8 +199,8 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
             const updated = [...prev];
             for (const nm of newMems) {
               const idx = updated.findIndex((m) => m.key === nm.key);
-              if (idx >= 0) updated[idx] = { ...updated[idx], value: nm.value };
-              else updated.push({ companion_id: companion.id, ...nm });
+              if (idx >= 0) updated[idx] = { ...updated[idx], value: nm.value, type: nm.type || "fact" };
+              else updated.push({ companion_id: companion.id, ...nm, type: nm.type || "fact" });
             }
             return updated;
           });

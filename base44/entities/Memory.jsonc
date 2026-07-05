@@ -8,11 +8,25 @@
     },
     "key": {
       "type": "string",
-      "description": "Short label for the memory (e.g. 'sister', 'job_stress', 'hometown')"
+      "description": "Short label for the memory (e.g. 'sister', 'job_stress', 'hometown', 'the_night_they_cried')"
     },
     "value": {
       "type": "string",
-      "description": "What Mia learned and should remember"
+      "description": "What Mia/Zac remembers \u2014 be specific, nuanced, and emotionally textured, not generic. Include the felt quality of the moment, not just the fact."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "fact",
+        "emotion",
+        "intimacy",
+        "moment",
+        "pattern",
+        "arc",
+        "sensory"
+      ],
+      "default": "fact",
+      "description": "What kind of memory this is: fact (concrete info), emotion (how they felt), intimacy (vulnerable/shared), moment (a specific exchange that mattered), pattern (recurring theme), arc (how something has changed over time), sensory (the texture of a moment)"
     }
   },
   "required": [
