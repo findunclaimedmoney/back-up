@@ -133,7 +133,9 @@ export default function Chat() {
     if (sorted.length > 0) {
       const lastMsg = sorted[sorted.length - 1];
       const hoursSince = (Date.now() - new Date(lastMsg.created_date).getTime()) / (1000 * 60 * 60);
-      if (hoursSince >= 6) {
+      // Only fire if last message was from the user (companion hasn't already reached out)
+      // and enough time has passed
+      if (lastMsg.role === 'user' && hoursSince >= 4) {
         setThinking(true);
         try {
           const history = sorted.slice(-10).map(m => `${m.role === 'user' ? 'Me' : companion.name}: ${m.content}`).join('\n');
