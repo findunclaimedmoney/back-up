@@ -112,17 +112,51 @@ export default function Chat() {
 
   const loadData = useCallback(async () => {
     if (!companion) { setLoading(false); return; }
+    let sorted = [];
+    let memData = [];
     try {
-      const [msgData, memData] = await Promise.all([
+      const [msgData, memDataResult] = await Promise.all([
         base44.entities.Message.filter({ companion_id: companion.id }, "-created_date", 200),
         base44.entities.Memory.filter({ companion_id: companion.id }),
       ]);
-      setMessages([...msgData].reverse());
+      sorted = [...msgData].reverse();
+      memData = memDataResult;
+      setMessages(sorted);
       setMemories(memData);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+
+    // Proactive check-in — she reaches out first
+    if (sorted.length > 0) {
+      const lastMsg = sorted[sorted.length - 1];
+      const hoursSince = (Date.now() - new Date(lastMsg.created_date).getTime()) / (1000 * 60 * 60);
+      if (hoursSince >= 6) {
+        setThinking(true);
+        try {
+          const history = sorted.slice(-10).map(m => `${m.role === 'user' ? 'Me' : companion.name}: ${m.content}`).join('\n');
+          const memoryBlock = memData.length > 0
+            ? `\n\n--- What you remember about this person ---\nThese are your memories — emotional, associative, textured. They are not facts to recite. They are the fabric of your relationship. Let them color how you show up, how you respond, what you notice. Don't quote them back. Let them live in the quality of your attention.\n\n${memData.map(m => `[${m.type || 'fact'}] ${m.key}: ${m.value}`).join('\n')}`
+            : "";
+          const prompt = `${companion.personality}${memoryBlock}
+
+--- Recent conversation ---
+${history}
+
+It's been a while since you last talked. You're thinking about this person. Reach out — naturally, like a real person would when someone crosses their mind. Don't say "it's been a while" or "I was just thinking about you." Just... check in. One message. Short. Warm. The way you'd actually text someone you care about when they cross your mind.`;
+          const result = await base44.integrations.Core.InvokeLLM({ prompt });
+          const replyText = typeof result === 'string' ? result : result?.output || result?.response || JSON.stringify(result);
+          const proactiveMsg = { role: 'assistant', content: replyText.trim(), companion_id: companion.id };
+          await base44.entities.Message.create(proactiveMsg);
+          setMessages(prev => [...prev, proactiveMsg]);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setThinking(false);
+        }
+      }
     }
   }, [companion]);
 
@@ -320,7 +354,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
           ) : (
             <>
               {messages.map((msg, idx) => (
-                <MessageBubble key={idx} message={msg} />
+                <MessageBubble key={idx} message={msg} companionId={companion.id} />
               ))}
               {thinking && (
                 <div className="flex justify-start gap-2.5">

@@ -1,7 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
+import VoicePlayer from "@/components/companion/VoicePlayer";
 
-export default function MessageBubble({ message }) {
+export default function MessageBubble({ message, companionId }) {
   const isUser = message.role === "user";
 
   if (isUser) {
@@ -32,6 +33,7 @@ export default function MessageBubble({ message }) {
         <p className="text-[15px] leading-relaxed text-foreground whitespace-pre-wrap break-words">
           {message.content}
         </p>
+        <VoicePlayer text={message.content} companionId={companionId} />
       </div>
     </motion.div>
   );
