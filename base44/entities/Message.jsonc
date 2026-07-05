@@ -13,10 +13,15 @@
     "content": {
       "type": "string",
       "description": "The text content of the message"
+    },
+    "companion_id": {
+      "type": "string",
+      "description": "Which companion this message belongs to"
     }
   },
   "required": [
     "role",
-    "content"
+    "content",
+    "companion_id"
   ]
 }

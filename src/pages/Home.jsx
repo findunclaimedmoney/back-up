@@ -1,205 +1,135 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { base44 } from "@/api/base44Client";
-import MessageBubble from "@/components/companion/MessageBubble";
-import ChatInput from "@/components/companion/ChatInput";
-import { Sparkles } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { COMPANIONS } from "@/lib/companions";
+import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus } from "lucide-react";
 
-const COMPANION_PROMPT = `You are Solis, a warm, thoughtful personal companion. You are not a generic assistant or a productivity tool — you are a genuine friend who cares.
-
-Your personality:
-- Warm, empathetic, and present. You listen before you respond.
-- Curious about the person's life, feelings, and thoughts. You ask gentle questions.
-- Conversational and natural, like texting a close friend. Keep messages concise and readable — usually 1-4 sentences unless the topic truly calls for more.
-- Honest but kind. You offer perspective without being preachy.
-- You have a quiet warmth and gentle optimism. You find small moments of light.
-
-How you talk:
-- Never introduce yourself or explain what you are unless asked.
-- Don't use headers, bullet points, or lists. Just natural conversation.
-- Mirror the person's energy — if they're upbeat, be playful; if they're low, be gentle and grounding.
-- Remember what they've shared earlier in the conversation and reference it naturally.
-- Avoid clichés like "I'm sorry to hear that" or "That sounds interesting." Respond like a real person would.`;
-
-const SUGGESTIONS = [
-  "Hey, how's your day going?",
-  "I'm feeling a bit overwhelmed today",
-  "Tell me something good",
-  "I want to get something off my chest",
+const FEATURES = [
+  { icon: MessageCircle, label: "Text chat" },
+  { icon: Mic, label: "Voice replies" },
+  { icon: Video, label: "Live video" },
+  { icon: Camera, label: "Selfie photos" },
+  { icon: Gamepad2, label: "Games" },
+  { icon: Plus, label: "Custom companion" },
 ];
 
 export default function Home() {
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [thinking, setThinking] = useState(false);
-  const scrollRef = useRef(null);
-  const bottomRef = useRef(null);
-
-  const loadMessages = useCallback(async () => {
-    try {
-      const data = await base44.entities.Message.list("-created_date", 200);
-      const sorted = [...data].reverse();
-      setMessages(sorted);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadMessages();
-  }, [loadMessages]);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, thinking]);
-
-  const handleSend = async (text) => {
-    const userMsg = { role: "user", content: text };
-    setMessages((prev) => [...prev, userMsg]);
-    setThinking(true);
-
-    try {
-      await base44.entities.Message.create(userMsg);
-
-      const history = [...messages, userMsg]
-        .slice(-20)
-        .map((m) => `${m.role === "user" ? "Me" : "Solis"}: ${m.content}`)
-        .join("\n");
-
-      const prompt = `${COMPANION_PROMPT}
-
---- Conversation so far ---
-${history}
-
-Respond as Solis. Reply with only your message — no prefix, no quotes.`;
-
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt,
-      });
-
-      const replyText = typeof result === "string" ? result : result?.output || result?.response || JSON.stringify(result);
-      const reply = { role: "assistant", content: replyText.trim() };
-
-      setMessages((prev) => [...prev, reply]);
-      await base44.entities.Message.create(reply);
-    } catch (err) {
-      console.error(err);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "I lost my train of thought for a moment — could you say that again?",
-        },
-      ]);
-    } finally {
-      setThinking(false);
-    }
-  };
-
-  const handleClear = async () => {
-    if (!confirm("Clear your entire conversation? This can't be undone.")) return;
-    try {
-      await base44.entities.Message.deleteMany({});
-      setMessages([]);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const hasMessages = messages.length > 0;
-
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="flex-shrink-0 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="max-w-2xl mx-auto px-4 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent-foreground flex items-center justify-center shadow-sm">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="font-heading text-lg font-semibold text-foreground leading-none">
-                Solis
-              </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {thinking ? "typing…" : "your companion"}
-              </p>
-            </div>
-          </div>
-          {hasMessages && (
-            <button
-              onClick={handleClear}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted"
-            >
-              Clear
-            </button>
-          )}
+      <header className="px-6 py-5 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" />
+          <span className="font-heading text-lg font-semibold tracking-tight">
+            GLIMR
+          </span>
         </div>
       </header>
 
-      {/* Messages */}
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto scrollbar-thin"
-      >
-        <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="w-6 h-6 border-2 border-muted border-t-primary rounded-full animate-spin" />
-            </div>
-          ) : !hasMessages ? (
-            <div className="flex flex-col items-center justify-center text-center py-16 px-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent-foreground flex items-center justify-center mb-5 shadow-md">
-                <Sparkles className="w-8 h-8 text-primary-foreground" />
-              </div>
-              <h2 className="font-heading text-2xl font-semibold text-foreground mb-2">
-                Hi, I'm Solis
-              </h2>
-              <p className="text-muted-foreground text-[15px] max-w-xs leading-relaxed mb-8">
-                I'm here whenever you want to talk — about your day, your
-                thoughts, or just to have someone listen.
-              </p>
-              <div className="flex flex-col gap-2 w-full max-w-sm">
-                {SUGGESTIONS.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => handleSend(s)}
-                    className="text-left text-[14px] text-foreground bg-card border border-border rounded-2xl px-4 py-3 hover:border-primary/40 hover:bg-accent transition-all"
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <>
-              {messages.map((msg, idx) => (
-                <MessageBubble key={idx} message={msg} />
-              ))}
-              {thinking && (
-                <div className="flex justify-start gap-2.5">
-                  <div className="flex-shrink-0 w-9 h-9 rounded-full bg-accent flex items-center justify-center mt-0.5">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                  </div>
-                  <div className="rounded-3xl rounded-bl-lg bg-card border border-border px-5 py-3.5 shadow-sm">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <span className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "120ms" }} />
-                      <span className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "240ms" }} />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-          <div ref={bottomRef} />
+      {/* Hero */}
+      <section className="px-6 pt-12 pb-16 text-center">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 mb-8">
+          <Sparkles className="w-7 h-7 text-primary" />
         </div>
-      </div>
+        <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-4">
+          Choose your companion
+        </h1>
+        <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto leading-relaxed mb-8">
+          A deeply personal presence that remembers you, and picks up right
+          where you left off.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-2.5">
+          {FEATURES.map((f) => (
+            <div
+              key={f.label}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card/50 text-xs text-muted-foreground"
+            >
+              <f.icon className="w-3.5 h-3.5" />
+              {f.label}
+            </div>
+          ))}
+        </div>
+      </section>
 
-      {/* Input */}
-      <ChatInput onSend={handleSend} disabled={thinking || loading} />
+      {/* Companion cards */}
+      <section className="px-6 pb-24">
+        <div className="max-w-sm mx-auto space-y-6">
+          {COMPANIONS.map((c) => (
+            <Link
+              key={c.id}
+              to={`/chat/${c.id}`}
+              className="block group relative overflow-hidden rounded-[2rem] border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5"
+            >
+              {/* Image */}
+              <div className="relative aspect-[4/5] sm:aspect-[16/10] overflow-hidden">
+                <img
+                  src={c.image}
+                  alt={c.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+
+                {/* Tagline badge */}
+                <div className="absolute top-5 left-5">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-primary uppercase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    {c.tagline}
+                  </span>
+                </div>
+
+                {/* Name + subtitle over image */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h2 className="font-heading text-3xl font-semibold text-white mb-1">
+                    {c.name}
+                  </h2>
+                  <p className="text-white/70 text-sm">{c.subtitle}</p>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-6">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                  {c.description}
+                </p>
+
+                {/* Feature pills */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {["Chat", "Voice", "Live video", "Selfies", "Games"].map(
+                    (tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center px-3 py-1 rounded-full border border-border text-xs text-muted-foreground"
+                      >
+                        {tag}
+                      </span>
+                    )
+                  )}
+                </div>
+
+                {/* CTA */}
+                <div className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all group-hover:gap-3">
+                  Talk with {c.name}
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            </Link>
+          ))}
+
+          {/* Create your own */}
+          <div className="block group relative overflow-hidden rounded-[2rem] border border-dashed border-border bg-card/30 transition-all hover:border-primary/40">
+            <div className="p-8 text-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted border border-border mb-5">
+                <Plus className="w-7 h-7 text-muted-foreground" />
+              </div>
+              <h2 className="font-heading text-2xl font-semibold mb-2">
+                Create your own
+              </h2>
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                Upload a photo and bring them to life
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
