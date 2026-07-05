@@ -4,7 +4,8 @@ import { base44 } from "@/api/base44Client";
 import { getCompanion } from "@/lib/companions";
 import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Video } from "lucide-react";
+import LiveAvatarView from "@/components/companion/LiveAvatarView";
 
 const SUGGESTIONS = [
   "Hey, how's your day going?",
@@ -108,6 +109,7 @@ export default function Chat() {
   const [memories, setMemories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [thinking, setThinking] = useState(false);
+  const [videoMode, setVideoMode] = useState(false);
   const bottomRef = useRef(null);
 
   const loadData = useCallback(async () => {
@@ -302,6 +304,13 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setVideoMode(true)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted"
+            >
+              <Video className="w-3.5 h-3.5" />
+              Face to face
+            </button>
             {memories.length > 0 && (
               <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-muted" title={memories.map(m => `${m.key}: ${m.value}`).join('\n')}>
                 {memories.length} {memories.length === 1 ? "memory" : "memories"}
@@ -382,6 +391,11 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
 
       {/* Input */}
       <ChatInput onSend={handleSend} disabled={thinking || loading} />
+
+      {/* Face-to-face video mode */}
+      {videoMode && (
+        <LiveAvatarView companion={companion} onClose={() => setVideoMode(false)} />
+      )}
     </div>
   );
 }
