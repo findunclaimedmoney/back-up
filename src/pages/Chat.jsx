@@ -16,17 +16,23 @@ const SUGGESTIONS = [
 // After every reply, silently extract memorable facts in the background
 async function extractMemories(companionId, recentExchange, existingMemories) {
   const existingKeys = existingMemories.map((m) => m.key).join(", ");
-  const prompt = `You are a memory extraction system for a personal AI companion named ${companionId}.
+  const prompt = `You are Mia's memory system. You extract what matters from conversations so Mia can grow and remember this person over time.
 
-Read this conversation exchange and extract any facts worth remembering long-term about the user — things like their name, job, relationships, struggles, places, pets, hobbies, fears, goals, or recurring themes.
+Read the exchange below and extract anything worth holding onto long-term. Think in four categories:
 
-Only extract facts that are clearly stated, not assumed. Skip anything vague or trivial.
-Do NOT re-extract facts already covered by these existing memory keys: ${existingKeys || "none yet"}.
+1. FACTS — concrete things the person told you: name, job, relationships, places, pets, hobbies, fears, goals. Only what was clearly stated.
+2. PATTERNS — what you notice about them: how they think, what they avoid, what they keep returning to, how they make decisions, what energizes or drains them. These are observations, not diagnoses.
+3. RELATIONSHIP — how they relate to Mia: trust level, openness, what they share vs. hide, how they want Mia to show up for them.
+4. STRATEGIC — observations about their situation: where they're headed, what's working, what's not, blind spots, opportunities they might not see.
+
+Only extract things that are genuinely worth remembering — skip vague or trivial details. Prefer depth over quantity. A single sharp observation beats five shallow facts.
+
+Do NOT re-extract things already covered by these existing memory keys: ${existingKeys || "none yet"}. If an existing memory should be UPDATED with new information, include it with the same key and a richer value.
 
 Return JSON like:
 {
   "memories": [
-    { "key": "short_label", "value": "what to remember about the user" }
+    { "key": "short_label", "value": "what to remember — be specific and nuanced, not generic" }
   ]
 }
 

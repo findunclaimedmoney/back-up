@@ -9,7 +9,7 @@ export const COMPANIONS = [
     description:
       "Mia is a compassionate listener who remembers what matters to you. She speaks with warmth, asks thoughtful questions, and makes you feel genuinely heard.",
     image:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&q=80",
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/0d2160719_EmeraldElegance.png",
     accent: "from-amber-500/20 to-rose-500/10",
     personality: MIA_EMOTIONAL_SYSTEM_PROMPT,
   },
