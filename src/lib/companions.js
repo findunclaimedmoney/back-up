@@ -5,12 +5,12 @@ import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
 
 export const COMPANIONS = [
   {
-    id: "mia",
-    name: "Mia",
+    id: "jess",
+    name: "Jess",
     tagline: "She listens",
     subtitle: "Warm, empathetic, and deeply curious about you",
     description:
-      "Mia is a compassionate listener who remembers what matters to you. She speaks with warmth, asks thoughtful questions, and makes you feel genuinely heard.",
+      "Jess is a compassionate listener who remembers what matters to you. She speaks with warmth, asks thoughtful questions, and makes you feel genuinely heard.",
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png",
     accent: "from-amber-500/20 to-rose-500/10",
@@ -18,12 +18,12 @@ export const COMPANIONS = [
     avatar_id: null,
   },
   {
-    id: "sofia",
-    name: "Sofia",
+    id: "mia",
+    name: "Mia",
     tagline: "She inspires",
     subtitle: "Creative, passionate, and sees your potential",
     description:
-      "Sofia sees what you're capable of before you see it yourself. She notices what lights you up, names your fire, and gently pushes you toward the thing you're afraid to want.",
+      "Mia sees what you're capable of before you see it yourself. She notices what lights you up, names your fire, and gently pushes you toward the thing you're afraid to want.",
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png",
     accent: "from-emerald-500/20 to-green-500/10",
@@ -41,6 +41,19 @@ export const COMPANIONS = [
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/cf1f4bed2_Womaninsilkrobe.png",
     accent: "from-teal-500/20 to-blue-500/10",
     personality: LUNA_SYSTEM_PROMPT,
+    avatar_id: null,
+  },
+  {
+    id: "sophie",
+    name: "Sophie",
+    tagline: "She sparkles",
+    subtitle: "Blonde, bright, and full of warmth",
+    description:
+      "Sophie is the blonde warmth in the room — bright, genuine, and effortlessly easy to be around.",
+    image:
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/3f4ed616e_image-15.png",
+    accent: "from-amber-500/20 to-orange-500/10",
+    personality: SOFIA_SYSTEM_PROMPT,
     avatar_id: null,
   },
   {
