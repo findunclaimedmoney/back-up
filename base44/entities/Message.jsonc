@@ -1,0 +1,22 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "assistant"
+      ],
+      "description": "Who sent the message"
+    },
+    "content": {
+      "type": "string",
+      "description": "The text content of the message"
+    }
+  },
+  "required": [
+    "role",
+    "content"
+  ]
+}
