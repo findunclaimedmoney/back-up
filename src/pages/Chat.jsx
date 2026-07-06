@@ -6,6 +6,8 @@ import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
 import { ArrowLeft, Video } from "lucide-react";
 import LiveAvatarView from "@/components/companion/LiveAvatarView";
+import AnamView from "@/components/companion/AnamView";
+import { ChevronDown, Zap, Crown } from "lucide-react";
 
 const SUGGESTIONS = [
   "Hey, how's your day going?",
@@ -109,7 +111,8 @@ export default function Chat() {
   const [memories, setMemories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [thinking, setThinking] = useState(false);
-  const [videoMode, setVideoMode] = useState(false);
+  const [videoMode, setVideoMode] = useState(null);
+  const [showVideoPicker, setShowVideoPicker] = useState(false);
   const bottomRef = useRef(null);
 
   const loadData = useCallback(async () => {
@@ -304,13 +307,45 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setVideoMode(true)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted"
-            >
-              <Video className="w-3.5 h-3.5" />
-              Face to face
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowVideoPicker(!showVideoPicker)}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted"
+              >
+                <Video className="w-3.5 h-3.5" />
+                Face to face
+                <ChevronDown className="w-3 h-3" />
+              </button>
+              {showVideoPicker && (
+                <div className="absolute right-0 top-full mt-1 w-56 rounded-2xl border border-border bg-popover shadow-xl z-20 overflow-hidden">
+                  <button
+                    onClick={() => { setVideoMode('instant'); setShowVideoPicker(false); }}
+                    className="w-full flex items-start gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
+                  >
+                    <div className="mt-0.5 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Zap className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Instant</p>
+                      <p className="text-[11px] text-muted-foreground">Ready now · real-time</p>
+                    </div>
+                  </button>
+                  <div className="border-t border-border" />
+                  <button
+                    onClick={() => { setVideoMode('premium'); setShowVideoPicker(false); }}
+                    className="w-full flex items-start gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
+                  >
+                    <div className="mt-0.5 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Crown className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Premium HD</p>
+                      <p className="text-[11px] text-muted-foreground">Trained model · highest fidelity</p>
+                    </div>
+                  </button>
+                </div>
+              )}
+            </div>
             {memories.length > 0 && (
               <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-muted" title={memories.map(m => `${m.key}: ${m.value}`).join('\n')}>
                 {memories.length} {memories.length === 1 ? "memory" : "memories"}
@@ -393,8 +428,11 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
       <ChatInput onSend={handleSend} disabled={thinking || loading} />
 
       {/* Face-to-face video mode */}
-      {videoMode && (
-        <LiveAvatarView companion={companion} onClose={() => setVideoMode(false)} />
+      {videoMode === 'premium' && (
+        <LiveAvatarView companion={companion} onClose={() => setVideoMode(null)} />
+      )}
+      {videoMode === 'instant' && (
+        <AnamView companion={companion} onClose={() => setVideoMode(null)} />
       )}
     </div>
   );
