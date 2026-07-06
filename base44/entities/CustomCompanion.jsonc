@@ -38,6 +38,20 @@
       ],
       "default": "anam",
       "description": "Which video engine powers this companion (custom = Anam instant)"
+    },
+    "avatar_id": {
+      "type": "string",
+      "description": "LiveAvatar avatar ID once the By Image processing is complete"
+    },
+    "avatar_status": {
+      "type": "string",
+      "enum": [
+        "processing",
+        "active",
+        "failed"
+      ],
+      "default": "processing",
+      "description": "Status of the custom LiveAvatar image avatar creation: processing (up to 24hrs), active (ready for video), failed"
     }
   },
   "required": [

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { X, Loader2, Shirt, Users, Crown, Lock, Sparkles } from "lucide-react";
+import { X, Loader2, Shirt, Users, Crown, Lock, Sparkles, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const OUTFITS = [
@@ -18,6 +18,7 @@ export default function LiveAvatarView({ companion, onClose }) {
   const [error, setError] = useState(null);
   const [subscription, setSubscription] = useState(null);
   const [selectedOutfit, setSelectedOutfit] = useState(null);
+  const [avatarProcessing, setAvatarProcessing] = useState(false);
 
   const fetchEmbed = useCallback(async (outfit, twin = false) => {
     const res = await base44.functions.invoke("liveavatarEmbed", {
@@ -37,6 +38,33 @@ export default function LiveAvatarView({ companion, onClose }) {
     let cancelled = false;
     (async () => {
       try {
+        // If this is a custom companion with avatar still processing, check status first
+        let stillProcessing = false;
+        if (companion.avatar_status === "processing") {
+          setAvatarProcessing(true);
+          setLoading(false);
+          try {
+            const checkRes = await base44.functions.invoke("createLiveAvatar", {
+              action: "check",
+              companion_name: companion.name,
+              avatar_id: companion.avatar_id || null,
+              companion_id: companion.id,
+            });
+            if (cancelled) return;
+            if (checkRes.data?.avatar_status === "active" && checkRes.data?.avatar_id) {
+              setAvatarProcessing(false);
+              companion.avatar_id = checkRes.data.avatar_id;
+              companion.avatar_status = "active";
+            } else {
+              stillProcessing = true;
+            }
+          } catch (e) {
+            stillProcessing = true;
+          }
+          if (cancelled || stillProcessing) return;
+          setLoading(true);
+        }
+
         const subRes = await base44.functions.invoke("getSubscription", {});
         if (!cancelled) setSubscription(subRes.data);
 
@@ -119,6 +147,23 @@ export default function LiveAvatarView({ companion, onClose }) {
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
             <p className="text-sm text-muted-foreground">{companion.name} is getting ready…</p>
+          </div>
+        ) : avatarProcessing || companion.avatar_status === "processing" ? (
+          <div className="text-center max-w-sm">
+            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <Clock className="w-7 h-7 text-primary" />
+            </div>
+            <p className="font-heading text-lg font-semibold mb-2">{companion.name}'s video avatar is being created</p>
+            <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+              We're building a custom face-to-face avatar from your photo. This takes up to 24 hours.
+              You can text chat with {companion.name} right now — come back when the avatar is ready.
+            </p>
+            <button
+              onClick={onClose}
+              className="px-6 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              Back to chat
+            </button>
           </div>
         ) : error ? (
           <div className="text-center max-w-sm">

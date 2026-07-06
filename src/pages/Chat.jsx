@@ -5,7 +5,7 @@ import { getCompanion } from "@/lib/companions";
 import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
 import { ArrowLeft, Video } from "lucide-react";
-import AnamView from "@/components/companion/AnamView";
+import LiveAvatarView from "@/components/companion/LiveAvatarView";
 import { decidePhotoAction, generateCompanionPhoto } from "@/lib/companionPhotos";
 
 const SUGGESTIONS = [
@@ -132,7 +132,8 @@ export default function Chat() {
           description: customCompanion.description || "",
           image: customCompanion.image_url,
           personality: customCompanion.personality,
-          avatar_id: null,
+          avatar_id: customCompanion.avatar_id || null,
+          avatar_status: customCompanion.avatar_status || null,
         }
       : null
     : staticCompanion;
@@ -500,7 +501,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
 
       {/* Face-to-face video */}
       {videoMode && (
-        <AnamView companion={companion} onClose={() => setVideoMode(false)} />
+        <LiveAvatarView companion={companion} onClose={() => setVideoMode(false)} />
       )}
     </div>
   );

@@ -83,9 +83,27 @@ export default function CreateCompanion() {
         personality,
         status: "ready",
         source: "anam",
+        avatar_id: null,
+        avatar_status: "processing",
       });
 
-      // 3. Go straight to chat
+      // 3. Submit photo to LiveAvatar for By Image avatar creation (up to 24 hours)
+      try {
+        const avatarRes = await base44.functions.invoke("createLiveAvatar", {
+          image_url: imageUrl,
+          companion_name: name.trim(),
+          companion_id: companion.id,
+        });
+        if (avatarRes.data?.avatar_id) {
+          await base44.entities.CustomCompanion.update(companion.id, {
+            avatar_id: avatarRes.data.avatar_id,
+          });
+        }
+      } catch (e) {
+        // Avatar creation is best-effort — companion can still text chat immediately
+      }
+
+      // 4. Go straight to chat
       navigate(`/chat/custom-${companion.id}`);
     } catch (err) {
       console.error(err);
@@ -203,8 +221,8 @@ export default function CreateCompanion() {
             <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 flex items-start gap-3">
               <Sparkles className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium mb-0.5">Ready instantly</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{name || "Your companion"} will be available to text chat and face-to-face video right away — powered by instant AI. No waiting required.</p>
+                <p className="text-sm font-medium mb-0.5">Text chat is instant · Video takes up to 24 hours</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{name || "Your companion"} will be available to text chat right away. Their face-to-face video avatar is custom-built from your photo — this takes up to 24 hours. You'll be able to start video once it's ready.</p>
               </div>
             </div>
 
