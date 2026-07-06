@@ -226,7 +226,7 @@ export default function Home() {
                 Create your own
               </h2>
               <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                Upload a photo and bring them to life — ready to chat instantly
+                Upload a photo and bring them to life — text chat is instant, custom video takes up to 24 hours
               </p>
             </div>
           </Link>
