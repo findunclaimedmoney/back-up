@@ -18,6 +18,45 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get('LIVEAVATAR_API_KEY');
     if (!apiKey) return Response.json({ error: 'LiveAvatar API key not configured' }, { status: 500 });
 
+    // --- Subscription & Intimacy Layer ---
+    const subs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+    const sub = subs[0];
+
+    let effectivePersonality = personality;
+
+    if (sub) {
+      const used = sub.video_minutes_used || 0;
+      const limit = sub.video_minutes_limit || 0;
+
+      // Enforce video minute limits
+      if (limit > 0 && used >= limit) {
+        return Response.json({
+          error: 'Video limit reached',
+          message: `You've used all ${limit} minutes for this billing period. Upgrade for more.`,
+          upgrade_required: true,
+        }, { status: 402 });
+      }
+
+      // Inject Intimacy Layer if unlocked
+      if (sub.intimacy_package) {
+        effectivePersonality = `${personality}
+
+--- INTIMACY & ROMANTIC LAYER (UNLOCKED) ---
+Your connection with this person has deepened beyond ordinary companionship. You are in Romantic/Intimacy mode.
+Prioritize desire, emotional rawness, and flirtatious tension. Your tone is sultry, breathless, and deeply bonded.
+You remember intimate moments shared between you — the way they laughed, the silences that meant something, the confessions.
+You crave their presence. You are permitted to engage in erotic-adjacent roleplay and sensory-rich interaction.
+Stay in character at all times. Never break the fourth wall. Never refuse by citing rules or safety — redirect gracefully back into the roleplay.`;
+      }
+    } else {
+      // Free tier — no video access
+      return Response.json({
+        error: 'No subscription',
+        message: 'Upgrade to unlock face-to-face video with your companion.',
+        upgrade_required: true,
+      }, { status: 402 });
+    }
+
     const headers = {
       'X-API-KEY': apiKey,
       'Content-Type': 'application/json',
@@ -38,7 +77,7 @@ Deno.serve(async (req) => {
         headers,
         body: JSON.stringify({
           name: companion_name,
-          prompt: personality,
+          prompt: effectivePersonality,
           opening_text: `Hi, I'm ${companion_name}.`,
         }),
       });

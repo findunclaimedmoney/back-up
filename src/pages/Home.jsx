@@ -38,6 +38,9 @@ export default function Home() {
           </span>
         </div>
         <nav className="flex items-center gap-1">
+          <Link to="/pricing" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+            Pricing
+          </Link>
           <Link to="/games" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
             <Gamepad2 className="w-4 h-4" />
             Games

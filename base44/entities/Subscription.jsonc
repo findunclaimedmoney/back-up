@@ -1,0 +1,50 @@
+{
+  "name": "Subscription",
+  "type": "object",
+  "properties": {
+    "tier": {
+      "type": "string",
+      "enum": [
+        "free",
+        "plus",
+        "pro",
+        "vip"
+      ],
+      "default": "free",
+      "description": "The user's subscription tier"
+    },
+    "video_minutes_used": {
+      "type": "number",
+      "default": 0,
+      "description": "Video minutes consumed this billing period"
+    },
+    "video_minutes_limit": {
+      "type": "number",
+      "default": 0,
+      "description": "Max video minutes for this tier per month"
+    },
+    "intimacy_package": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the Intimacy/Romantic layer is unlocked"
+    },
+    "twin_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the Twin/Clone companion feature is available"
+    },
+    "stripe_customer_id": {
+      "type": "string",
+      "description": "Stripe customer ID"
+    },
+    "stripe_subscription_id": {
+      "type": "string",
+      "description": "Stripe subscription ID"
+    },
+    "current_period_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the current billing period ends"
+    }
+  }
+}
