@@ -13,6 +13,7 @@ import Games from './pages/Games';
 import CreateCompanion from './pages/CreateCompanion';
 import Pricing from './pages/Pricing';
 import Manual from './pages/Manual';
+import Notes from './pages/Notes';
 import Dashboard from './pages/Dashboard';
 import VipLounge from './pages/VipLounge';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -46,6 +47,7 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Home />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/manual" element={<Manual />} />
+      <Route path="/notes" element={<Notes />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/vip-lounge" element={<VipLounge />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>

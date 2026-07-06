@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { COMPANIONS } from "@/lib/companions";
-import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus, Loader2, Crown } from "lucide-react";
+import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus, Loader2, Crown, NotebookPen } from "lucide-react";
 import { useGreetings } from "@/hooks/useGreetings";
 import { base44 } from "@/api/base44Client";
 
@@ -47,6 +47,10 @@ export default function Home() {
           </Link>
           <Link to="/manual" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
             Manual
+          </Link>
+          <Link to="/notes" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+            <NotebookPen className="w-4 h-4" />
+            Notes
           </Link>
           <Link to="/games" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
             <Gamepad2 className="w-4 h-4" />

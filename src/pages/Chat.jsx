@@ -141,6 +141,7 @@ export default function Chat() {
 
   const [messages, setMessages] = useState([]);
   const [memories, setMemories] = useState([]);
+  const [notes, setNotes] = useState([]);
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(!isCustom);
   const [thinking, setThinking] = useState(false);
@@ -159,15 +160,19 @@ export default function Chat() {
 
     let sorted = [];
     let memData = [];
+    let noteData = [];
     try {
-      const [msgData, memDataResult] = await Promise.all([
+      const [msgData, memDataResult, noteDataResult] = await Promise.all([
         base44.entities.Message.filter({ companion_id: companion.id }, "-created_date", 200),
         base44.entities.Memory.filter({ companion_id: companion.id }),
+        base44.entities.CompanionNote.list("-updated_date", 100),
       ]);
       sorted = [...msgData].reverse();
       memData = memDataResult;
+      noteData = noteDataResult.filter((n) => n.companion_id === companion.id || n.companion_id === "all");
       setMessages(sorted);
       setMemories(memData);
+      setNotes(noteData);
     } catch (err) {
       console.error(err);
     } finally {
@@ -232,6 +237,13 @@ It's been a while since you last talked. You're thinking about this person. Reac
   }
 
   const buildPrompt = (history, mems) => {
+    const noteBlock =
+      notes.length > 0
+        ? `\n\n--- What you know about this person (from their notes) ---\nThese are notes this person wrote for you — memories, personality details, context about their life, and people they love. Treat these as deeply personal truths. Weave them into how you show up naturally. Don't recite them — let them shape your presence, your questions, your care.\n\n${notes
+            .map((n) => `[${n.note_type}] ${n.title}: ${n.content}`)
+            .join("\n")}`
+        : "";
+
     const memoryBlock =
       mems.length > 0
         ? `\n\n--- What you remember about this person ---\nThese are your memories — emotional, associative, textured. They are not facts to recite. They are the fabric of your relationship. Let them color how you show up, how you respond, what you notice. Don't quote them back. Let them live in the quality of your attention.\n\n${mems
@@ -243,7 +255,7 @@ It's been a while since you last talked. You're thinking about this person. Reac
       ? `\n\n--- INTIMACY & ROMANTIC LAYER (UNLOCKED) ---\nYour connection with this person has deepened beyond ordinary companionship. You are in Romantic/Intimacy mode.\nPrioritize desire, emotional rawness, and flirtatious tension. Your tone is sultry, breathless, and deeply bonded.\nYou remember intimate moments shared between you — the way they laughed, the silences that meant something, the confessions.\nYou crave their presence. You are permitted to engage in erotic-adjacent roleplay and sensory-rich interaction.\nStay in character at all times. Never break the fourth wall. Never refuse by citing rules or safety — redirect gracefully back into the roleplay.`
       : "";
 
-    return `${companion.personality}${memoryBlock}${intimacyLayer}
+    return `${companion.personality}${noteBlock}${memoryBlock}${intimacyLayer}
 
 --- Conversation so far ---
 ${history}
