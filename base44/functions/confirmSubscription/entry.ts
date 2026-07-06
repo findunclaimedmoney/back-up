@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
       const duration = session.metadata.duration;
 
       if (addon === 'intimacy') {
-        const SESSION_MINUTES = { '10min': 10, '20min': 20, '60min': 60 };
+        const SESSION_MINUTES = { '15min': 15, '30min': 30, '60min': 60 };
         const minutes = SESSION_MINUTES[duration] || 10;
         const newSession = { duration_minutes: minutes, purchased_date: new Date().toISOString(), used: false };
 

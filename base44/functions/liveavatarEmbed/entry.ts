@@ -39,12 +39,14 @@ Deno.serve(async (req) => {
 
       // Inject Intimacy Layer if included in tier OR user has available sessions
       let intimacyActive = sub.intimacy_package || false;
+      let sessionMaxDuration = null;
 
       if (!intimacyActive) {
         const sessions = sub.intimacy_sessions || [];
         const availableIdx = sessions.findIndex(s => !s.used);
         if (availableIdx >= 0) {
           intimacyActive = true;
+          sessionMaxDuration = (sessions[availableIdx].duration_minutes || 15) * 60;
           const updatedSessions = sessions.map((s, i) =>
             i === availableIdx ? { ...s, used: true } : s
           );
@@ -134,15 +136,20 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
     const voiceId = voicesList[0]?.voice_id || voicesList[0]?.id;
 
     // 4. Create embed session
+    const embedBody = {
+      avatar_id: avatarId,
+      context_id: contextId,
+      voice_id: voiceId,
+      is_sandbox: false,
+    };
+    if (sessionMaxDuration) {
+      embedBody.max_session_duration = sessionMaxDuration;
+    }
+
     const embedRes = await fetch(`${LA_API}/v2/embeddings`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({
-        avatar_id: avatarId,
-        context_id: contextId,
-        voice_id: voiceId,
-        is_sandbox: false,
-      }),
+      body: JSON.stringify(embedBody),
     });
     const embedData = await embedRes.json();
 
