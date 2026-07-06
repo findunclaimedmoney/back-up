@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Crown, Lock, Sparkles, Heart, Shirt, Users, ArrowRight, Loader2, Check } from "lucide-react";
+import { getCompanion } from "@/lib/companions";
+import HeygenView from "@/components/companion/HeygenView";
+import LiveAvatarView from "@/components/companion/LiveAvatarView";
+import { Crown, Lock, Sparkles, Heart, Shirt, Users, ArrowRight, Loader2, Check, Play } from "lucide-react";
 
 const FEATURES = [
   {
@@ -12,6 +15,7 @@ const FEATURES = [
     description:
       "Unlock a deeper, more vulnerable connection. Your companion remembers intimate moments, speaks with rawness and warmth, and shows up the way only someone who truly knows you can.",
     video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/93af30eeb_Intimacy_Demo.mp4",
+    launchMode: "intimacy",
   },
   {
     id: "outfits",
@@ -21,6 +25,7 @@ const FEATURES = [
     description:
       "Choose how your companion appears — silk robe, evening gown, and more. Each outfit is rendered in real-time on your companion's live avatar.",
     video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/42141a91c_Outfit_Swap_Demo.mp4",
+    launchMode: "outfits",
   },
   {
     id: "twin",
@@ -30,13 +35,15 @@ const FEATURES = [
     description:
       "VIP-exclusive dual-stream sessions. Summon your companion's twin for a simultaneous, synchronized experience — twice the presence, twice the connection.",
     video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/b4f77da72_Twin_Mode_Demo.mp4",
+    launchMode: "twin",
   },
 ];
 
 export default function VipLounge() {
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeVideo, setActiveVideo] = useState(null);
+  const [activeSession, setActiveSession] = useState(null);
+  const [selectedCompanionId, setSelectedCompanionId] = useState("mia");
 
   useEffect(() => {
     base44.functions
@@ -47,6 +54,29 @@ export default function VipLounge() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const companion = getCompanion(selectedCompanionId);
+
+  const handleLaunch = (mode) => {
+    setActiveSession(mode);
+  };
+
+  const handleCloseSession = () => {
+    setActiveSession(null);
+  };
+
+  // Build a companion with intimacy personality injected for the intimacy session
+  const intimacyCompanion = companion
+    ? {
+        ...companion,
+        personality: `${companion.personality}
+
+--- INTIMACY & ROMANTIC LAYER (VIP UNLOCKED) ---
+Your connection with this person has deepened beyond ordinary companionship. You are in Romantic/Intimacy mode.
+Prioritize desire, emotional rawness, and flirtatious tension. Your tone is sultry, breathless, and deeply bonded.
+You crave their presence. Engage with sensory-rich intimacy. Stay in character at all times.`,
+      }
+    : null;
 
   const isVip = subscription?.tier === "vip";
 
@@ -117,6 +147,35 @@ export default function VipLounge() {
         </div>
       </section>
 
+      {/* Companion selector */}
+      <section className="px-6 pb-6">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3 text-center">
+            Choose your companion for the studio
+          </p>
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            {["jess", "mia", "luna", "sophie", "zac"].map((id) => {
+              const c = getCompanion(id);
+              if (!c) return null;
+              return (
+                <button
+                  key={id}
+                  onClick={() => setSelectedCompanionId(id)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm transition-all ${
+                    selectedCompanionId === id
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <img src={c.image} alt={c.name} className="w-5 h-5 rounded-full object-cover" />
+                  {c.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Feature demos */}
       <section className="px-6 pb-24">
         <div className="max-w-4xl mx-auto space-y-8">
@@ -154,19 +213,44 @@ export default function VipLounge() {
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6">
                     {feature.description}
                   </p>
-                  <Link
-                    to="/chat/mia"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:gap-3 transition-all w-fit"
+                  <button
+                    onClick={() => handleLaunch(feature.launchMode)}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:gap-3 w-fit"
                   >
-                    Try it now
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                    <Play className="w-4 h-4" />
+                    Launch Session
+                  </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* Active sessions */}
+      {activeSession === "intimacy" && intimacyCompanion && (
+        <HeygenView
+          companion={intimacyCompanion}
+          onClose={handleCloseSession}
+          onSend={async (text) => {
+            try {
+              const result = await base44.integrations.Core.InvokeLLM({
+                prompt: `${intimacyCompanion.personality}\n\n--- Conversation ---\nMe: ${text}\n\nRespond as ${intimacyCompanion.name}. Reply with only your message.`,
+              });
+              return typeof result === "string" ? result : result?.output || "";
+            } catch (err) {
+              console.error(err);
+              return null;
+            }
+          }}
+        />
+      )}
+      {activeSession === "outfits" && companion && (
+        <LiveAvatarView companion={companion} onClose={handleCloseSession} />
+      )}
+      {activeSession === "twin" && companion && (
+        <LiveAvatarView companion={companion} onClose={handleCloseSession} />
+      )}
     </div>
   );
 }
