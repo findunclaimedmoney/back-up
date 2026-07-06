@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import HeroSection from "@/components/landing/HeroSection";
 import ProblemSection from "@/components/landing/ProblemSection";
+import SolutionSection from "@/components/landing/SolutionSection";
 import { Sparkles } from "lucide-react";
 
 export default function AvatarLanding() {
@@ -35,6 +36,11 @@ export default function AvatarLanding() {
       {/* Problem section */}
       <div id="problem">
         <ProblemSection />
+      </div>
+
+      {/* Solution section */}
+      <div id="benefits">
+        <SolutionSection />
       </div>
 
       {/* CTA */}
