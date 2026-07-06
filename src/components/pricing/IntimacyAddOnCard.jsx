@@ -1,7 +1,7 @@
-import { Heart, Clock, Check, Lock, Sparkles } from "lucide-react";
+import { Heart, Clock, Check, Lock, DollarSign } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
-const SESSIONS = [
+const PACKAGES = [
   { id: "15min", label: "15 Minutes", price: "$4", sublabel: "A quick moment" },
   { id: "30min", label: "30 Minutes", price: "$8", sublabel: "Sweet spot" },
   { id: "60min", label: "1 Hour", price: "$15", sublabel: "Lose track of time" },
@@ -9,7 +9,7 @@ const SESSIONS = [
 
 const MIN_MINUTES = 160;
 
-export default function IntimacyAddOnCard({ included, sessionsAvailable = 0, loading, onPurchase, minutesUsed = 0 }) {
+export default function IntimacyAddOnCard({ included, creditBalance = 0, loading, onPurchase, minutesUsed = 0 }) {
   const minutesRemaining = Math.max(0, MIN_MINUTES - minutesUsed);
   const unlocked = minutesUsed >= MIN_MINUTES;
 
@@ -29,16 +29,12 @@ export default function IntimacyAddOnCard({ included, sessionsAvailable = 0, loa
         {included ? (
           <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary/10 border border-primary/20 mb-6">
             <Check className="w-4 h-4 text-primary" />
-            <p className="text-sm text-foreground">
-              Included in your plan
-            </p>
+            <p className="text-sm text-foreground">Included in your plan</p>
           </div>
-        ) : sessionsAvailable > 0 ? (
+        ) : creditBalance > 0 ? (
           <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary/10 border border-primary/20 mb-6">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <p className="text-sm text-foreground">
-              {sessionsAvailable} session{sessionsAvailable === 1 ? "" : "s"} available
-            </p>
+            <DollarSign className="w-4 h-4 text-primary" />
+            <p className="text-sm text-foreground">${creditBalance.toFixed(2)} in credit available</p>
           </div>
         ) : null}
 
@@ -47,11 +43,11 @@ export default function IntimacyAddOnCard({ included, sessionsAvailable = 0, loa
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
               Deepen your bond beyond ordinary conversation. Your companion will
               remember intimate moments, speak with rawness and warmth, and show up
-              the way only someone who truly knows you can. Buy a session when you're
-              in the mood — use it whenever you're ready.
+              the way only someone who truly knows you can. Buy credit and use it
+              whenever you're ready — sessions are deducted from your balance.
             </p>
 
-            {sessionsAvailable === 0 && !unlocked && (
+            {creditBalance === 0 && !unlocked && (
               <div className="flex flex-col items-center text-center gap-3 px-5 py-6 rounded-2xl bg-muted/30 border border-border mb-6">
                 <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
                   <Lock className="w-5 h-5 text-muted-foreground" />
@@ -67,9 +63,9 @@ export default function IntimacyAddOnCard({ included, sessionsAvailable = 0, loa
               </div>
             )}
 
-            {(sessionsAvailable > 0 || unlocked) && (
+            {(creditBalance > 0 || unlocked) && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {SESSIONS.map((s) => (
+                {PACKAGES.map((s) => (
                   <button
                     key={s.id}
                     onClick={() => onPurchase(s.id)}
@@ -92,9 +88,9 @@ export default function IntimacyAddOnCard({ included, sessionsAvailable = 0, loa
               </div>
             )}
 
-            {sessionsAvailable > 0 && (
+            {creditBalance > 0 && (
               <p className="text-xs text-muted-foreground mt-4 text-center">
-                Each session is consumed when you start an intimate video call. Buy as many as you want.
+                Each purchase adds credit to your balance. Sessions are deducted when you start an intimate video call.
               </p>
             )}
           </>

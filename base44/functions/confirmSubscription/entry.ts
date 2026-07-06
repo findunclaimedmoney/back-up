@@ -28,30 +28,29 @@ Deno.serve(async (req) => {
       const duration = session.metadata.duration;
 
       if (addon === 'intimacy') {
-        const SESSION_MINUTES = { '15min': 15, '30min': 30, '60min': 60 };
-        const minutes = SESSION_MINUTES[duration] || 10;
-        const newSession = { duration_minutes: minutes, purchased_date: new Date().toISOString(), used: false };
+        const CREDIT_AMOUNTS = { '15min': 4.00, '30min': 8.00, '60min': 15.00 };
+        const creditToAdd = CREDIT_AMOUNTS[duration] || 0;
 
         const existing = await base44.entities.Subscription.filter({ created_by_id: user.id });
 
         if (existing.length > 0) {
           const sub = existing[0];
-          const currentSessions = sub.intimacy_sessions || [];
+          const newBalance = (sub.credit_balance || 0) + creditToAdd;
           await base44.entities.Subscription.update(sub.id, {
-            intimacy_sessions: [...currentSessions, newSession],
+            credit_balance: newBalance,
             stripe_customer_id: session.customer?.toString() || sub.stripe_customer_id,
           });
+          return Response.json({ addon: 'intimacy', credit_added: creditToAdd, new_balance: newBalance });
         } else {
           await base44.entities.Subscription.create({
             tier: 'free',
             video_minutes_limit: 0,
             video_minutes_used: 0,
-            intimacy_sessions: [newSession],
+            credit_balance: creditToAdd,
             stripe_customer_id: session.customer?.toString() || null,
           });
+          return Response.json({ addon: 'intimacy', credit_added: creditToAdd, new_balance: creditToAdd });
         }
-
-        return Response.json({ addon: 'intimacy', session_added: true, minutes });
       }
 
       return Response.json({ error: 'Unknown add-on' }, { status: 400 });

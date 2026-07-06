@@ -28,29 +28,10 @@
       "default": false,
       "description": "Whether intimacy is included in the user's tier (pro/vip)"
     },
-    "intimacy_sessions": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "duration_minutes": {
-            "type": "number",
-            "description": "Session length purchased"
-          },
-          "purchased_date": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the session was purchased"
-          },
-          "used": {
-            "type": "boolean",
-            "default": false,
-            "description": "Whether this session has been consumed"
-          }
-        }
-      },
-      "default": [],
-      "description": "Purchased intimacy session slots \u2014 buy as many as you want, use them when you're ready"
+    "credit_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Prepaid credit balance for intimacy sessions (in USD)"
     },
     "intimacy_training_stage": {
       "type": "number",

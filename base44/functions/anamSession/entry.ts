@@ -54,16 +54,37 @@ Deno.serve(async (req) => {
     let sessionDurationSeconds = null;
 
     if (!intimacyActive) {
-      const sessions = sub.intimacy_sessions || [];
-      const availableIdx = sessions.findIndex(s => !s.used);
-      if (availableIdx >= 0) {
-        intimacyActive = true;
-        sessionDurationSeconds = (sessions[availableIdx].duration_minutes || 15) * 60;
-        const updatedSessions = sessions.map((s, i) =>
-          i === availableIdx ? { ...s, used: true } : s
-        );
-        await base44.entities.Subscription.update(sub.id, { intimacy_sessions: updatedSessions });
+      const duration = body.duration;
+      const pricing = PRICING[duration];
+
+      if (!duration || !pricing) {
+        return Response.json({
+          error: 'Duration required',
+          message: 'Select a session duration to begin.',
+          duration_required: true,
+          credit_balance: sub.credit_balance || 0,
+        }, { status: 400 });
       }
+
+      const balance = sub.credit_balance || 0;
+      if (balance < pricing.price) {
+        return Response.json({
+          error: 'Insufficient credit',
+          message: `You need $${pricing.price.toFixed(2)} for a ${duration}-minute session. You have $${balance.toFixed(2)} in credit.`,
+          upgrade_required: true,
+          credit_balance: balance,
+          session_price: pricing.price,
+        }, { status: 402 });
+      }
+
+      intimacyActive = true;
+      sessionDurationSeconds = duration * 60;
+
+      // Deduct from credit balance + track minutes used
+      await base44.entities.Subscription.update(sub.id, {
+        credit_balance: balance - pricing.price,
+        video_minutes_used: (sub.video_minutes_used || 0) + duration,
+      });
     }
 
     if (intimacyActive) {
@@ -102,7 +123,7 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       return Response.json({ error: 'Failed to create Anam session', details: sessionData, status: sessionRes.status }, { status: 500 });
     }
 
-    // Log the session cost and deduct minutes from the customer's bill
+    // Log the session cost for admin tracking
     if (sessionDurationSeconds) {
       const durationMin = sessionDurationSeconds / 60;
       const pricing = PRICING[durationMin] || { cost: durationMin * ANAM_RATE_PER_MIN, price: durationMin * ANAM_RATE_PER_MIN * MARGIN_MULTIPLIER };
@@ -117,14 +138,6 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
         });
       } catch (e) {
         // Logging is best-effort — don't fail the session
-      }
-
-      // Deduct the session duration from the customer's usage balance
-      try {
-        const newUsed = (sub.video_minutes_used || 0) + durationMin;
-        await base44.entities.Subscription.update(sub.id, { video_minutes_used: newUsed });
-      } catch (e) {
-        // Best-effort — don't fail the session
       }
     }
 

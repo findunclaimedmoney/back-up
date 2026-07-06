@@ -74,7 +74,7 @@ export default function Pricing() {
   const [loading, setLoading] = useState(null);
   const [success, setSuccess] = useState(false);
   const [intimacyPackage, setIntimacyPackage] = useState(false);
-  const [intimacySessionsAvailable, setIntimacySessionsAvailable] = useState(0);
+  const [creditBalance, setCreditBalance] = useState(0);
   const [minutesUsed, setMinutesUsed] = useState(0);
   const [addonLoading, setAddonLoading] = useState(null);
 
@@ -95,7 +95,7 @@ export default function Pricing() {
       const res = await base44.functions.invoke("getSubscription", {});
       if (res.data?.tier) setCurrentTier(res.data.tier);
       setIntimacyPackage(res.data?.intimacy_package || false);
-      setIntimacySessionsAvailable(res.data?.intimacy_sessions_available || 0);
+      setCreditBalance(res.data?.credit_balance || 0);
       setMinutesUsed(res.data?.video_minutes_used || 0);
     } catch (err) {
       console.error(err);
@@ -108,7 +108,7 @@ export default function Pricing() {
       if (res.data?.tier) {
         setCurrentTier(res.data.tier);
       }
-      if (res.data?.tier || res.data?.session_added) {
+      if (res.data?.tier || res.data?.credit_added) {
         setSuccess(true);
       }
     } catch (err) {
@@ -224,7 +224,7 @@ export default function Pricing() {
             <div className="max-w-3xl mx-auto">
               <IntimacyAddOnCard
                 included={intimacyPackage}
-                sessionsAvailable={intimacySessionsAvailable}
+                creditBalance={creditBalance}
                 loading={addonLoading}
                 onPurchase={handlePurchaseAddon}
                 minutesUsed={minutesUsed}
