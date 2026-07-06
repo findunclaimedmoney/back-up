@@ -6,9 +6,11 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { to_email, to_name, companion_name } = await req.json().catch(() => ({}));
+    const { to_email, to_name, companion_name, from_name } = await req.json().catch(() => ({}));
 
     if (!to_email) return Response.json({ error: 'to_email is required' }, { status: 400 });
+
+    const senderLabel = from_name || 'GLIMR';
 
     const apiKey = Deno.env.get("RESEND_API_KEY");
     if (!apiKey) return Response.json({ error: 'RESEND_API_KEY not set' }, { status: 500 });
@@ -81,7 +83,7 @@ Deno.serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'GLIMR <admin@lensflow.com.au>',
+        from: `${senderLabel} <admin@lensflow.com.au>`,
         to: [to_email],
         subject: `Welcome to GLIMR, ${firstName} 🌟`,
         html,
