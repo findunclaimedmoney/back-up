@@ -3,6 +3,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 const ANAM_API = 'https://api.anam.ai/v1';
 const ANAM_RATE_PER_MIN = 0.12;
 const MARGIN_MULTIPLIER = 2; // 100% margin = double the Anam cost
+const LOW_BALANCE_THRESHOLD = 4.00; // Cheapest session price — alert below this
 
 const PRICING = {
   15: { cost: 15 * ANAM_RATE_PER_MIN, price: 4.00 },
@@ -81,10 +82,24 @@ Deno.serve(async (req) => {
       sessionDurationSeconds = duration * 60;
 
       // Deduct from credit balance + track minutes used
+      const newBalance = balance - pricing.price;
       await base44.entities.Subscription.update(sub.id, {
-        credit_balance: balance - pricing.price,
+        credit_balance: newBalance,
         video_minutes_used: (sub.video_minutes_used || 0) + duration,
       });
+
+      // Low balance notification — send email if below threshold
+      if (newBalance < LOW_BALANCE_THRESHOLD) {
+        try {
+          await base44.integrations.Core.SendEmail({
+            to: user.email,
+            subject: 'Your GLIMR credit is running low',
+            body: `Hi ${user.full_name || 'there'},\n\nYour intimate session with ${companion_name} just started, and your remaining credit balance is $${newBalance.toFixed(2)}.\n\nThat's not enough for another session. Top up anytime to keep the connection going:\nhttps://glimr.app/pricing\n\nWith warmth,\nThe GLIMR Team`,
+          });
+        } catch (e) {
+          // Notification is best-effort
+        }
+      }
     }
 
     if (intimacyActive) {
@@ -141,9 +156,15 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       }
     }
 
+    // Determine remaining balance for the response
+    const updatedSubs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+    const remainingBalance = updatedSubs[0]?.credit_balance ?? 0;
+
     return Response.json({
       sessionToken: sessionData.sessionToken,
       sessionDurationSeconds,
+      credit_balance: remainingBalance,
+      low_balance_warning: remainingBalance < LOW_BALANCE_THRESHOLD,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

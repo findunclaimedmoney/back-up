@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { createClient } from "@anam-ai/js-sdk";
-import { X, Loader2, Clock, AlertCircle, DollarSign } from "lucide-react";
+import { X, Loader2, Clock, AlertCircle, DollarSign, Wallet } from "lucide-react";
 
 const DURATIONS = [
   { value: 15, label: "15 min", price: 4 },
@@ -17,6 +17,7 @@ export default function AnamView({ companion, onClose }) {
   const [error, setError] = useState(null);
   const [timeLeft, setTimeLeft] = useState(null);
   const [showWarning, setShowWarning] = useState(false);
+  const [lowBalance, setLowBalance] = useState(null);
   const videoRef = useRef(null);
   const clientRef = useRef(null);
 
@@ -63,6 +64,9 @@ export default function AnamView({ companion, onClose }) {
 
       if (res.data.sessionDurationSeconds) {
         setTimeLeft(res.data.sessionDurationSeconds);
+      }
+      if (res.data.low_balance_warning) {
+        setLowBalance(res.data.credit_balance);
       }
 
       const anamClient = createClient(sessionToken);
@@ -211,6 +215,15 @@ export default function AnamView({ companion, onClose }) {
         {!showPicker && !subLoading && !loading && !error && (
           <div className="w-full max-w-2xl aspect-video rounded-2xl overflow-hidden border border-border shadow-lg bg-black relative">
             <video ref={videoRef} autoPlay playsInline className="w-full h-full" />
+            {lowBalance !== null && (
+              <a
+                href="/pricing"
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-amber-500/90 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg"
+              >
+                <Wallet className="w-4 h-4" />
+                Credit low: ${lowBalance.toFixed(2)} left — top up
+              </a>
+            )}
             {showWarning && timeLeft > 0 && (
               <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-full text-sm font-medium shadow-lg flex items-center gap-2">
                 <AlertCircle className="w-4 h-4" />
