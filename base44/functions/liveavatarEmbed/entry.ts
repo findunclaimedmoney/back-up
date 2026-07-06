@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    const { companion_name, personality, avatar_id: preferredAvatarId } = body;
+    const { companion_name, personality, avatar_id: preferredAvatarId, twin } = body;
 
     if (!companion_name || !personality) {
       return Response.json({ error: 'companion_name and personality are required' }, { status: 400 });
@@ -67,7 +67,8 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
     const contextsRes = await fetch(`${LA_API}/v1/contexts`, { headers });
     const contextsData = await contextsRes.json();
     const contextsList = contextsData.data?.results || contextsData.data || [];
-    const existing = contextsList.find((c) => c.name === companion_name);
+    const contextName = twin ? `${companion_name} Twin` : companion_name;
+    const existing = contextsList.find((c) => c.name === contextName);
 
     if (existing) {
       contextId = existing.id;
@@ -76,9 +77,9 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
         method: 'POST',
         headers,
         body: JSON.stringify({
-          name: companion_name,
+          name: contextName,
           prompt: effectivePersonality,
-          opening_text: `Hi, I'm ${companion_name}.`,
+          opening_text: twin ? `Hi, I'm ${companion_name}'s twin.` : `Hi, I'm ${companion_name}.`,
         }),
       });
       const createData = await createRes.json();
