@@ -29,6 +29,7 @@
               "video_minutes_used": "${ .trigger.data.video_minutes_used }",
               "stored_stage": "${ .trigger.data.intimacy_training_stage }",
               "intimacy_package": "${ .trigger.data.intimacy_package }",
+              "intimacy_sessions": "${ .trigger.data.intimacy_sessions }",
               "user_id": "${ .trigger.data.created_by_id }"
             }
           },

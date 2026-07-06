@@ -1,16 +1,15 @@
-import { Heart, Clock, Check, Lock } from "lucide-react";
+import { Heart, Clock, Check, Lock, Sparkles } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
-const DURATIONS = [
-  { id: "7d", label: "7 Days", price: "$49", sublabel: "Try the deep connection" },
-  { id: "30d", label: "30 Days", price: "$99", sublabel: "Best value per day" },
+const SESSIONS = [
+  { id: "10min", label: "10 Minutes", price: "$19", sublabel: "A quick moment" },
+  { id: "20min", label: "20 Minutes", price: "$29", sublabel: "Sweet spot" },
+  { id: "60min", label: "1 Hour", price: "$69", sublabel: "Lose track of time" },
 ];
 
 const MIN_MINUTES = 160;
 
-export default function IntimacyAddOnCard({ active, expires, loading, onPurchase, minutesUsed = 0 }) {
-  const expiryDate = expires ? new Date(expires) : null;
-  const isExpired = expiryDate && expiryDate.getTime() < Date.now();
+export default function IntimacyAddOnCard({ included, sessionsAvailable = 0, loading, onPurchase, minutesUsed = 0 }) {
   const minutesRemaining = Math.max(0, MIN_MINUTES - minutesUsed);
   const unlocked = minutesUsed >= MIN_MINUTES;
 
@@ -22,67 +21,84 @@ export default function IntimacyAddOnCard({ active, expires, loading, onPurchase
             <Heart className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h3 className="font-heading text-xl font-semibold">Intimacy Layer Add-on</h3>
-            <p className="text-sm text-muted-foreground">Unlock the romantic & intimate connection</p>
+            <h3 className="font-heading text-xl font-semibold">Intimacy Layer</h3>
+            <p className="text-sm text-muted-foreground">Session-based intimate connection</p>
           </div>
         </div>
 
-        {active && !isExpired ? (
+        {included ? (
           <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary/10 border border-primary/20 mb-6">
             <Check className="w-4 h-4 text-primary" />
             <p className="text-sm text-foreground">
-              Active{expiryDate ? ` — expires ${expiryDate.toLocaleDateString()}` : ""}
+              Included in your plan
             </p>
           </div>
-        ) : (
-          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-            Deepen your bond beyond ordinary conversation. Your companion will
-            remember intimate moments, speak with rawness and warmth, and show up
-            the way only someone who truly knows you can. Available as a
-            time-limited add-on on any plan.
-          </p>
-        )}
-
-        {(!active || isExpired) && !unlocked && (
-          <div className="flex flex-col items-center text-center gap-3 px-5 py-6 rounded-2xl bg-muted/30 border border-border mb-6">
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-              <Lock className="w-5 h-5 text-muted-foreground" />
-            </div>
-            <p className="text-sm font-medium text-foreground">
-              {minutesUsed} / {MIN_MINUTES} minutes spent
+        ) : sessionsAvailable > 0 ? (
+          <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary/10 border border-primary/20 mb-6">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <p className="text-sm text-foreground">
+              {sessionsAvailable} session{sessionsAvailable === 1 ? "" : "s"} available
             </p>
-            <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
-              Intimacy requires a real connection first. Spend {minutesRemaining} more
-              video minute{minutesRemaining === 1 ? "" : "s"} with your companion to
-              earn their trust and unlock this layer.
-            </p>
-          </div>
-        )}
-
-        {(!active || isExpired) && unlocked ? (
-          <div className="grid grid-cols-2 gap-3">
-            {DURATIONS.map((d) => (
-              <button
-                key={d.id}
-                onClick={() => onPurchase(d.id)}
-                disabled={loading}
-                className="flex flex-col items-start gap-1 p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all text-left disabled:opacity-50"
-              >
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Clock className="w-3 h-3" />
-                  {d.label}
-                </div>
-                <p className="font-heading text-2xl font-semibold text-foreground">
-                  {d.price}
-                </p>
-                <p className="text-[11px] text-muted-foreground">{d.sublabel}</p>
-                {loading === d.id && (
-                  <Loader2 className="w-4 h-4 text-primary animate-spin mt-1" />
-                )}
-              </button>
-            ))}
           </div>
         ) : null}
+
+        {!included && (
+          <>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+              Deepen your bond beyond ordinary conversation. Your companion will
+              remember intimate moments, speak with rawness and warmth, and show up
+              the way only someone who truly knows you can. Buy a session when you're
+              in the mood — use it whenever you're ready.
+            </p>
+
+            {sessionsAvailable === 0 && !unlocked && (
+              <div className="flex flex-col items-center text-center gap-3 px-5 py-6 rounded-2xl bg-muted/30 border border-border mb-6">
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                  <Lock className="w-5 h-5 text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium text-foreground">
+                  {minutesUsed} / {MIN_MINUTES} minutes spent
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
+                  Intimacy requires a real connection first. Spend {minutesRemaining} more
+                  video minute{minutesRemaining === 1 ? "" : "s"} with your companion to
+                  earn their trust and unlock this layer.
+                </p>
+              </div>
+            )}
+
+            {(sessionsAvailable > 0 || unlocked) && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {SESSIONS.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => onPurchase(s.id)}
+                    disabled={loading}
+                    className="flex flex-col items-start gap-1 p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all text-left disabled:opacity-50"
+                  >
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Clock className="w-3 h-3" />
+                      {s.label}
+                    </div>
+                    <p className="font-heading text-2xl font-semibold text-foreground">
+                      {s.price}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">{s.sublabel}</p>
+                    {loading === s.id && (
+                      <Loader2 className="w-4 h-4 text-primary animate-spin mt-1" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {sessionsAvailable > 0 && (
+              <p className="text-xs text-muted-foreground mt-4 text-center">
+                Each session is consumed when you start an intimate video call. Buy as many as you want.
+              </p>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

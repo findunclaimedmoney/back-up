@@ -73,8 +73,8 @@ export default function Pricing() {
   const [currentTier, setCurrentTier] = useState("free");
   const [loading, setLoading] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [intimacyActive, setIntimacyActive] = useState(false);
-  const [intimacyExpires, setIntimacyExpires] = useState(null);
+  const [intimacyPackage, setIntimacyPackage] = useState(false);
+  const [intimacySessionsAvailable, setIntimacySessionsAvailable] = useState(0);
   const [minutesUsed, setMinutesUsed] = useState(0);
   const [addonLoading, setAddonLoading] = useState(null);
 
@@ -94,8 +94,8 @@ export default function Pricing() {
       if (!authed) return;
       const res = await base44.functions.invoke("getSubscription", {});
       if (res.data?.tier) setCurrentTier(res.data.tier);
-      setIntimacyActive(res.data?.intimacy_package || false);
-      setIntimacyExpires(res.data?.intimacy_expires || null);
+      setIntimacyPackage(res.data?.intimacy_package || false);
+      setIntimacySessionsAvailable(res.data?.intimacy_sessions_available || 0);
       setMinutesUsed(res.data?.video_minutes_used || 0);
     } catch (err) {
       console.error(err);
@@ -107,6 +107,8 @@ export default function Pricing() {
       const res = await base44.functions.invoke("confirmSubscription", { session_id: sessionId });
       if (res.data?.tier) {
         setCurrentTier(res.data.tier);
+      }
+      if (res.data?.tier || res.data?.session_added) {
         setSuccess(true);
       }
     } catch (err) {
@@ -184,7 +186,7 @@ export default function Pricing() {
           </div>
           <h1 className="font-heading text-3xl font-semibold mb-2">You're all set</h1>
           <p className="text-muted-foreground mb-8 text-center">
-            Your subscription is active. Your companion is waiting.
+            Your purchase is complete. Your companion is waiting.
           </p>
           <Link
             to="/"
@@ -221,8 +223,8 @@ export default function Pricing() {
           <section className="px-6 pb-24">
             <div className="max-w-3xl mx-auto">
               <IntimacyAddOnCard
-                active={intimacyActive}
-                expires={intimacyExpires}
+                included={intimacyPackage}
+                sessionsAvailable={intimacySessionsAvailable}
                 loading={addonLoading}
                 onPurchase={handlePurchaseAddon}
                 minutesUsed={minutesUsed}

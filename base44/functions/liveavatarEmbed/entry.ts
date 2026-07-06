@@ -37,11 +37,18 @@ Deno.serve(async (req) => {
         }, { status: 402 });
       }
 
-      // Inject Intimacy Layer if unlocked (and not expired)
+      // Inject Intimacy Layer if included in tier OR user has available sessions
       let intimacyActive = sub.intimacy_package || false;
-      if (intimacyActive && sub.intimacy_expires) {
-        if (new Date(sub.intimacy_expires).getTime() < Date.now()) {
-          intimacyActive = false;
+
+      if (!intimacyActive) {
+        const sessions = sub.intimacy_sessions || [];
+        const availableIdx = sessions.findIndex(s => !s.used);
+        if (availableIdx >= 0) {
+          intimacyActive = true;
+          const updatedSessions = sessions.map((s, i) =>
+            i === availableIdx ? { ...s, used: true } : s
+          );
+          await base44.entities.Subscription.update(sub.id, { intimacy_sessions: updatedSessions });
         }
       }
 

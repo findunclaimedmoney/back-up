@@ -26,12 +26,31 @@
     "intimacy_package": {
       "type": "boolean",
       "default": false,
-      "description": "Whether the Intimacy/Romantic layer is unlocked"
+      "description": "Whether intimacy is included in the user's tier (pro/vip)"
     },
-    "intimacy_expires": {
-      "type": "string",
-      "format": "date-time",
-      "description": "When the intimacy add-on expires (null if included via tier)"
+    "intimacy_sessions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "duration_minutes": {
+            "type": "number",
+            "description": "Session length purchased"
+          },
+          "purchased_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the session was purchased"
+          },
+          "used": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this session has been consumed"
+          }
+        }
+      },
+      "default": [],
+      "description": "Purchased intimacy session slots \u2014 buy as many as you want, use them when you're ready"
     },
     "intimacy_training_stage": {
       "type": "number",

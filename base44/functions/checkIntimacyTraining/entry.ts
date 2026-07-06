@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
 
     const body = await req.json();
-    const { subscription_id, video_minutes_used, stored_stage, intimacy_package, user_id } = body;
+    const { subscription_id, video_minutes_used, stored_stage, intimacy_package, intimacy_sessions, user_id } = body;
 
     if (!subscription_id || !user_id) {
       return Response.json({ error: 'subscription_id and user_id are required' }, { status: 400 });
@@ -31,8 +31,9 @@ Deno.serve(async (req) => {
     const currentStage = getStage(minutes);
     const previousStage = Number(stored_stage) || 0;
 
-    // Skip if intimacy already unlocked — no need to train further
-    if (intimacy_package) {
+    // Skip if intimacy already unlocked (tier-included or sessions purchased)
+    const hasSessions = Array.isArray(intimacy_sessions) && intimacy_sessions.length > 0;
+    if (intimacy_package || hasSessions) {
       return Response.json({ skipped: true, reason: 'intimacy_already_active' });
     }
 
