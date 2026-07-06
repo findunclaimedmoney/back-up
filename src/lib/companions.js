@@ -51,7 +51,7 @@ export const COMPANIONS = [
     description:
       "Sophie is the blonde warmth in the room — bright, genuine, and effortlessly easy to be around.",
     image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/3f4ed616e_image-15.png",
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/ba7d734da_ElegantHallwayPose.png",
     accent: "from-amber-500/20 to-orange-500/10",
     personality: SOFIA_SYSTEM_PROMPT,
     avatar_id: null,
