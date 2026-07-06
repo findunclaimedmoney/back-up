@@ -6,6 +6,7 @@ import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
 import { ArrowLeft, Video } from "lucide-react";
 import AnamView from "@/components/companion/AnamView";
+import { decidePhotoAction, generateCompanionPhoto } from "@/lib/companionPhotos";
 
 const SUGGESTIONS = [
   "Hey, how's your day going?",
@@ -258,8 +259,21 @@ ${history}
 Respond as ${companion.name}. Reply with only your message — no prefix, no quotes.`;
   };
 
-  const handleSend = async (text) => {
-    const userMsg = { role: "user", content: text, companion_id: companion.id };
+  const handleSend = async (text, photoFile) => {
+    let imageUrl = null;
+    let fileUrls = [];
+
+    if (photoFile) {
+      try {
+        const uploadRes = await base44.integrations.Core.UploadFile({ file: photoFile });
+        imageUrl = uploadRes.file_url;
+        fileUrls = [imageUrl];
+      } catch (err) {
+        console.error("Photo upload failed:", err);
+      }
+    }
+
+    const userMsg = { role: "user", content: text, companion_id: companion.id, image_url: imageUrl };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setThinking(true);
@@ -269,11 +283,12 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
 
       const history = updatedMessages
         .slice(-20)
-        .map((m) => `${m.role === "user" ? "Me" : companion.name}: ${m.content}`)
+        .map((m) => `${m.role === "user" ? "Me" : companion.name}: ${m.content || (m.image_url ? "[photo]" : "")}`)
         .join("\n");
 
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: buildPrompt(history, memories),
+        file_urls: fileUrls.length > 0 ? fileUrls : undefined,
       });
 
       let replyText =
@@ -299,6 +314,24 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
 
       setMessages((prev) => [...prev, reply]);
       await base44.entities.Message.create(reply);
+
+      // Maybe send a photo — selfie, together, or nothing
+      const photoExchange = `Me: ${text || "[photo]"}${imageUrl ? " [photo]" : ""}\n${companion.name}: ${replyText.trim()}`;
+      decidePhotoAction(companion, photoExchange, !!imageUrl).then(async (photoDecision) => {
+        if (photoDecision.action !== "none" && photoDecision.description) {
+          const photoUrl = await generateCompanionPhoto(companion, photoDecision.description, photoDecision.action, imageUrl);
+          if (photoUrl) {
+            const photoMsg = {
+              role: "assistant",
+              content: photoDecision.caption || "",
+              companion_id: companion.id,
+              image_url: photoUrl,
+            };
+            await base44.entities.Message.create(photoMsg);
+            setMessages((prev) => [...prev, photoMsg]);
+          }
+        }
+      });
 
       // Extract memories in the background — don't await, don't block UI
       const recentExchange = `Me: ${text}\n${companion.name}: ${replyText.trim()}`;

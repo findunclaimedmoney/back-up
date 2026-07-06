@@ -17,6 +17,10 @@
     "companion_id": {
       "type": "string",
       "description": "Which companion this message belongs to"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL of an image attached to this message \u2014 selfie, shared photo, or joint photo"
     }
   },
   "required": [
