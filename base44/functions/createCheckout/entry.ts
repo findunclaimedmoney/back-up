@@ -29,6 +29,21 @@ Deno.serve(async (req) => {
       const addonConfig = ADDON_CONFIG[body.addon]?.[body.duration];
       if (!addonConfig) return Response.json({ error: 'Invalid add-on or duration' }, { status: 400 });
 
+      // Gate: intimacy requires minimum 160 video minutes spent with a companion
+      const MIN_MINUTES = 160;
+      const subs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+      const sub = subs[0];
+      const minutesUsed = sub?.video_minutes_used || 0;
+      if (minutesUsed < MIN_MINUTES) {
+        return Response.json({
+          error: 'Minimum usage required',
+          message: `You need at least ${MIN_MINUTES} video minutes with your companion before unlocking intimacy. You've used ${minutesUsed} minute(s) so far.`,
+          minimum_required: true,
+          minutes_used: minutesUsed,
+          minutes_required: MIN_MINUTES,
+        }, { status: 403 });
+      }
+
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         line_items: [{

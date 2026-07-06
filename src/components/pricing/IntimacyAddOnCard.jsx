@@ -1,4 +1,4 @@
-import { Heart, Clock, Check } from "lucide-react";
+import { Heart, Clock, Check, Lock } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
 const DURATIONS = [
@@ -6,9 +6,13 @@ const DURATIONS = [
   { id: "30d", label: "30 Days", price: "$99", sublabel: "Best value per day" },
 ];
 
-export default function IntimacyAddOnCard({ active, expires, loading, onPurchase }) {
+const MIN_MINUTES = 160;
+
+export default function IntimacyAddOnCard({ active, expires, loading, onPurchase, minutesUsed = 0 }) {
   const expiryDate = expires ? new Date(expires) : null;
   const isExpired = expiryDate && expiryDate.getTime() < Date.now();
+  const minutesRemaining = Math.max(0, MIN_MINUTES - minutesUsed);
+  const unlocked = minutesUsed >= MIN_MINUTES;
 
   return (
     <div className="rounded-[2rem] border border-primary/30 bg-gradient-to-br from-primary/5 to-card overflow-hidden">
@@ -39,7 +43,23 @@ export default function IntimacyAddOnCard({ active, expires, loading, onPurchase
           </p>
         )}
 
-        {!active || isExpired ? (
+        {(!active || isExpired) && !unlocked && (
+          <div className="flex flex-col items-center text-center gap-3 px-5 py-6 rounded-2xl bg-muted/30 border border-border mb-6">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+              <Lock className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-foreground">
+              {minutesUsed} / {MIN_MINUTES} minutes spent
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
+              Intimacy requires a real connection first. Spend {minutesRemaining} more
+              video minute{minutesRemaining === 1 ? "" : "s"} with your companion to
+              earn their trust and unlock this layer.
+            </p>
+          </div>
+        )}
+
+        {(!active || isExpired) && unlocked ? (
           <div className="grid grid-cols-2 gap-3">
             {DURATIONS.map((d) => (
               <button

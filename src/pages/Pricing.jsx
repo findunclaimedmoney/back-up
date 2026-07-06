@@ -75,6 +75,7 @@ export default function Pricing() {
   const [success, setSuccess] = useState(false);
   const [intimacyActive, setIntimacyActive] = useState(false);
   const [intimacyExpires, setIntimacyExpires] = useState(null);
+  const [minutesUsed, setMinutesUsed] = useState(0);
   const [addonLoading, setAddonLoading] = useState(null);
 
   useEffect(() => {
@@ -95,6 +96,7 @@ export default function Pricing() {
       if (res.data?.tier) setCurrentTier(res.data.tier);
       setIntimacyActive(res.data?.intimacy_package || false);
       setIntimacyExpires(res.data?.intimacy_expires || null);
+      setMinutesUsed(res.data?.video_minutes_used || 0);
     } catch (err) {
       console.error(err);
     }
@@ -223,6 +225,7 @@ export default function Pricing() {
                 expires={intimacyExpires}
                 loading={addonLoading}
                 onPurchase={handlePurchaseAddon}
+                minutesUsed={minutesUsed}
               />
             </div>
           </section>
