@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { X, Loader2, Shirt, Users, Crown, Lock, Sparkles, Clock, AlertCircle, DollarSign, Wallet } from "lucide-react";
+import { X, Loader2, Shirt, Users, Crown, Lock, Sparkles, Clock, AlertCircle, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const OUTFITS = [
