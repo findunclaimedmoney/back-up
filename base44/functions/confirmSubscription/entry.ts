@@ -27,33 +27,36 @@ Deno.serve(async (req) => {
       const addon = session.metadata.addon;
       const duration = session.metadata.duration;
 
-      if (addon === 'intimacy') {
-        const CREDIT_AMOUNTS = { '15min': 4.00, '30min': 8.00, '60min': 15.00 };
-        const creditToAdd = CREDIT_AMOUNTS[duration] || 0;
+      const CREDIT_AMOUNTS = {
+        intimacy: { '15min': 4.00, '30min': 8.00, '60min': 15.00 },
+        topup: { 'pack_5': 5.00, 'pack_10': 10.00, 'pack_25': 25.00, 'pack_50': 50.00 },
+      };
 
-        const existing = await base44.entities.Subscription.filter({ created_by_id: user.id });
-
-        if (existing.length > 0) {
-          const sub = existing[0];
-          const newBalance = (sub.credit_balance || 0) + creditToAdd;
-          await base44.entities.Subscription.update(sub.id, {
-            credit_balance: newBalance,
-            stripe_customer_id: session.customer?.toString() || sub.stripe_customer_id,
-          });
-          return Response.json({ addon: 'intimacy', credit_added: creditToAdd, new_balance: newBalance });
-        } else {
-          await base44.entities.Subscription.create({
-            tier: 'free',
-            video_minutes_limit: 0,
-            video_minutes_used: 0,
-            credit_balance: creditToAdd,
-            stripe_customer_id: session.customer?.toString() || null,
-          });
-          return Response.json({ addon: 'intimacy', credit_added: creditToAdd, new_balance: creditToAdd });
-        }
+      const creditToAdd = CREDIT_AMOUNTS[addon]?.[duration] || 0;
+      if (creditToAdd === 0) {
+        return Response.json({ error: 'Unknown add-on or duration' }, { status: 400 });
       }
 
-      return Response.json({ error: 'Unknown add-on' }, { status: 400 });
+      const existing = await base44.entities.Subscription.filter({ created_by_id: user.id });
+
+      if (existing.length > 0) {
+        const sub = existing[0];
+        const newBalance = (sub.credit_balance || 0) + creditToAdd;
+        await base44.entities.Subscription.update(sub.id, {
+          credit_balance: newBalance,
+          stripe_customer_id: session.customer?.toString() || sub.stripe_customer_id,
+        });
+        return Response.json({ addon, credit_added: creditToAdd, new_balance: newBalance });
+      } else {
+        await base44.entities.Subscription.create({
+          tier: 'free',
+          video_minutes_limit: 0,
+          video_minutes_used: 0,
+          credit_balance: creditToAdd,
+          stripe_customer_id: session.customer?.toString() || null,
+        });
+        return Response.json({ addon, credit_added: creditToAdd, new_balance: creditToAdd });
+      }
     }
 
     // --- Tier confirmation (monthly subscription) ---

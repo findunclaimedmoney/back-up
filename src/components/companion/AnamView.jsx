@@ -188,7 +188,7 @@ export default function AnamView({ companion, onClose }) {
             </div>
 
             {subscription.credit_balance < 4 && (
-              <a href="/pricing" className="text-sm text-primary hover:underline">
+              <a href="/pricing#topup" className="text-sm text-primary hover:underline">
                 Add credit →
               </a>
             )}
@@ -207,7 +207,7 @@ export default function AnamView({ companion, onClose }) {
         {error && (
           <div className="text-center max-w-sm">
             <p className="text-sm text-muted-foreground mb-3">{error}</p>
-            <a href="/pricing" className="text-sm text-primary hover:underline">View plans →</a>
+            <a href="/pricing#topup" className="text-sm text-primary hover:underline">View plans →</a>
           </div>
         )}
 
@@ -217,7 +217,7 @@ export default function AnamView({ companion, onClose }) {
             <video ref={videoRef} autoPlay playsInline className="w-full h-full" />
             {lowBalance !== null && (
               <a
-                href="/pricing"
+                href="/pricing#topup"
                 className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-amber-500/90 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg"
               >
                 <Wallet className="w-4 h-4" />

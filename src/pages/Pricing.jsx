@@ -4,6 +4,7 @@ import { Sparkles, ArrowLeft, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import TierCard from "@/components/pricing/TierCard";
 import IntimacyAddOnCard from "@/components/pricing/IntimacyAddOnCard";
+import TopUpCard from "@/components/pricing/TopUpCard";
 
 const TIERS = [
   {
@@ -77,6 +78,7 @@ export default function Pricing() {
   const [creditBalance, setCreditBalance] = useState(0);
   const [minutesUsed, setMinutesUsed] = useState(0);
   const [addonLoading, setAddonLoading] = useState(null);
+  const [topupLoading, setTopupLoading] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -111,6 +113,9 @@ export default function Pricing() {
       if (res.data?.tier || res.data?.credit_added) {
         setSuccess(true);
       }
+      if (res.data?.new_balance !== undefined) {
+        setCreditBalance(res.data.new_balance);
+      }
     } catch (err) {
       console.error(err);
       loadSubscription();
@@ -136,6 +141,28 @@ export default function Pricing() {
     } catch (err) {
       console.error(err);
       setAddonLoading(null);
+    }
+  };
+
+  const handlePurchaseTopUp = async (packId) => {
+    const authed = await base44.auth.isAuthenticated();
+    if (!authed) {
+      window.location.href = "/login";
+      return;
+    }
+
+    setTopupLoading(packId);
+    try {
+      const res = await base44.functions.invoke("createCheckout", {
+        addon: "topup",
+        duration: packId,
+      });
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err) {
+      console.error(err);
+      setTopupLoading(null);
     }
   };
 
@@ -217,6 +244,16 @@ export default function Pricing() {
                   onUpgrade={() => handleUpgrade(tier.id)}
                 />
               ))}
+            </div>
+          </section>
+
+          <section className="px-6 pb-12">
+            <div className="max-w-3xl mx-auto">
+              <TopUpCard
+                creditBalance={creditBalance}
+                onPurchase={handlePurchaseTopUp}
+                loading={topupLoading}
+              />
             </div>
           </section>
 

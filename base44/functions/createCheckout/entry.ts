@@ -13,6 +13,12 @@ const ADDON_CONFIG = {
     '30min': { price: 800, name: 'Intimacy Session — 30 Minutes', description: 'A 30-minute intimate session with your companion',  minutes: 30 },
     '60min': { price: 1500, name: 'Intimacy Session — 60 Minutes', description: 'A full hour intimate session with your companion',   minutes: 60 },
   },
+  topup: {
+    'pack_5':  { price: 500,  name: 'GLIMR Credit — $5',  description: '$5 added to your credit balance', credit: 5 },
+    'pack_10': { price: 1000, name: 'GLIMR Credit — $10', description: '$10 added to your credit balance', credit: 10 },
+    'pack_25': { price: 2500, name: 'GLIMR Credit — $25', description: '$25 added to your credit balance', credit: 25 },
+    'pack_50': { price: 5000, name: 'GLIMR Credit — $50', description: '$50 added to your credit balance', credit: 50 },
+  },
 };
 
 Deno.serve(async (req) => {
@@ -31,18 +37,21 @@ Deno.serve(async (req) => {
       if (!addonConfig) return Response.json({ error: 'Invalid add-on or duration' }, { status: 400 });
 
       // Gate: intimacy requires minimum 160 video minutes spent with a companion
-      const MIN_MINUTES = 160;
-      const subs = await base44.entities.Subscription.filter({ created_by_id: user.id });
-      const sub = subs[0];
-      const minutesUsed = sub?.video_minutes_used || 0;
-      if (minutesUsed < MIN_MINUTES) {
-        return Response.json({
-          error: 'Minimum usage required',
-          message: `You need at least ${MIN_MINUTES} video minutes with your companion before unlocking intimacy. You've used ${minutesUsed} minute(s) so far.`,
-          minimum_required: true,
-          minutes_used: minutesUsed,
-          minutes_required: MIN_MINUTES,
-        }, { status: 403 });
+      // (top-up packs have no usage gate — anyone can buy credit)
+      if (body.addon === 'intimacy') {
+        const MIN_MINUTES = 160;
+        const subs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+        const sub = subs[0];
+        const minutesUsed = sub?.video_minutes_used || 0;
+        if (minutesUsed < MIN_MINUTES) {
+          return Response.json({
+            error: 'Minimum usage required',
+            message: `You need at least ${MIN_MINUTES} video minutes with your companion before unlocking intimacy. You've used ${minutesUsed} minute(s) so far.`,
+            minimum_required: true,
+            minutes_used: minutesUsed,
+            minutes_required: MIN_MINUTES,
+          }, { status: 403 });
+        }
       }
 
       const session = await stripe.checkout.sessions.create({
