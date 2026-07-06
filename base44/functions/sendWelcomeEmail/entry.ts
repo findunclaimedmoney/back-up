@@ -6,7 +6,7 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { to_email, to_name, companion_name, from_name } = await req.json().catch(() => ({}));
+    const { to_email, to_name, companion_name, from_name, custom_html, custom_subject } = await req.json().catch(() => ({}));
 
     if (!to_email) return Response.json({ error: 'to_email is required' }, { status: 400 });
 
@@ -85,8 +85,8 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from: `${senderLabel} <admin@lensflow.com.au>`,
         to: [to_email],
-        subject: `Welcome to GLIMR, ${firstName} 🌟`,
-        html,
+        subject: custom_subject || `Welcome to GLIMR, ${firstName} 🌟`,
+        html: custom_html || html,
       }),
     });
 
