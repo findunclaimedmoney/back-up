@@ -7,7 +7,8 @@ import ChatInput from "@/components/companion/ChatInput";
 import { ArrowLeft, Video } from "lucide-react";
 import LiveAvatarView from "@/components/companion/LiveAvatarView";
 import AnamView from "@/components/companion/AnamView";
-import { ChevronDown, Zap, Crown } from "lucide-react";
+import HeygenView from "@/components/companion/HeygenView";
+import { ChevronDown, Zap, Crown, Globe } from "lucide-react";
 
 const SUGGESTIONS = [
   "Hey, how's your day going?",
@@ -145,6 +146,7 @@ export default function Chat() {
   const [videoMode, setVideoMode] = useState(null);
   const [showVideoPicker, setShowVideoPicker] = useState(false);
   const bottomRef = useRef(null);
+  const heygenRef = useRef(null);
 
   const loadData = useCallback(async () => {
     if (!companion) { if (!(isCustom && customLoading)) setLoading(false); return; }
@@ -285,6 +287,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
           });
         }
       });
+      return reply.content;
     } catch (err) {
       console.error(err);
       setMessages((prev) => [
@@ -295,6 +298,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
           companion_id: companion.id,
         },
       ]);
+      return null;
     } finally {
       setThinking(false);
     }
@@ -379,6 +383,19 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
                     <div>
                       <p className="text-sm font-medium text-foreground">Premium HD</p>
                       <p className="text-[11px] text-muted-foreground">Trained model · highest fidelity</p>
+                    </div>
+                  </button>
+                  <div className="border-t border-border" />
+                  <button
+                    onClick={() => { setVideoMode('heygen'); setShowVideoPicker(false); }}
+                    className="w-full flex items-start gap-3 px-4 py-3 hover:bg-muted transition-colors text-left"
+                  >
+                    <div className="mt-0.5 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Globe className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">HeyGen</p>
+                      <p className="text-[11px] text-muted-foreground">Public avatars and voices</p>
                     </div>
                   </button>
                 </div>
@@ -471,6 +488,9 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
       )}
       {videoMode === 'instant' && (
         <AnamView companion={companion} onClose={() => setVideoMode(null)} />
+      )}
+      {videoMode === 'heygen' && (
+        <HeygenView ref={heygenRef} companion={companion} onClose={() => setVideoMode(null)} onSend={handleSend} />
       )}
     </div>
   );
