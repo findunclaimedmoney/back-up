@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { COMPANIONS } from "@/lib/companions";
 import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus, Loader2 } from "lucide-react";
 import { useGreetings } from "@/hooks/useGreetings";
+import { base44 } from "@/api/base44Client";
 
 const FEATURES = [
   { icon: MessageCircle, label: "Text chat" },
@@ -15,6 +16,16 @@ const FEATURES = [
 
 export default function Home() {
   const { greetings, loading } = useGreetings();
+  const [customCompanions, setCustomCompanions] = React.useState([]);
+
+  React.useEffect(() => {
+    base44.auth.isAuthenticated().then((authed) => {
+      if (!authed) return;
+      base44.entities.CustomCompanion.list("-created_date", 50)
+        .then(setCustomCompanions)
+        .catch(() => {});
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -142,8 +153,51 @@ export default function Home() {
             </Link>
           ))}
 
+          {/* Custom companions */}
+          {customCompanions.map((c) => (
+            <Link
+              key={`custom-${c.id}`}
+              to={`/chat/custom-${c.id}`}
+              className="block group relative overflow-hidden rounded-[2rem] border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5"
+            >
+              <div className="relative aspect-[4/5] sm:aspect-[16/10] overflow-hidden">
+                <img
+                  src={c.image_url}
+                  alt={c.name}
+                  className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                <div className="absolute top-5 left-5">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-primary uppercase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    {c.tagline || "Yours"}
+                  </span>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h2 className="font-heading text-3xl font-semibold text-white mb-1">
+                    {c.name}
+                  </h2>
+                  <p className="text-white/70 text-sm">{c.description}</p>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {["Chat", "Instant video"].map((tag) => (
+                    <span key={tag} className="inline-flex items-center px-3 py-1 rounded-full border border-border text-xs text-muted-foreground">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all group-hover:gap-3">
+                  Talk with {c.name}
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            </Link>
+          ))}
+
           {/* Create your own */}
-          <div className="sm:col-span-2 lg:col-span-1 block group relative overflow-hidden rounded-[2rem] border border-dashed border-border bg-card/30 transition-all hover:border-primary/40">
+          <Link to="/create" className="block group relative overflow-hidden rounded-[2rem] border border-dashed border-border bg-card/30 transition-all hover:border-primary/40">
             <div className="p-8 text-center">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted border border-border mb-5">
                 <Plus className="w-7 h-7 text-muted-foreground" />
@@ -152,10 +206,10 @@ export default function Home() {
                 Create your own
               </h2>
               <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                Upload a photo and bring them to life — ready in 24 hours
+                Upload a photo and bring them to life — ready to chat instantly
               </p>
             </div>
-          </div>
+          </Link>
         </div>
       </section>
     </div>

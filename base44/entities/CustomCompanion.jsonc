@@ -1,0 +1,48 @@
+{
+  "name": "CustomCompanion",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name given to the custom companion"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "Short descriptor shown on cards"
+    },
+    "description": {
+      "type": "string",
+      "description": "Longer description of personality"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL of the uploaded photo"
+    },
+    "personality": {
+      "type": "string",
+      "description": "System prompt describing how the companion should behave"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "ready"
+      ],
+      "default": "ready",
+      "description": "draft = still being set up; ready = available to chat"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "anam"
+      ],
+      "default": "anam",
+      "description": "Which video engine powers this companion (custom = Anam instant)"
+    }
+  },
+  "required": [
+    "name",
+    "image_url",
+    "personality"
+  ]
+}

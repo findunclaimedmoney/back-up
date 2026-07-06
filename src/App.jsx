@@ -10,6 +10,7 @@ import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Chat from './pages/Chat';
 import Games from './pages/Games';
+import CreateCompanion from './pages/CreateCompanion';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -42,6 +43,7 @@ const AuthenticatedApp = () => {
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/chat/:companionId" element={<Chat />} />
         <Route path="/games" element={<Games />} />
+      <Route path="/create" element={<CreateCompanion />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

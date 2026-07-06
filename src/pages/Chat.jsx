@@ -105,18 +105,49 @@ ${recentExchange}`;
 export default function Chat() {
   const { companionId } = useParams();
   const navigate = useNavigate();
-  const companion = getCompanion(companionId);
+
+  const isCustom = companionId?.startsWith("custom-");
+  const customId = isCustom ? companionId.replace("custom-", "") : null;
+
+  const staticCompanion = getCompanion(companionId);
+  const [customCompanion, setCustomCompanion] = useState(null);
+  const [customLoading, setCustomLoading] = useState(isCustom);
+
+  useEffect(() => {
+    if (!isCustom) return;
+    let cancelled = false;
+    base44.entities.CustomCompanion.get(customId)
+      .then((data) => { if (!cancelled) setCustomCompanion(data); })
+      .catch((err) => { console.error(err); })
+      .finally(() => { if (!cancelled) setCustomLoading(false); });
+    return () => { cancelled = true; };
+  }, [companionId]);
+
+  const companion = isCustom
+    ? customCompanion
+      ? {
+          id: companionId,
+          name: customCompanion.name,
+          tagline: customCompanion.tagline || "Custom companion",
+          subtitle: customCompanion.tagline || "Custom companion",
+          description: customCompanion.description || "",
+          image: customCompanion.image_url,
+          personality: customCompanion.personality,
+          avatar_id: null,
+        }
+      : null
+    : staticCompanion;
 
   const [messages, setMessages] = useState([]);
   const [memories, setMemories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!isCustom);
   const [thinking, setThinking] = useState(false);
   const [videoMode, setVideoMode] = useState(null);
   const [showVideoPicker, setShowVideoPicker] = useState(false);
   const bottomRef = useRef(null);
 
   const loadData = useCallback(async () => {
-    if (!companion) { setLoading(false); return; }
+    if (!companion) { if (!(isCustom && customLoading)) setLoading(false); return; }
     let sorted = [];
     let memData = [];
     try {
@@ -174,6 +205,13 @@ It's been a while since you last talked. You're thinking about this person. Reac
   }, [messages, thinking]);
 
   if (!companion) {
+    if (isCustom && customLoading) {
+      return (
+        <div className="flex flex-col items-center justify-center h-screen bg-background text-foreground">
+          <div className="w-6 h-6 border-2 border-muted border-t-primary rounded-full animate-spin" />
+        </div>
+      );
+    }
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-background text-foreground">
         <p className="text-muted-foreground mb-4">Companion not found.</p>
