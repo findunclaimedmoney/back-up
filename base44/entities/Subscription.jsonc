@@ -33,6 +33,11 @@
       "format": "date-time",
       "description": "When the intimacy add-on expires (null if included via tier)"
     },
+    "intimacy_training_stage": {
+      "type": "number",
+      "default": 0,
+      "description": "Current intimacy training progression stage (0=First Glances, 1=Finding Rhythm, 2=Opening Up, 3=Deepening Bond, 4=Ready)"
+    },
     "twin_enabled": {
       "type": "boolean",
       "default": false,
