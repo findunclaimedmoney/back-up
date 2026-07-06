@@ -100,7 +100,7 @@ export default function Home() {
               className="block group relative overflow-hidden rounded-[2rem] border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5"
             >
               {/* Image */}
-              <div className="relative aspect-[4/5] sm:aspect-[16/10] overflow-hidden">
+              <div className="relative aspect-[3/4] overflow-hidden">
                 <img
                   src={c.image}
                   alt={c.name}
@@ -180,7 +180,7 @@ export default function Home() {
               to={`/chat/custom-${c.id}`}
               className="block group relative overflow-hidden rounded-[2rem] border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5"
             >
-              <div className="relative aspect-[4/5] sm:aspect-[16/10] overflow-hidden">
+              <div className="relative aspect-[3/4] overflow-hidden">
                 <img
                   src={c.image_url}
                   alt={c.name}

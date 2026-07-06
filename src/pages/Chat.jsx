@@ -395,7 +395,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
                 <img
                   src={companion.image}
                   alt={companion.name}
-                  className="w-9 h-9 rounded-full object-cover"
+                  className="w-9 h-9 rounded-full object-cover object-top"
                 />
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-primary border-2 border-background" />
               </div>
@@ -446,7 +446,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
               <img
                 src={companion.image}
                 alt={companion.name}
-                className="w-20 h-20 rounded-full object-cover mb-5 shadow-lg"
+                className="w-20 h-20 rounded-full object-cover object-top mb-5 shadow-lg"
               />
               <h2 className="font-heading text-2xl font-semibold mb-2">
                 {memories.length > 0 ? `Good to see you again` : `Hi, I'm ${companion.name}`}
@@ -478,7 +478,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
                   <img
                     src={companion.image}
                     alt={companion.name}
-                    className="flex-shrink-0 w-9 h-9 rounded-full object-cover mt-0.5"
+                    className="flex-shrink-0 w-9 h-9 rounded-full object-cover object-top mt-0.5"
                   />
                   <div className="rounded-3xl rounded-bl-lg bg-card border border-border px-5 py-3.5 shadow-sm">
                     <div className="flex gap-1">

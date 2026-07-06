@@ -206,7 +206,7 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
           className="fixed bottom-6 right-6 z-50 flex items-center gap-2 pl-3 pr-5 py-3 rounded-full bg-[#1946D2] text-white shadow-2xl hover:bg-[#1538A8] transition-all group"
         >
           <div className="relative">
-            <img src={MIA_IMAGE} alt="Mia" className="w-8 h-8 rounded-full object-cover" />
+            <img src={MIA_IMAGE} alt="Mia" className="w-8 h-8 rounded-full object-cover object-top" />
             <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-[#1946D2]" />
           </div>
           <div className="text-left">
@@ -223,7 +223,7 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
           <div className="flex items-center justify-between px-4 py-3 bg-[#1946D2] text-white">
             <div className="flex items-center gap-2.5">
               <div className="relative">
-                <img src={MIA_IMAGE} alt="Mia" className="w-9 h-9 rounded-full object-cover border-2 border-white/20" />
+                <img src={MIA_IMAGE} alt="Mia" className="w-9 h-9 rounded-full object-cover object-top border-2 border-white/20" />
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-[#1946D2]" />
               </div>
               <div>
@@ -249,7 +249,7 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
               return (
                 <div key={idx} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
                   {!isUser && (
-                    <img src={MIA_IMAGE} alt="Mia" className="w-7 h-7 rounded-full object-cover mr-2 mt-0.5 flex-shrink-0" />
+                    <img src={MIA_IMAGE} alt="Mia" className="w-7 h-7 rounded-full object-cover object-top mr-2 mt-0.5 flex-shrink-0" />
                   )}
                   <div
                     className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
@@ -265,7 +265,7 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
             })}
             {thinking && (
               <div className="flex justify-start">
-                <img src={MIA_IMAGE} alt="Mia" className="w-7 h-7 rounded-full object-cover mr-2 mt-0.5 flex-shrink-0" />
+                <img src={MIA_IMAGE} alt="Mia" className="w-7 h-7 rounded-full object-cover object-top mr-2 mt-0.5 flex-shrink-0" />
                 <div className="bg-white border border-[#202020]/8 rounded-2xl rounded-bl-md px-4 py-3">
                   <div className="flex gap-1">
                     <span className="w-2 h-2 rounded-full bg-[#505050]/40 animate-bounce" style={{ animationDelay: "0ms" }} />

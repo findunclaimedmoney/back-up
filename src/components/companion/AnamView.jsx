@@ -121,7 +121,7 @@ export default function AnamView({ companion, onClose }) {
       <header className="flex-shrink-0 border-b border-border">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img src={companion.image} alt={companion.name} className="w-8 h-8 rounded-full object-cover" />
+            <img src={companion.image} alt={companion.name} className="w-8 h-8 rounded-full object-cover object-top" />
             <div>
               <h1 className="font-heading text-base font-semibold">{companion.name} — face to face</h1>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Powered by Anam · live video</p>
