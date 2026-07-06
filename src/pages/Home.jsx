@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { COMPANIONS } from "@/lib/companions";
-import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus } from "lucide-react";
+import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus, Loader2 } from "lucide-react";
+import { useGreetings } from "@/hooks/useGreetings";
 
 const FEATURES = [
   { icon: MessageCircle, label: "Text chat" },
@@ -13,6 +14,8 @@ const FEATURES = [
 ];
 
 export default function Home() {
+  const { greetings, loading } = useGreetings();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -87,9 +90,28 @@ export default function Home() {
 
               {/* Body */}
               <div className="p-6">
-                <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                   {c.description}
                 </p>
+
+                {/* Greeting preview */}
+                {loading ? (
+                  <div className="mb-5 flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/40 border border-border">
+                    <Loader2 className="w-3 h-3 text-muted-foreground animate-spin" />
+                    <span className="text-xs text-muted-foreground">
+                      {c.name} is thinking…
+                    </span>
+                  </div>
+                ) : greetings[c.id] ? (
+                  <div className="mb-5 px-3 py-2.5 rounded-xl bg-muted/40 border border-border">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">
+                      {c.name} says
+                    </p>
+                    <p className="text-sm text-foreground/80 italic line-clamp-2 leading-relaxed">
+                      "{greetings[c.id]}"
+                    </p>
+                  </div>
+                ) : null}
 
                 {/* Feature pills */}
                 <div className="flex flex-wrap gap-2 mb-6">
