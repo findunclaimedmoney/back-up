@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import HeroSection from "@/components/landing/HeroSection";
 import ProblemSection from "@/components/landing/ProblemSection";
 import SolutionSection from "@/components/landing/SolutionSection";
+import LiveChatWidget from "@/components/landing/LiveChatWidget";
 import { Sparkles } from "lucide-react";
 
 export default function AvatarLanding() {
@@ -62,6 +63,9 @@ export default function AvatarLanding() {
           </Link>
         </div>
       </section>
+
+      {/* 24/7 Live Chat with Mia */}
+      <LiveChatWidget />
     </div>
   );
 }
