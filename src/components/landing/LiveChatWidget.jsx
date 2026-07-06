@@ -134,7 +134,15 @@ Our companions (each with a distinct personality):
 - Sophie — blonde, bright, full of warmth. She sparkles.
 - Zac — grounded, direct, genuinely supportive. He steadies.
 
-Features: text chat, voice replies, live HD video, selfie photos, games, and custom companions (upload a photo and bring someone to life).
+Features (all built and live):
+- Text chat — real conversations with any companion, anytime.
+- Voice replies — hear your companion's voice.
+- Live video — face-to-face HD video with your companion in real time.
+- Selfie photos — your companion can send selfies.
+- Games — play games with your companion (tic-tac-toe, trivia, and more).
+- Custom companions — upload a photo and bring someone to life, ready to chat instantly.
+- Emotional memory — your companion remembers what matters, emotionally and with texture, and carries it forward.
+- Companion Notes — write personality traits, memories, and context so your companion knows you deeply.
 
 PRICING TIERS (monthly):
 - Free ($0): Text chat with all companions, 1 companion at a time, basic emotional memory, community support.
