@@ -17,6 +17,7 @@ import Notes from './pages/Notes';
 import AvatarLanding from './pages/AvatarLanding';
 import Dashboard from './pages/Dashboard';
 import VipLounge from './pages/VipLounge';
+import HealthCheck from './pages/HealthCheck';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -51,6 +52,7 @@ const AuthenticatedApp = () => {
       <Route path="/notes" element={<Notes />} />
       <Route path="/avatar-landing" element={<AvatarLanding />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/health" element={<HealthCheck />} />
       <Route path="/vip-lounge" element={<VipLounge />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/chat/:companionId" element={<Chat />} />
