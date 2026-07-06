@@ -79,6 +79,19 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'image_url and companion_name are required' }, { status: 400 });
     }
 
+    // Validate that image_url is from a trusted domain (app upload storage).
+    // Prevents SSRF — client-supplied URLs are forwarded to the LiveAvatar API.
+    const TRUSTED_HOSTS = ['media.base44.com'];
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(image_url);
+    } catch {
+      return Response.json({ error: 'Invalid image_url' }, { status: 400 });
+    }
+    if (!TRUSTED_HOSTS.includes(parsedUrl.hostname)) {
+      return Response.json({ error: 'Image must be uploaded through the app' }, { status: 400 });
+    }
+
     const createRes = await fetch(`${LA_API}/v1/avatars`, {
       method: 'POST',
       headers,

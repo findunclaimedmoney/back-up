@@ -22,6 +22,13 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Payment not completed' }, { status: 400 });
     }
 
+    // Verify the Stripe checkout session belongs to the authenticated user.
+    // Prevents session reuse: another user's paid session_id cannot grant tiers/credit.
+    const sessionUserId = session.metadata?.user_id || session.client_reference_id;
+    if (sessionUserId !== user.id) {
+      return Response.json({ error: 'This payment session does not belong to your account' }, { status: 403 });
+    }
+
     // --- Add-on confirmation (one-time payment) ---
     if (session.metadata?.type === 'addon') {
       const addon = session.metadata.addon;
