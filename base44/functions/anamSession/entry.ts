@@ -102,7 +102,7 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       return Response.json({ error: 'Failed to create Anam session', details: sessionData, status: sessionRes.status }, { status: 500 });
     }
 
-    // Log the session cost for tracking
+    // Log the session cost and deduct minutes from the customer's bill
     if (sessionDurationSeconds) {
       const durationMin = sessionDurationSeconds / 60;
       const pricing = PRICING[durationMin] || { cost: durationMin * ANAM_RATE_PER_MIN, price: durationMin * ANAM_RATE_PER_MIN * MARGIN_MULTIPLIER };
@@ -117,6 +117,14 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
         });
       } catch (e) {
         // Logging is best-effort — don't fail the session
+      }
+
+      // Deduct the session duration from the customer's usage balance
+      try {
+        const newUsed = (sub.video_minutes_used || 0) + durationMin;
+        await base44.entities.Subscription.update(sub.id, { video_minutes_used: newUsed });
+      } catch (e) {
+        // Best-effort — don't fail the session
       }
     }
 
