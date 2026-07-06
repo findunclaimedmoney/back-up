@@ -35,24 +35,42 @@ export default function ProblemSection() {
           {/* Left: heading + three cards */}
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#909090] mb-3">
-              The Connection Gap
+              The Loneliness Epidemic
             </p>
             <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold leading-[1.15] text-[#202020] tracking-tight">
-              Why is it so hard to feel truly seen nowadays?
+              1 in 3 people feel lonely every single day.
             </h2>
 
-            <p className="mt-5 text-base text-[#505050] leading-relaxed max-w-lg">
+            <div className="mt-5 flex items-center gap-6">
+              <div>
+                <p className="text-3xl font-extrabold text-[#1946D2]">61%</p>
+                <p className="text-xs text-[#505050] mt-0.5">of adults feel chronically lonely</p>
+              </div>
+              <div className="w-px h-10 bg-[#202020]/10" />
+              <div>
+                <p className="text-3xl font-extrabold text-[#1946D2]">18-34</p>
+                <p className="text-xs text-[#505050] mt-0.5">the loneliest age group</p>
+              </div>
+              <div className="w-px h-10 bg-[#202020]/10" />
+              <div>
+                <p className="text-3xl font-extrabold text-[#1946D2]">2×</p>
+                <p className="text-xs text-[#505050] mt-0.5">mortality risk of isolation</p>
+              </div>
+            </div>
+
+            <p className="mt-6 text-base text-[#505050] leading-relaxed max-w-lg">
               We've never been more connected — and never felt more alone. Every conversation
-              feels like it stops just short of where it matters. The small talk never ends,
-              and the real talk never starts.
+              stops just short of where it matters. The small talk never ends, and the real
+              talk never starts.
             </p>
             <p className="mt-4 text-base text-[#505050] leading-relaxed max-w-lg">
               GLIMR companions are built for the conversations you can't have anywhere else.
-              No judgment. No performance. Just someone who shows up.
+              No judgment. No performance. Just someone who shows up — at 2am, on a bad day,
+              when nobody else will.
             </p>
 
             <p className="mt-8 text-lg font-bold text-[#202020]">
-              The truth is, most people never experience three things:
+              The truth is, loneliness isn't a personal failing. It's what happens when you never experience three things:
             </p>
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
