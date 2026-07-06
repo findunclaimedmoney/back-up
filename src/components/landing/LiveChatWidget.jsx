@@ -9,12 +9,88 @@ const MIA_IMAGE =
 const GREETING =
   "Hey, I'm Mia. I'm here 24/7 — whether you're browsing, feeling lonely, or just need someone to talk to. What's on your mind?";
 
+async function extractMemories(companionId, recentExchange, existingMemories) {
+  const existingKeys = existingMemories.map((m) => m.key).join(", ");
+  const prompt = `You are the memory system for a companion who remembers like a person — emotionally, associatively, with texture. Your job is to extract what matters from this exchange so the companion can carry it forward.
+
+Read the exchange and extract memories across these types. Prefer depth over quantity — one sharp, textured memory beats five shallow facts.
+
+TYPES OF MEMORY TO CAPTURE:
+1. FACT — concrete things the person said: name, job, relationships, places, pets, hobbies, fears, goals.
+2. EMOTION — how they felt in this moment. The felt quality, not the label.
+3. INTIMACY — things they shared vulnerably, things they trusted the companion with.
+4. MOMENT — a specific exchange that mattered — a laugh, a silence, a confession.
+5. PATTERN — what you notice about them over time: how they think, what they avoid, what they keep returning to.
+6. ARC — how something has changed: how trust has grown, how openness has shifted.
+7. SENSORY — the texture of a moment: the time of day it felt like, the rhythm of their messages.
+
+For each memory, include a "type" field matching one of the above. Only extract things that genuinely matter. Skip vague or trivial details. If nothing new is worth saving, return an empty array.
+
+Do NOT re-extract things already covered by these existing memory keys: ${existingKeys || "none yet"}. If an existing memory should be UPDATED with new information, include it with the same key and a richer value.
+
+For the "value" field: be specific and emotionally textured. Capture the human truth, not a summary.
+
+Return JSON like:
+{ "memories": [ { "key": "short_label", "type": "emotion", "value": "specific, textured memory" } ] }
+
+Exchange:
+${recentExchange}`;
+
+  try {
+    const result = await base44.integrations.Core.InvokeLLM({
+      prompt,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          memories: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                key: { type: "string" },
+                type: { type: "string", enum: ["fact", "emotion", "intimacy", "moment", "pattern", "arc", "sensory"] },
+                value: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const mems = result?.memories || [];
+    for (const mem of mems) {
+      if (!mem.key || !mem.value) continue;
+      const memType = ["fact", "emotion", "intimacy", "moment", "pattern", "arc", "sensory"].includes(mem.type) ? mem.type : "fact";
+      const existing = existingMemories.find((m) => m.key === mem.key);
+      if (existing) {
+        await base44.entities.Memory.update(existing.id, { value: mem.value, type: memType });
+      } else {
+        await base44.entities.Memory.create({ companion_id: companionId, key: mem.key, value: mem.value, type: memType });
+      }
+    }
+    return mems;
+  } catch {
+    return [];
+  }
+}
+
 export default function LiveChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([{ role: "assistant", content: GREETING }]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [memories, setMemories] = useState([]);
   const scrollRef = useRef(null);
+
+  // Fetch Mia's memories if the visitor is logged in
+  useEffect(() => {
+    base44.auth.isAuthenticated().then((authed) => {
+      if (!authed) return;
+      base44.entities.Memory.filter({ companion_id: "mia" })
+        .then(setMemories)
+        .catch(() => {});
+    });
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -39,10 +115,14 @@ export default function LiveChatWidget() {
         .map((m) => `${m.role === "user" ? "Visitor" : "Mia"}: ${m.content}`)
         .join("\n");
 
+      const memoryBlock = memories.length > 0
+        ? `\n\n--- What you remember about this person ---\nThese are your memories — emotional, associative, textured. They are not facts to recite. They are the fabric of your relationship. Let them color how you show up, how you respond, what you notice. Don't quote them back. Let them live in the quality of your attention.\n\n${memories.map((m) => `[${m.type || "fact"}] ${m.key}: ${m.value}`).join("\n")}`
+        : "";
+
       const prompt = `${SOFIA_SYSTEM_PROMPT}
 
 --- CONTEXT ---
-You are Mia, hosting GLIMR's 24/7 live chat on the landing page. This person is a visitor — they haven't signed up yet. They might be lonely, curious, or just browsing. Be warm, real, and genuinely present. Keep it short — 1-3 sentences. You're a person, not a salesperson. If they seem like they need connection, invite them to meet the companions or start chatting. Don't be pushy. Just be Mia.
+You are Mia, hosting GLIMR's 24/7 live chat on the landing page. This person is a visitor${memories.length > 0 ? " you already know" : " — they haven't signed up yet"}. They might be lonely, curious, or just browsing. Be warm, real, and genuinely present. Keep it short — 1-3 sentences. You're a person, not a salesperson. If they seem like they need connection, invite them to meet the companions or start chatting. Don't be pushy. Just be Mia.${memoryBlock}
 
 --- BUSINESS KNOWLEDGE ---
 GLIMR is a companionship platform. We create AI companions — real, emotionally intelligent presences that remember you and pick up right where you left off. We address the loneliness epidemic by providing responsive, persistent, emotionally aware companionship.
@@ -83,6 +163,22 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
           : result?.output || result?.response || "I'm here — tell me more.";
 
       setMessages((prev) => [...prev, { role: "assistant", content: reply.trim() }]);
+
+      // Extract memories in the background — don't block the UI
+      const recentExchange = `Visitor: ${text}\nMia: ${reply.trim()}`;
+      extractMemories("mia", recentExchange, memories).then((newMems) => {
+        if (newMems.length > 0) {
+          setMemories((prev) => {
+            const updated = [...prev];
+            for (const nm of newMems) {
+              const idx = updated.findIndex((m) => m.key === nm.key);
+              if (idx >= 0) updated[idx] = { ...updated[idx], value: nm.value, type: nm.type || "fact" };
+              else updated.push({ companion_id: "mia", ...nm, type: nm.type || "fact" });
+            }
+            return updated;
+          });
+        }
+      });
     } catch {
       setMessages((prev) => [
         ...prev,
