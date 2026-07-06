@@ -2,8 +2,8 @@ import { Heart, Clock, Check } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
 const DURATIONS = [
-  { id: "7d", label: "7 Days", price: "$9.99", sublabel: "Try the deep connection" },
-  { id: "30d", label: "30 Days", price: "$19.99", sublabel: "Best value per day" },
+  { id: "7d", label: "7 Days", price: "$49", sublabel: "Try the deep connection" },
+  { id: "30d", label: "30 Days", price: "$99", sublabel: "Best value per day" },
 ];
 
 export default function IntimacyAddOnCard({ active, expires, loading, onPurchase }) {

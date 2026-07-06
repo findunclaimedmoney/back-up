@@ -9,8 +9,8 @@ const TIER_CONFIG = {
 
 const ADDON_CONFIG = {
   intimacy: {
-    '7d':  { price: 999,  name: 'Intimacy Layer — 7 Days',  description: 'Unlock the romantic & intimacy layer for 7 days',  days: 7 },
-    '30d': { price: 1999, name: 'Intimacy Layer — 30 Days', description: 'Unlock the romantic & intimacy layer for 30 days', days: 30 },
+    '7d':  { price: 4900, name: 'Intimacy Layer — 7 Days',  description: 'Unlock the romantic & intimacy layer for 7 days',  days: 7 },
+    '30d': { price: 9900, name: 'Intimacy Layer — 30 Days', description: 'Unlock the romantic & intimacy layer for 30 days', days: 30 },
   },
 };
 
