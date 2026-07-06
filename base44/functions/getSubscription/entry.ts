@@ -23,11 +23,23 @@ Deno.serve(async (req) => {
     const used = sub.video_minutes_used || 0;
     const limit = sub.video_minutes_limit || 0;
 
+    // Check if intimacy add-on has expired
+    let intimacyActive = sub.intimacy_package || false;
+    let intimacyExpires = sub.intimacy_expires || null;
+
+    if (intimacyActive && intimacyExpires) {
+      if (new Date(intimacyExpires).getTime() < Date.now()) {
+        intimacyActive = false;
+        intimacyExpires = null;
+      }
+    }
+
     return Response.json({
       tier: sub.tier || 'free',
       video_minutes_used: used,
       video_minutes_limit: limit,
-      intimacy_package: sub.intimacy_package || false,
+      intimacy_package: intimacyActive,
+      intimacy_expires: intimacyExpires,
       twin_enabled: sub.twin_enabled || false,
       remaining: Math.max(0, limit - used)
     });

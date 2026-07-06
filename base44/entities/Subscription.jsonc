@@ -28,6 +28,11 @@
       "default": false,
       "description": "Whether the Intimacy/Romantic layer is unlocked"
     },
+    "intimacy_expires": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the intimacy add-on expires (null if included via tier)"
+    },
     "twin_enabled": {
       "type": "boolean",
       "default": false,
@@ -46,5 +51,6 @@
       "format": "date-time",
       "description": "When the current billing period ends"
     }
-  }
+  },
+  "required": []
 }

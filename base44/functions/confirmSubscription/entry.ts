@@ -7,6 +7,8 @@ const TIER_CONFIG = {
   vip: { minutes: 500, intimacy: true, twin: true },
 };
 
+const ADDON_DURATIONS = { '7d': 7, '30d': 30 };
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -22,6 +24,42 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Payment not completed' }, { status: 400 });
     }
 
+    // --- Add-on confirmation (one-time payment) ---
+    if (session.metadata?.type === 'addon') {
+      const addon = session.metadata.addon;
+      const duration = session.metadata.duration;
+
+      if (addon === 'intimacy') {
+        const days = ADDON_DURATIONS[duration] || 7;
+        const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+
+        const existing = await base44.entities.Subscription.filter({ created_by_id: user.id });
+
+        if (existing.length > 0) {
+          const sub = existing[0];
+          await base44.entities.Subscription.update(sub.id, {
+            intimacy_package: true,
+            intimacy_expires: expiresAt,
+            stripe_customer_id: session.customer?.toString() || sub.stripe_customer_id,
+          });
+        } else {
+          await base44.entities.Subscription.create({
+            tier: 'free',
+            video_minutes_limit: 0,
+            video_minutes_used: 0,
+            intimacy_package: true,
+            intimacy_expires: expiresAt,
+            stripe_customer_id: session.customer?.toString() || null,
+          });
+        }
+
+        return Response.json({ addon: 'intimacy', intimacy_expires: expiresAt });
+      }
+
+      return Response.json({ error: 'Unknown add-on' }, { status: 400 });
+    }
+
+    // --- Tier confirmation (monthly subscription) ---
     const tier = session.metadata?.tier;
     const config = TIER_CONFIG[tier];
     if (!config) return Response.json({ error: 'Invalid tier in session' }, { status: 400 });

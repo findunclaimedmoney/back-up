@@ -37,8 +37,15 @@ Deno.serve(async (req) => {
         }, { status: 402 });
       }
 
-      // Inject Intimacy Layer if unlocked
-      if (sub.intimacy_package) {
+      // Inject Intimacy Layer if unlocked (and not expired)
+      let intimacyActive = sub.intimacy_package || false;
+      if (intimacyActive && sub.intimacy_expires) {
+        if (new Date(sub.intimacy_expires).getTime() < Date.now()) {
+          intimacyActive = false;
+        }
+      }
+
+      if (intimacyActive) {
         effectivePersonality = `${personality}
 
 --- INTIMACY & ROMANTIC LAYER (UNLOCKED) ---

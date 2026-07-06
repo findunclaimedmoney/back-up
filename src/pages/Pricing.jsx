@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Sparkles, ArrowLeft, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import TierCard from "@/components/pricing/TierCard";
+import IntimacyAddOnCard from "@/components/pricing/IntimacyAddOnCard";
 
 const TIERS = [
   {
@@ -72,6 +73,9 @@ export default function Pricing() {
   const [currentTier, setCurrentTier] = useState("free");
   const [loading, setLoading] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [intimacyActive, setIntimacyActive] = useState(false);
+  const [intimacyExpires, setIntimacyExpires] = useState(null);
+  const [addonLoading, setAddonLoading] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -89,6 +93,8 @@ export default function Pricing() {
       if (!authed) return;
       const res = await base44.functions.invoke("getSubscription", {});
       if (res.data?.tier) setCurrentTier(res.data.tier);
+      setIntimacyActive(res.data?.intimacy_package || false);
+      setIntimacyExpires(res.data?.intimacy_expires || null);
     } catch (err) {
       console.error(err);
     }
@@ -104,6 +110,28 @@ export default function Pricing() {
     } catch (err) {
       console.error(err);
       loadSubscription();
+    }
+  };
+
+  const handlePurchaseAddon = async (duration) => {
+    const authed = await base44.auth.isAuthenticated();
+    if (!authed) {
+      window.location.href = "/login";
+      return;
+    }
+
+    setAddonLoading(duration);
+    try {
+      const res = await base44.functions.invoke("createCheckout", {
+        addon: "intimacy",
+        duration,
+      });
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err) {
+      console.error(err);
+      setAddonLoading(null);
     }
   };
 
@@ -185,6 +213,17 @@ export default function Pricing() {
                   onUpgrade={() => handleUpgrade(tier.id)}
                 />
               ))}
+            </div>
+          </section>
+
+          <section className="px-6 pb-24">
+            <div className="max-w-3xl mx-auto">
+              <IntimacyAddOnCard
+                active={intimacyActive}
+                expires={intimacyExpires}
+                loading={addonLoading}
+                onPurchase={handlePurchaseAddon}
+              />
             </div>
           </section>
         </>
