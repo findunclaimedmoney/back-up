@@ -12,6 +12,7 @@ import Chat from './pages/Chat';
 import Games from './pages/Games';
 import CreateCompanion from './pages/CreateCompanion';
 import Pricing from './pages/Pricing';
+import Dashboard from './pages/Dashboard';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const AuthenticatedApp = () => {
@@ -42,6 +43,7 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/pricing" element={<Pricing />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/chat/:companionId" element={<Chat />} />
         <Route path="/games" element={<Games />} />
