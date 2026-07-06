@@ -20,7 +20,7 @@ export default function AnamView({ companion, onClose }) {
           avatar_id: companion.avatar_id || null,
         });
         if (cancelled) return;
-        if (res.data?.error) throw new Error(res.data.error);
+        if (res.data?.error) throw new Error(res.data.message || res.data.error);
 
         const sessionToken = res.data.sessionToken;
         if (!sessionToken) throw new Error("No session token returned");
@@ -85,10 +85,10 @@ export default function AnamView({ companion, onClose }) {
           </div>
         ) : error ? (
           <div className="text-center max-w-sm">
-            <p className="text-sm text-destructive mb-2">{error}</p>
-            <p className="text-xs text-muted-foreground">
-              Make sure your Anam API key is set.
-            </p>
+            <p className="text-sm text-muted-foreground mb-3">{error}</p>
+            <a href="/pricing" className="text-sm text-primary hover:underline">
+              View plans →
+            </a>
           </div>
         ) : (
           <div className="w-full max-w-2xl aspect-video rounded-2xl overflow-hidden border border-border shadow-lg bg-black">

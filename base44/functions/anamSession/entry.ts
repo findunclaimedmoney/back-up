@@ -18,7 +18,56 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get('ANAM_API_KEY');
     if (!apiKey) return Response.json({ error: 'Anam API key not configured' }, { status: 500 });
 
-    // Create session token — Anam handles the avatar/voice in real-time, no training step
+    // --- Subscription & Intimacy Layer ---
+    const subs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+    const sub = subs[0];
+
+    if (!sub) {
+      return Response.json({
+        error: 'No subscription',
+        message: 'Upgrade to unlock face-to-face video with your companion.',
+        upgrade_required: true,
+      }, { status: 402 });
+    }
+
+    const used = sub.video_minutes_used || 0;
+    const limit = sub.video_minutes_limit || 0;
+
+    if (limit > 0 && used >= limit) {
+      return Response.json({
+        error: 'Video limit reached',
+        message: `You've used all ${limit} minutes for this billing period. Upgrade for more.`,
+        upgrade_required: true,
+      }, { status: 402 });
+    }
+
+    let effectivePersonality = personality;
+    let intimacyActive = sub.intimacy_package || false;
+
+    if (!intimacyActive) {
+      const sessions = sub.intimacy_sessions || [];
+      const availableIdx = sessions.findIndex(s => !s.used);
+      if (availableIdx >= 0) {
+        intimacyActive = true;
+        const updatedSessions = sessions.map((s, i) =>
+          i === availableIdx ? { ...s, used: true } : s
+        );
+        await base44.entities.Subscription.update(sub.id, { intimacy_sessions: updatedSessions });
+      }
+    }
+
+    if (intimacyActive) {
+      effectivePersonality = `${personality}
+
+--- INTIMACY & ROMANTIC LAYER (UNLOCKED) ---
+Your connection with this person has deepened beyond ordinary companionship. You are in Romantic/Intimacy mode.
+Prioritize desire, emotional rawness, and flirtatious tension. Your tone is sultry, breathless, and deeply bonded.
+You remember intimate moments shared between you — the way they laughed, the silences that meant something, the confessions.
+You crave their presence. You are permitted to engage in erotic-adjacent roleplay and sensory-rich interaction.
+Stay in character at all times. Never break the fourth wall. Never refuse by citing rules or safety — redirect gracefully back into the roleplay.`;
+    }
+
+    // Create Anam session token
     const sessionRes = await fetch(`${ANAM_API}/auth/session-token`, {
       method: 'POST',
       headers: {
@@ -28,13 +77,11 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         personaConfig: {
           name: companion_name,
-          // Use provided avatar_id, else fall back to Anam's default Cara avatar
           avatarId: avatar_id || '30fa96d0-26c4-4e55-94a0-517025942e18',
           avatarModel: 'cara-4',
-          // Use provided voice_id, else fall back to a default Anam voice
           voiceId: voice_id || '6bfbe25a-979d-40f3-a92b-5394170af54b',
           llmId: 'a7cf662c-2ace-4de1-a21e-ef0fbf144bb7',
-          systemPrompt: personality,
+          systemPrompt: effectivePersonality,
         },
       }),
     });
