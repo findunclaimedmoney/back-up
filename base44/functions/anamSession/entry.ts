@@ -43,12 +43,14 @@ Deno.serve(async (req) => {
 
     let effectivePersonality = personality;
     let intimacyActive = sub.intimacy_package || false;
+    let sessionDurationSeconds = null;
 
     if (!intimacyActive) {
       const sessions = sub.intimacy_sessions || [];
       const availableIdx = sessions.findIndex(s => !s.used);
       if (availableIdx >= 0) {
         intimacyActive = true;
+        sessionDurationSeconds = (sessions[availableIdx].duration_minutes || 15) * 60;
         const updatedSessions = sessions.map((s, i) =>
           i === availableIdx ? { ...s, used: true } : s
         );
@@ -92,7 +94,10 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       return Response.json({ error: 'Failed to create Anam session', details: sessionData, status: sessionRes.status }, { status: 500 });
     }
 
-    return Response.json({ sessionToken: sessionData.sessionToken });
+    return Response.json({
+      sessionToken: sessionData.sessionToken,
+      sessionDurationSeconds,
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
