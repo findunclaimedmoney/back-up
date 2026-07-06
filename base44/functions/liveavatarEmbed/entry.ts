@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    const { companion_name, personality, avatar_id: preferredAvatarId, twin } = body;
+    const { companion_name, personality, avatar_id: preferredAvatarId, twin, duration } = body;
 
     if (!companion_name || !personality) {
       return Response.json({ error: 'companion_name and personality are required' }, { status: 400 });
@@ -37,20 +37,55 @@ Deno.serve(async (req) => {
         }, { status: 402 });
       }
 
-      // Inject Intimacy Layer if included in tier OR user has available sessions
+      // Inject Intimacy Layer if included in tier
       let intimacyActive = sub.intimacy_package || false;
       let sessionMaxDuration = null;
 
-      if (!intimacyActive) {
-        const sessions = sub.intimacy_sessions || [];
-        const availableIdx = sessions.findIndex(s => !s.used);
-        if (availableIdx >= 0) {
-          intimacyActive = true;
-          sessionMaxDuration = (sessions[availableIdx].duration_minutes || 15) * 60;
-          const updatedSessions = sessions.map((s, i) =>
-            i === availableIdx ? { ...s, used: true } : s
-          );
-          await base44.entities.Subscription.update(sub.id, { intimacy_sessions: updatedSessions });
+      // Free/Plus users: deduct from credit_balance to activate intimacy session
+      if (!intimacyActive && body.duration) {
+        const SESSION_PRICES = { 15: 4.00, 30: 8.00, 60: 15.00 };
+        const sessionPrice = SESSION_PRICES[body.duration];
+        const balance = sub.credit_balance || 0;
+
+        if (!sessionPrice) {
+          return Response.json({
+            error: 'Invalid duration',
+            message: 'Select a valid session duration (15, 30, or 60 minutes).',
+            duration_required: true,
+            credit_balance: balance,
+          }, { status: 400 });
+        }
+
+        if (balance < sessionPrice) {
+          return Response.json({
+            error: 'Insufficient credit',
+            message: `You need $${sessionPrice.toFixed(2)} for a ${body.duration}-minute session. You have $${balance.toFixed(2)} in credit.`,
+            upgrade_required: true,
+            credit_balance: balance,
+            session_price: sessionPrice,
+          }, { status: 402 });
+        }
+
+        intimacyActive = true;
+        sessionMaxDuration = body.duration * 60;
+        const newBalance = balance - sessionPrice;
+
+        await base44.entities.Subscription.update(sub.id, {
+          credit_balance: newBalance,
+          video_minutes_used: (sub.video_minutes_used || 0) + body.duration,
+        });
+
+        // Low balance email notification
+        if (newBalance < 4.00) {
+          try {
+            await base44.integrations.Core.SendEmail({
+              to: user.email,
+              subject: 'Your GLIMR credit is running low',
+              body: `Hi ${user.full_name || 'there'},\n\nYour intimate session with ${companion_name} just started, and your remaining credit balance is $${newBalance.toFixed(2)}.\n\nThat's not enough for another session. Top up anytime to keep the connection going:\nhttps://glimr.app/pricing\n\nWith warmth,\nThe GLIMR Team`,
+            });
+          } catch (e) {
+            // Best-effort notification
+          }
         }
       }
 
@@ -157,7 +192,16 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       return Response.json({ error: 'Failed to create embed session', details: embedData }, { status: 500 });
     }
 
-    return Response.json({ url: embedData.data.url });
+    // Fetch updated balance after any credit deduction
+    const updatedSubs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+    const remainingBalance = updatedSubs[0]?.credit_balance ?? 0;
+
+    return Response.json({
+      url: embedData.data.url,
+      session_duration_seconds: sessionMaxDuration,
+      credit_balance: remainingBalance,
+      low_balance_warning: remainingBalance < 4.00,
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

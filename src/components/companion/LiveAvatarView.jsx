@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { X, Loader2, Shirt, Users, Crown, Lock, Sparkles, Clock } from "lucide-react";
+import { X, Loader2, Shirt, Users, Crown, Lock, Sparkles, Clock, AlertCircle, DollarSign, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const OUTFITS = [
@@ -8,6 +8,12 @@ const OUTFITS = [
   { id: "silk_robe", label: "Silk Robe" },
   { id: "nurse", label: "Nurse" },
   { id: "gown", label: "Evening Gown" },
+];
+
+const DURATIONS = [
+  { value: 15, label: "15 min", price: 4 },
+  { value: 30, label: "30 min", price: 8 },
+  { value: 60, label: "1 hour", price: 15 },
 ];
 
 export default function LiveAvatarView({ companion, onClose }) {
@@ -19,19 +25,32 @@ export default function LiveAvatarView({ companion, onClose }) {
   const [subscription, setSubscription] = useState(null);
   const [selectedOutfit, setSelectedOutfit] = useState(null);
   const [avatarProcessing, setAvatarProcessing] = useState(false);
+  const [duration, setDuration] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [showWarning, setShowWarning] = useState(false);
+  const [lowBalance, setLowBalance] = useState(null);
+  const [subLoading, setSubLoading] = useState(true);
 
-  const fetchEmbed = useCallback(async (outfit, twin = false) => {
-    const res = await base44.functions.invoke("liveavatarEmbed", {
+  const fetchEmbed = useCallback(async (outfit, twin = false, dur = null) => {
+    const payload = {
       companion_name: companion.name,
       personality: companion.personality,
       avatar_id: outfit || companion.avatar_id || null,
       twin,
-    });
+    };
+    if (dur) payload.duration = dur;
+
+    const res = await base44.functions.invoke("liveavatarEmbed", payload);
     if (res.data?.upgrade_required) {
       return { upgradeRequired: true, message: res.data.message };
     }
     if (res.data?.error) throw new Error(res.data.error);
-    return { url: res.data?.url };
+    return {
+      url: res.data?.url,
+      sessionDurationSeconds: res.data?.session_duration_seconds || null,
+      creditBalance: res.data?.credit_balance,
+      lowBalanceWarning: res.data?.low_balance_warning,
+    };
   }, [companion]);
 
   useEffect(() => {
@@ -66,7 +85,21 @@ export default function LiveAvatarView({ companion, onClose }) {
         }
 
         const subRes = await base44.functions.invoke("getSubscription", {});
-        if (!cancelled) setSubscription(subRes.data);
+        if (!cancelled) {
+          setSubscription(subRes.data);
+          setSubLoading(false);
+          // If intimacy is included in tier (pro/vip), start video immediately
+          if (subRes.data?.intimacy_package) {
+            setDuration("included");
+          }
+        }
+        if (cancelled) return;
+
+        // If no intimacy package, show duration picker (don't auto-start)
+        if (!subRes.data?.intimacy_package) {
+          setLoading(false);
+          return;
+        }
 
         const result = await fetchEmbed(null);
         if (cancelled) return;
@@ -74,6 +107,8 @@ export default function LiveAvatarView({ companion, onClose }) {
           setError(result.message || "Upgrade required");
         } else {
           setEmbedUrl(result.url);
+          if (result.sessionDurationSeconds) setTimeLeft(result.sessionDurationSeconds);
+          if (result.lowBalanceWarning) setLowBalance(result.creditBalance);
         }
       } catch (err) {
         if (!cancelled) setError(err.message || "Something went wrong");
@@ -89,11 +124,12 @@ export default function LiveAvatarView({ companion, onClose }) {
     setLoading(true);
     setError(null);
     try {
-      const result = await fetchEmbed(outfitId);
+      const result = await fetchEmbed(outfitId, false, duration === "included" ? null : duration);
       if (result.upgradeRequired) {
         setError(result.message);
       } else {
         setEmbedUrl(result.url);
+        if (result.sessionDurationSeconds) setTimeLeft(result.sessionDurationSeconds);
       }
     } catch (err) {
       setError(err.message);
@@ -105,7 +141,7 @@ export default function LiveAvatarView({ companion, onClose }) {
   const handleSummonTwin = async () => {
     setTwinLoading(true);
     try {
-      const result = await fetchEmbed(selectedOutfit, true);
+      const result = await fetchEmbed(selectedOutfit, true, duration === "included" ? null : duration);
       if (result.upgradeRequired) {
         setError(result.message);
       } else {
@@ -118,8 +154,54 @@ export default function LiveAvatarView({ companion, onClose }) {
     }
   };
 
+  const handleDurationSelect = async (dur) => {
+    setDuration(dur);
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await fetchEmbed(null, false, dur);
+      if (result.upgradeRequired) {
+        setError(result.message);
+      } else {
+        setEmbedUrl(result.url);
+        if (result.sessionDurationSeconds) setTimeLeft(result.sessionDurationSeconds);
+        if (result.lowBalanceWarning) setLowBalance(result.creditBalance);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const hasIntimacy = subscription?.intimacy_package;
   const hasTwin = subscription?.twin_enabled;
+
+  // Countdown timer
+  useEffect(() => {
+    if (timeLeft === null || loading || error) return;
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev === null) return null;
+        if (prev <= 1) {
+          clearInterval(interval);
+          onClose();
+          return 0;
+        }
+        if (prev <= 30 && !showWarning) setShowWarning(true);
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timeLeft, loading, error, onClose, showWarning]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const showPicker = !subLoading && subscription && !subscription.intimacy_package && duration === null && !loading && !error;
 
   return (
     <div className="fixed inset-0 z-50 bg-background flex flex-col">
@@ -132,18 +214,72 @@ export default function LiveAvatarView({ companion, onClose }) {
               {twinUrl && <span className="text-primary ml-2">+ Twin</span>}
             </h1>
           </div>
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-muted transition-colors"
-            aria-label="Close video"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-3">
+            {timeLeft !== null && !loading && !error && (
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${
+                showWarning ? "bg-destructive/15 text-destructive" : "bg-muted text-muted-foreground"
+              }`}>
+                {showWarning ? <AlertCircle className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
+                {formatTime(timeLeft)}
+              </div>
+            )}
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-muted transition-colors"
+              aria-label="Close video"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </header>
 
       <div className="flex-1 flex flex-col items-center justify-center p-4 gap-4 overflow-y-auto">
-        {loading ? (
+        {showPicker ? (
+          <div className="flex flex-col items-center gap-6 max-w-sm w-full">
+            <div className="text-center">
+              <h2 className="font-heading text-2xl font-semibold mb-2">Choose your session</h2>
+              <p className="text-sm text-muted-foreground">How long would you like to spend with {companion.name}?</p>
+            </div>
+
+            {subscription.credit_balance > 0 && (
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/10 border border-primary/20">
+                <DollarSign className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium">${subscription.credit_balance.toFixed(2)} credit</span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 gap-3 w-full">
+              {DURATIONS.map((d) => {
+                const affordable = subscription.credit_balance >= d.price;
+                return (
+                  <button
+                    key={d.value}
+                    onClick={() => affordable && handleDurationSelect(d.value)}
+                    disabled={!affordable}
+                    className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left ${
+                      affordable
+                        ? "border-border bg-card hover:border-primary/40"
+                        : "border-border bg-muted/30 opacity-50 cursor-not-allowed"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-muted-foreground" />
+                      <span className="font-medium">{d.label}</span>
+                    </div>
+                    <span className="font-heading text-lg font-semibold">${d.price}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {subscription.credit_balance < 4 && (
+              <Link to="/pricing" className="text-sm text-primary hover:underline">
+                Add credit →
+              </Link>
+            )}
+          </div>
+        ) : loading ? (
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
             <p className="text-sm text-muted-foreground">{companion.name} is getting ready…</p>
