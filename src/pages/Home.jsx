@@ -26,7 +26,13 @@ export default function Home() {
             GLIMR
           </span>
         </div>
-      </header>
+        <nav className="flex items-center gap-1">
+          <Link to="/games" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+            <Gamepad2 className="w-4 h-4" />
+            Games
+          </Link>
+        </nav>
+        </header>
 
       {/* Hero */}
       <section className="px-6 pt-12 pb-16 text-center">
