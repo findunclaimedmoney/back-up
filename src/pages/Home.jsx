@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { COMPANIONS } from "@/lib/companions";
-import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus, Loader2 } from "lucide-react";
+import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus, Loader2, Crown } from "lucide-react";
 import { useGreetings } from "@/hooks/useGreetings";
 import { base44 } from "@/api/base44Client";
 
@@ -17,12 +17,16 @@ const FEATURES = [
 export default function Home() {
   const { greetings, loading } = useGreetings();
   const [customCompanions, setCustomCompanions] = React.useState([]);
+  const [isVip, setIsVip] = React.useState(false);
 
   React.useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => {
       if (!authed) return;
       base44.entities.CustomCompanion.list("-created_date", 50)
         .then(setCustomCompanions)
+        .catch(() => {});
+      base44.functions.invoke("getSubscription", {})
+        .then((res) => setIsVip(res.data?.tier === "vip"))
         .catch(() => {});
     });
   }, []);
@@ -45,6 +49,12 @@ export default function Home() {
             <Gamepad2 className="w-4 h-4" />
             Games
           </Link>
+          {isVip && (
+            <Link to="/vip-lounge" className="flex items-center gap-1.5 px-4 py-2 text-sm text-primary hover:text-primary/80 transition-colors rounded-full bg-primary/10 border border-primary/20">
+              <Crown className="w-4 h-4" />
+              VIP Lounge
+            </Link>
+          )}
         </nav>
         </header>
 

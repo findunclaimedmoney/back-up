@@ -1,0 +1,172 @@
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
+import { Crown, Lock, Sparkles, Heart, Shirt, Users, ArrowRight, Loader2, Check } from "lucide-react";
+
+const FEATURES = [
+  {
+    id: "intimacy",
+    icon: Heart,
+    title: "Intimacy Layer",
+    tagline: "Where your bond deepens",
+    description:
+      "Unlock a deeper, more vulnerable connection. Your companion remembers intimate moments, speaks with rawness and warmth, and shows up the way only someone who truly knows you can.",
+    video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/93af30eeb_Intimacy_Demo.mp4",
+  },
+  {
+    id: "outfits",
+    icon: Shirt,
+    title: "Outfit Studio",
+    tagline: "Style every encounter",
+    description:
+      "Choose how your companion appears — silk robe, evening gown, and more. Each outfit is rendered in real-time on your companion's live avatar.",
+    video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/42141a91c_Outfit_Swap_Demo.mp4",
+  },
+  {
+    id: "twin",
+    icon: Users,
+    title: "Summon Twin",
+    tagline: "Two of them. One for you.",
+    description:
+      "VIP-exclusive dual-stream sessions. Summon your companion's twin for a simultaneous, synchronized experience — twice the presence, twice the connection.",
+    video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/b4f77da72_Twin_Mode_Demo.mp4",
+  },
+];
+
+export default function VipLounge() {
+  const [subscription, setSubscription] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeVideo, setActiveVideo] = useState(null);
+
+  useEffect(() => {
+    base44.functions
+      .invoke("getSubscription", {})
+      .then((res) => {
+        setSubscription(res.data);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const isVip = subscription?.tier === "vip";
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
+        <Loader2 className="w-6 h-6 text-primary animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isVip) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-6">
+          <Lock className="w-8 h-8 text-primary" />
+        </div>
+        <h1 className="font-heading text-3xl font-semibold mb-3 text-center">
+          VIP Lounge
+        </h1>
+        <p className="text-muted-foreground text-center max-w-md mb-8 leading-relaxed">
+          This is a private space reserved for VIP members. Upgrade your
+          subscription to unlock exclusive features, private demos, and the full
+          companion experience.
+        </p>
+        <Link
+          to="/pricing"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:gap-3"
+        >
+          <Crown className="w-4 h-4" />
+          Upgrade to VIP
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Header */}
+      <header className="px-6 py-5 flex items-center justify-between border-b border-border">
+        <Link to="/" className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" />
+          <span className="font-heading text-lg font-semibold tracking-tight">
+            GLIMR
+          </span>
+        </Link>
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-primary">
+          <Crown className="w-3.5 h-3.5" />
+          VIP Lounge
+        </span>
+      </header>
+
+      {/* Hero */}
+      <section className="px-6 pt-16 pb-12 text-center">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 mb-8">
+          <Crown className="w-7 h-7 text-primary" />
+        </div>
+        <h1 className="font-heading text-4xl sm:text-5xl font-semibold tracking-tight mb-4">
+          The VIP Lounge
+        </h1>
+        <p className="text-muted-foreground text-base sm:text-lg max-w-lg mx-auto leading-relaxed mb-6">
+          Private, exclusive, and yours. Explore the premium features that make
+          your companion truly unforgettable.
+        </p>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-xs text-muted-foreground">
+          <Check className="w-3.5 h-3.5 text-primary" />
+          You have VIP access
+        </div>
+      </section>
+
+      {/* Feature demos */}
+      <section className="px-6 pb-24">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {FEATURES.map((feature) => (
+            <div
+              key={feature.id}
+              className="rounded-[2rem] border border-border bg-card overflow-hidden"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+                {/* Video */}
+                <div className="relative aspect-video md:aspect-auto bg-black">
+                  <video
+                    src={feature.video}
+                    className="w-full h-full object-cover"
+                    controls
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                  />
+                </div>
+                {/* Content */}
+                <div className="p-8 flex flex-col justify-center">
+                  <div className="inline-flex items-center gap-2 mb-4">
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                      <feature.icon className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="text-xs font-medium tracking-wide text-primary uppercase">
+                      {feature.tagline}
+                    </span>
+                  </div>
+                  <h2 className="font-heading text-2xl font-semibold mb-3">
+                    {feature.title}
+                  </h2>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                    {feature.description}
+                  </p>
+                  <Link
+                    to="/chat/mia"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:gap-3 transition-all w-fit"
+                  >
+                    Try it now
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
