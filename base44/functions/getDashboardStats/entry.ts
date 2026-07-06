@@ -65,6 +65,26 @@ Deno.serve(async (req) => {
       };
     }
 
+    // Session cost tracking
+    const sessionLogs = await base44.asServiceRole.entities.SessionLog.filter({}, '-created_date', 500);
+    let totalAnamCost = 0;
+    let totalRevenue = 0;
+    let totalProfit = 0;
+    const sessionBreakdown = { 15: { count: 0, cost: 0, revenue: 0, profit: 0 }, 30: { count: 0, cost: 0, revenue: 0, profit: 0 }, 60: { count: 0, cost: 0, revenue: 0, profit: 0 } };
+
+    for (const log of sessionLogs) {
+      totalAnamCost += log.anam_cost || 0;
+      totalRevenue += log.revenue || 0;
+      totalProfit += log.profit || 0;
+      const dur = log.duration_minutes;
+      if (sessionBreakdown[dur]) {
+        sessionBreakdown[dur].count++;
+        sessionBreakdown[dur].cost += log.anam_cost || 0;
+        sessionBreakdown[dur].revenue += log.revenue || 0;
+        sessionBreakdown[dur].profit += log.profit || 0;
+      }
+    }
+
     return Response.json({
       totals: {
         total_users: allSubs.length,
@@ -80,6 +100,13 @@ Deno.serve(async (req) => {
       growth: growthData,
       total_minutes_used: Math.round(totalMinutesUsed),
       total_minutes_allocated: totalMinutesLimit,
+      cost_tracking: {
+        total_sessions: sessionLogs.length,
+        total_anam_cost: parseFloat(totalAnamCost.toFixed(2)),
+        total_revenue: parseFloat(totalRevenue.toFixed(2)),
+        total_profit: parseFloat(totalProfit.toFixed(2)),
+        breakdown: sessionBreakdown,
+      },
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

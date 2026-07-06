@@ -9,6 +9,9 @@ import {
   Heart,
   UserCheck,
   Zap,
+  DollarSign,
+  Receipt,
+  PiggyBank,
 } from "lucide-react";
 import {
   BarChart,
@@ -206,6 +209,70 @@ export default function Dashboard() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+
+        {/* Cost tracking */}
+        {stats.cost_tracking && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <StatCard icon={Receipt} label="Anam costs" value={`$${stats.cost_tracking.total_anam_cost.toFixed(2)}`} sub={`${stats.cost_tracking.total_sessions} sessions logged`} accent="bg-orange-500/10" />
+              <StatCard icon={DollarSign} label="Revenue" value={`$${stats.cost_tracking.total_revenue.toFixed(2)}`} sub="Cost-plus-margin pricing" accent="bg-primary/10" />
+              <StatCard icon={PiggyBank} label="Profit" value={`$${stats.cost_tracking.total_profit.toFixed(2)}`} sub="Revenue minus Anam costs" accent="bg-emerald-500/10" />
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-heading text-lg font-semibold mb-1">Session Cost Breakdown</h2>
+              <p className="text-xs text-muted-foreground mb-5">Per-duration Anam cost vs revenue vs profit (100% margin model)</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left">
+                      <th className="pb-3 font-medium text-muted-foreground">Duration</th>
+                      <th className="pb-3 font-medium text-muted-foreground">Sessions</th>
+                      <th className="pb-3 font-medium text-muted-foreground">Anam Cost</th>
+                      <th className="pb-3 font-medium text-muted-foreground">Revenue</th>
+                      <th className="pb-3 font-medium text-muted-foreground">Profit</th>
+                      <th className="pb-3 font-medium text-muted-foreground">Margin</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[15, 30, 60].map((dur) => {
+                      const d = stats.cost_tracking.breakdown[dur];
+                      if (!d || d.count === 0) return null;
+                      const margin = d.revenue > 0 ? ((d.profit / d.revenue) * 100).toFixed(0) : 0;
+                      return (
+                        <tr key={dur} className="border-b border-border/50 last:border-0">
+                          <td className="py-3 font-medium">{dur} min</td>
+                          <td className="py-3">{d.count}</td>
+                          <td className="py-3 text-orange-400">${d.cost.toFixed(2)}</td>
+                          <td className="py-3 text-primary">${d.revenue.toFixed(2)}</td>
+                          <td className="py-3 text-emerald-400">${d.profit.toFixed(2)}</td>
+                          <td className="py-3 text-muted-foreground">{margin}%</td>
+                        </tr>
+                      );
+                    })}
+                    {stats.cost_tracking.total_sessions === 0 && (
+                      <tr>
+                        <td colSpan={6} className="py-6 text-center text-muted-foreground text-sm">No sessions logged yet</td>
+                      </tr>
+                    )}
+                  </tbody>
+                  {stats.cost_tracking.total_sessions > 0 && (
+                    <tfoot>
+                      <tr className="border-t-2 border-border">
+                        <td className="pt-3 font-medium">Total</td>
+                        <td className="pt-3 font-medium">{stats.cost_tracking.total_sessions}</td>
+                        <td className="pt-3 font-medium text-orange-400">${stats.cost_tracking.total_anam_cost.toFixed(2)}</td>
+                        <td className="pt-3 font-medium text-primary">${stats.cost_tracking.total_revenue.toFixed(2)}</td>
+                        <td className="pt-3 font-medium text-emerald-400">${stats.cost_tracking.total_profit.toFixed(2)}</td>
+                        <td className="pt-3 font-medium text-muted-foreground">{stats.cost_tracking.total_revenue > 0 ? ((stats.cost_tracking.total_profit / stats.cost_tracking.total_revenue) * 100).toFixed(0) : 0}%</td>
+                      </tr>
+                    </tfoot>
+                  )}
+                </table>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Per-tier breakdown table */}
         <div className="rounded-2xl border border-border bg-card p-6">

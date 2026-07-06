@@ -1,6 +1,14 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 const ANAM_API = 'https://api.anam.ai/v1';
+const ANAM_RATE_PER_MIN = 0.12;
+const MARGIN_MULTIPLIER = 2; // 100% margin = double the Anam cost
+
+const PRICING = {
+  15: { cost: 15 * ANAM_RATE_PER_MIN, price: 4.00 },
+  30: { cost: 30 * ANAM_RATE_PER_MIN, price: 8.00 },
+  60: { cost: 60 * ANAM_RATE_PER_MIN, price: 15.00 },
+};
 
 Deno.serve(async (req) => {
   try {
@@ -92,6 +100,24 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
 
     if (!sessionData.sessionToken) {
       return Response.json({ error: 'Failed to create Anam session', details: sessionData, status: sessionRes.status }, { status: 500 });
+    }
+
+    // Log the session cost for tracking
+    if (sessionDurationSeconds) {
+      const durationMin = sessionDurationSeconds / 60;
+      const pricing = PRICING[durationMin] || { cost: durationMin * ANAM_RATE_PER_MIN, price: durationMin * ANAM_RATE_PER_MIN * MARGIN_MULTIPLIER };
+      try {
+        await base44.asServiceRole.entities.SessionLog.create({
+          duration_minutes: durationMin,
+          anam_cost: pricing.cost,
+          revenue: pricing.price,
+          profit: pricing.price - pricing.cost,
+          companion_name: companion_name,
+          session_type: 'intimacy',
+        });
+      } catch (e) {
+        // Logging is best-effort — don't fail the session
+      }
     }
 
     return Response.json({
