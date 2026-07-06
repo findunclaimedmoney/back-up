@@ -34,10 +34,10 @@
     "source": {
       "type": "string",
       "enum": [
-        "anam"
+        "liveavatar"
       ],
-      "default": "anam",
-      "description": "Which video engine powers this companion (custom = Anam instant)"
+      "default": "liveavatar",
+      "description": "Which video engine powers this companion (LiveAvatar by-image pipeline)"
     },
     "avatar_id": {
       "type": "string",

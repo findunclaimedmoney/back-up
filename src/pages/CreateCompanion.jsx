@@ -82,7 +82,7 @@ export default function CreateCompanion() {
         image_url: imageUrl,
         personality,
         status: "ready",
-        source: "anam",
+        source: "liveavatar",
         avatar_id: null,
         avatar_status: "processing",
       });

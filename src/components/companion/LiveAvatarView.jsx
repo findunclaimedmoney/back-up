@@ -25,6 +25,8 @@ export default function LiveAvatarView({ companion, onClose }) {
   const [subscription, setSubscription] = useState(null);
   const [selectedOutfit, setSelectedOutfit] = useState(null);
   const [avatarProcessing, setAvatarProcessing] = useState(false);
+  const [liveAvatarId, setLiveAvatarId] = useState(companion.avatar_id || null);
+  const [liveAvatarStatus, setLiveAvatarStatus] = useState(companion.avatar_status || null);
   const [duration, setDuration] = useState(null);
   const [timeLeft, setTimeLeft] = useState(null);
   const [showWarning, setShowWarning] = useState(false);
@@ -35,7 +37,7 @@ export default function LiveAvatarView({ companion, onClose }) {
     const payload = {
       companion_name: companion.name,
       personality: companion.personality,
-      avatar_id: outfit || companion.avatar_id || null,
+      avatar_id: outfit || liveAvatarId || null,
       twin,
     };
     if (dur) payload.duration = dur;
@@ -59,21 +61,21 @@ export default function LiveAvatarView({ companion, onClose }) {
       try {
         // If this is a custom companion with avatar still processing, check status first
         let stillProcessing = false;
-        if (companion.avatar_status === "processing") {
+        if (liveAvatarStatus === "processing") {
           setAvatarProcessing(true);
           setLoading(false);
           try {
             const checkRes = await base44.functions.invoke("createLiveAvatar", {
               action: "check",
               companion_name: companion.name,
-              avatar_id: companion.avatar_id || null,
+              avatar_id: liveAvatarId || null,
               companion_id: companion.id,
             });
             if (cancelled) return;
             if (checkRes.data?.avatar_status === "active" && checkRes.data?.avatar_id) {
               setAvatarProcessing(false);
-              companion.avatar_id = checkRes.data.avatar_id;
-              companion.avatar_status = "active";
+              setLiveAvatarId(checkRes.data.avatar_id);
+              setLiveAvatarStatus("active");
             } else {
               stillProcessing = true;
             }
@@ -284,7 +286,7 @@ export default function LiveAvatarView({ companion, onClose }) {
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
             <p className="text-sm text-muted-foreground">{companion.name} is getting ready…</p>
           </div>
-        ) : avatarProcessing || companion.avatar_status === "processing" ? (
+        ) : avatarProcessing || liveAvatarStatus === "processing" ? (
           <div className="text-center max-w-sm">
             <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
               <Clock className="w-7 h-7 text-primary" />

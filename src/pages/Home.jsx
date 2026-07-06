@@ -202,7 +202,7 @@ export default function Home() {
               </div>
               <div className="p-6">
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {["Chat", "Instant video"].map((tag) => (
+                  {["Chat", "Video (24h setup)"].map((tag) => (
                     <span key={tag} className="inline-flex items-center px-3 py-1 rounded-full border border-border text-xs text-muted-foreground">
                       {tag}
                     </span>

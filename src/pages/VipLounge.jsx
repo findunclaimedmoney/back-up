@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { getCompanion } from "@/lib/companions";
-import HeygenView from "@/components/companion/HeygenView";
 import LiveAvatarView from "@/components/companion/LiveAvatarView";
 import { Crown, Lock, Sparkles, Heart, Shirt, Users, ArrowRight, Loader2, Check, Play } from "lucide-react";
 
@@ -229,21 +228,7 @@ You crave their presence. Engage with sensory-rich intimacy. Stay in character a
 
       {/* Active sessions */}
       {activeSession === "intimacy" && intimacyCompanion && (
-        <HeygenView
-          companion={intimacyCompanion}
-          onClose={handleCloseSession}
-          onSend={async (text) => {
-            try {
-              const result = await base44.integrations.Core.InvokeLLM({
-                prompt: `${intimacyCompanion.personality}\n\n--- Conversation ---\nMe: ${text}\n\nRespond as ${intimacyCompanion.name}. Reply with only your message.`,
-              });
-              return typeof result === "string" ? result : result?.output || "";
-            } catch (err) {
-              console.error(err);
-              return null;
-            }
-          }}
-        />
+        <LiveAvatarView companion={intimacyCompanion} onClose={handleCloseSession} />
       )}
       {activeSession === "outfits" && companion && (
         <LiveAvatarView companion={companion} onClose={handleCloseSession} />

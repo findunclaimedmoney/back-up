@@ -3,7 +3,10 @@ import { Volume2, Loader2, Pause } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 const VOICE_MAP = {
-  mia: "honey",
+  jess: "honey",
+  mia: "sunny",
+  luna: "river",
+  sophie: "spark",
   zac: "storm",
 };
 

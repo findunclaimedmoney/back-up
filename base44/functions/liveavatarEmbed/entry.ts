@@ -175,7 +175,7 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       avatar_id: avatarId,
       context_id: contextId,
       voice_id: voiceId,
-      is_sandbox: false,
+      is_sandbox: Deno.env.get('LIVE_AVATAR_SANDBOX') === 'true',
     };
     if (sessionMaxDuration) {
       embedBody.max_session_duration = sessionMaxDuration;
