@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 // Map companion IDs to specific ElevenLabs voice IDs
 const ELEVENLABS_VOICE_MAP = {
-  zac: 'xgvYIJ6Q48ODJi6fZlsS',
+  zac: 'uA8iwvpnu0DieH3q2qEO',
 };
 
 Deno.serve(async (req) => {
