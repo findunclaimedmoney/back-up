@@ -6,9 +6,9 @@ const ADDON_PRICES = {
   topup: { 'pack_5': 5, 'pack_10': 10, 'pack_25': 25, 'pack_50': 50 },
 };
 const ASSET_CONFIG = {
-  USDC: { krakenAsset: 'USDC', pair: null, decimals: 2 },
-  BTC: { krakenAsset: 'XBT', pair: 'XXBTZUSD', decimals: 8 },
-  ETH: { krakenAsset: 'ETH', pair: 'XETHZUSD', decimals: 8 },
+  USDC: { krakenAsset: 'USDC', pair: null, decimals: 2, method: 'USDC' },
+  BTC: { krakenAsset: 'XBT', pair: 'XXBTZUSD', decimals: 8, method: 'Bitcoin' },
+  ETH: { krakenAsset: 'ETH', pair: 'XETHZUSD', decimals: 8, method: 'Ethereum' },
 };
 
 let _nonceSeq = 0;
@@ -16,11 +16,18 @@ async function krakenRequest(path, params, apiKey, apiSecret) {
   _nonceSeq++;
   const nonce = (Date.now() * 1000 + _nonceSeq).toString();
   const body = new URLSearchParams({ nonce, ...params }).toString();
+  // Kraken signing: HMAC-SHA512 of (path + SHA256(nonce + body)) using base64-decoded secret
   const sha256buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(nonce + body));
-  const sha256hex = Array.from(new Uint8Array(sha256buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
-  const keyBytes = Uint8Array.from(atob(apiSecret), (c) => c.charCodeAt(0));
+  const pathBytes = new TextEncoder().encode(path);
+  const combined = new Uint8Array(pathBytes.length + sha256buf.byteLength);
+  combined.set(pathBytes, 0);
+  combined.set(new Uint8Array(sha256buf), pathBytes.length);
+  // Decode base64 secret — handle potential padding/whitespace issues
+  const cleanSecret = apiSecret.replace(/\s/g, '').replace(/-/g, '+').replace(/_/g, '/');
+  const secretB64 = cleanSecret + '='.repeat((4 - (cleanSecret.length % 4)) % 4);
+  const keyBytes = Uint8Array.from(atob(secretB64), (c) => c.charCodeAt(0));
   const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-512' }, false, ['sign']);
-  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(path + sha256hex));
+  const sig = await crypto.subtle.sign('HMAC', key, combined);
   const sigb64 = btoa(String.fromCharCode(...new Uint8Array(sig)));
   const res = await fetch('https://api.kraken.com' + path, {
     method: 'POST',
@@ -77,23 +84,12 @@ Deno.serve(async (req) => {
     }
 
     const krakenAsset = ASSET_CONFIG[asset].krakenAsset;
-    const addrParams = { asset: krakenAsset };
-
-    // Some assets (e.g. USDC) have multiple deposit networks — fetch the method list and pick one.
-    const methodsRes = await krakenRequest('/0/private/DepositMethods', { asset: krakenAsset }, apiKey, apiSecret);
-    if (methodsRes.error || !methodsRes.result || methodsRes.result.length === 0) {
-      const errMsg = methodsRes.error ? (Array.isArray(methodsRes.error) ? methodsRes.error.join('; ') : methodsRes.error) : 'No methods returned';
-      return Response.json({ error: `DepositMethods for ${krakenAsset}: ${errMsg}`, debug: methodsRes }, { status: 502 });
-    }
-    const methods = methodsRes.result;
-    if (methods.length > 0 && methods[0].method) {
-      addrParams.method = methods[0].method;
-    }
+    const addrParams = { asset: krakenAsset, method: ASSET_CONFIG[asset].method };
 
     const addrRes = await krakenRequest('/0/private/DepositAddresses', addrParams, apiKey, apiSecret);
     if (addrRes.error && (!addrRes.result || addrRes.result.length === 0)) {
       const errMsg = Array.isArray(addrRes.error) ? addrRes.error.join('; ') : (typeof addrRes.error === 'string' ? addrRes.error : 'Kraken error');
-      return Response.json({ error: `DepositAddresses: ${errMsg}`, debug_methods: methods, debug_addr_params: addrParams }, { status: 502 });
+      return Response.json({ error: errMsg, debug_addr_params: addrParams }, { status: 502 });
     }
     const addresses = addrRes.result || [];
     let address = null;
