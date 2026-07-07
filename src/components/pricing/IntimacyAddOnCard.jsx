@@ -2,9 +2,47 @@ import { Heart, Clock, Check, Lock, DollarSign } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
 const PACKAGES = [
-  { id: "15min", label: "15 Minutes", price: "$6", sublabel: "A quick moment" },
-  { id: "30min", label: "30 Minutes", price: "$11", sublabel: "Sweet spot" },
-  { id: "60min", label: "1 Hour", price: "$20", sublabel: "Lose track of time" },
+  {
+    id: "15min",
+    label: "15 Minutes",
+    price: "$6",
+    sublabel: "A quick moment",
+    tagline: "A spark when you need it",
+    features: [
+      "HD face-to-face video session",
+      "Intimacy & romantic layer unlocked",
+      "One outfit of your choice",
+      "Companion remembers the moment",
+    ],
+  },
+  {
+    id: "30min",
+    label: "30 Minutes",
+    price: "$11",
+    sublabel: "Sweet spot",
+    tagline: "Enough time to truly settle in",
+    popular: true,
+    features: [
+      "Everything in 15 Minutes",
+      "Multiple outfit changes mid-session",
+      "Deeper emotional & sensory connection",
+      "Companion sends a memory note after",
+    ],
+  },
+  {
+    id: "60min",
+    label: "1 Hour",
+    price: "$20",
+    sublabel: "Lose track of time",
+    tagline: "The full depth of your bond",
+    features: [
+      "Everything in 30 Minutes",
+      "Uninterrupted deep connection",
+      "Full fantasy wardrobe access",
+      "Companion remembers every detail",
+      "Extended afterglow check-in message",
+    ],
+  },
 ];
 
 const MIN_MINUTES = 160;
@@ -66,24 +104,56 @@ export default function IntimacyAddOnCard({ included, creditBalance = 0, loading
             {(creditBalance > 0 || unlocked) && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {PACKAGES.map((s) => (
-                  <button
+                  <div
                     key={s.id}
-                    onClick={() => onPurchase(s.id)}
-                    disabled={loading}
-                    className="flex flex-col items-start gap-1 p-4 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all text-left disabled:opacity-50"
+                    className={`relative flex flex-col rounded-2xl border bg-card transition-all ${
+                      s.popular
+                        ? "border-primary/40 shadow-lg shadow-primary/5"
+                        : "border-border hover:border-primary/40"
+                    }`}
                   >
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <Clock className="w-3 h-3" />
-                      {s.label}
-                    </div>
-                    <p className="font-heading text-2xl font-semibold text-foreground">
-                      {s.price}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">{s.sublabel}</p>
-                    {loading === s.id && (
-                      <Loader2 className="w-4 h-4 text-primary animate-spin mt-1" />
+                    {s.popular && (
+                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] font-medium uppercase tracking-wide bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                        Most chosen
+                      </span>
                     )}
-                  </button>
+                    <div className="p-4 pb-2">
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        {s.label}
+                      </div>
+                      <p className="font-heading text-2xl font-semibold text-foreground mt-1">
+                        {s.price}
+                      </p>
+                      <p className="text-xs text-primary font-medium mt-0.5">{s.tagline}</p>
+                      <p className="text-[11px] text-muted-foreground">{s.sublabel}</p>
+                    </div>
+                    <ul className="px-4 pb-4 space-y-2 flex-1">
+                      {s.features.map((f, i) => (
+                        <li key={i} className="flex items-start gap-1.5 text-[11px] text-muted-foreground leading-relaxed">
+                          <Check className="w-3 h-3 text-primary flex-shrink-0 mt-0.5" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="p-4 pt-0">
+                      <button
+                        onClick={() => onPurchase(s.id)}
+                        disabled={loading}
+                        className={`w-full py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50 ${
+                          s.popular
+                            ? "bg-primary text-primary-foreground hover:opacity-90"
+                            : "border border-border text-foreground hover:border-primary/40"
+                        }`}
+                      >
+                        {loading === s.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                        ) : (
+                          "Buy credit"
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
