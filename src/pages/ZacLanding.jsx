@@ -3,10 +3,9 @@ import { Link } from "react-router-dom";
 import { ArrowRight, MessageCircle, Mic, Video, Crown, ChevronLeft } from "lucide-react";
 
 const ZAC_VIDEOS = [
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/6e473d496_avatar-shot-20260705-a2b9f09f.mp4",
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/041aeda52_avatar-shot-20260705-a960260f.mp4",
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/7fc169e3c_avatar-shot-20260705-f948b98e.mp4",
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/e2a7b9012_ElevenLabs_video_google-veo-3-1-fast_amansittingo_2026-07-07T16_31_52.mp4",
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/2f79bc01a_Zac_Bedroom_Clip_1.mp4",
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/aa045e66c_Zac_Bedroom_Clip_2.mp4",
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/127075288_Zac_Bedroom_Clip_3.mp4",
 ];
 
 const TRAITS = [
@@ -107,7 +106,7 @@ export default function ZacLanding() {
               See him in motion
             </h2>
             <p className="text-muted-foreground text-base max-w-md mx-auto">
-              Four moments. One steady presence.
+              Three moments. One steady presence.
             </p>
           </div>
 
