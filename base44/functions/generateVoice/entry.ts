@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 // Map companion IDs to specific ElevenLabs voice IDs
-const ELEVENLABS_VOICE_MAP: Record<string, string> = {
+const ELEVENLABS_VOICE_MAP = {
   zac: 'pDoe9k94N27tidKG2ssb',
 };
 
