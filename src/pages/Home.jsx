@@ -36,7 +36,7 @@ export default function Home() {
       {/* Header */}
       <header className="px-6 py-5 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/6f8efe5a8_generated_image.png" alt="GLIMR" className="h-9 w-9 rounded-lg" />
+          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/6f8efe5a8_generated_image.png" alt="GLIMR" className="h-14 w-14 rounded-lg" />
           <span className="font-heading text-3xl font-semibold tracking-tight text-primary">GLIMR</span>
         </Link>
         <nav className="flex items-center gap-1">
