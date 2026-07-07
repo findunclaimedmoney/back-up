@@ -4,7 +4,6 @@ import { ArrowRight, MessageCircle, Mic, Video, Crown, ChevronLeft } from "lucid
 
 const ZAC_VIDEOS = [
   "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/127075288_Zac_Bedroom_Clip_3.mp4",
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/307f5321d_Zac_Shower_Clip.mp4",
 ];
 
 const TRAITS = [
@@ -105,7 +104,7 @@ export default function ZacLanding() {
               See him in motion
             </h2>
             <p className="text-muted-foreground text-base max-w-md mx-auto">
-              Four moments. One steady presence.
+              One steady presence.
             </p>
           </div>
 
