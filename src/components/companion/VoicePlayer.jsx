@@ -8,7 +8,7 @@ const VOICE_MAP = {
   luna: "river",
   sophie: "spark",
   natalie: "honey",
-  zac: "storm",
+  zac: "river",
 };
 
 export default function VoicePlayer({ text, companionId }) {
