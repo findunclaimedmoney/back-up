@@ -12,7 +12,7 @@ export const COMPANIONS = [
     description:
       "Jess is a compassionate listener who remembers what matters to you. She speaks with warmth, asks thoughtful questions, and makes you feel genuinely heard.",
     image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png",
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/e8dd7b379_Generatedimage3.png",
     accent: "from-amber-500/20 to-rose-500/10",
     personality: MIA_EMOTIONAL_SYSTEM_PROMPT,
     avatar_id: null,
@@ -38,7 +38,7 @@ export const COMPANIONS = [
     description:
       "Luna is the still point when everything moves too fast. She doesn't fix or solve — she holds space, slows things down, and brings you back to right now.",
     image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/cf1f4bed2_Womaninsilkrobe.png",
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/0ae3a229f_image-1782886782778.png",
     accent: "from-teal-500/20 to-blue-500/10",
     personality: LUNA_SYSTEM_PROMPT,
     avatar_id: null,

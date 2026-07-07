@@ -164,11 +164,16 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
 
     if (!avatarId) return Response.json({ error: 'No avatars available. Create one at app.liveavatar.com' }, { status: 500 });
 
-    // 3. Get a voice for the embed
+    // 3. Get a voice for the embed — match by companion name first, fall back to first available
     const voicesRes = await fetch(`${LA_API}/v1/voices`, { headers });
     const voicesData = await voicesRes.json();
     const voicesList = voicesData.data?.results || voicesData.data || [];
-    const voiceId = voicesList[0]?.voice_id || voicesList[0]?.id;
+    const voiceName = twin ? `${companion_name} Twin` : companion_name;
+    const matchedVoice = voicesList.find(
+      (v) => (v.name && v.name.toLowerCase() === voiceName.toLowerCase()) ||
+             (v.title && v.title.toLowerCase() === voiceName.toLowerCase())
+    );
+    const voiceId = matchedVoice?.voice_id || matchedVoice?.id || voicesList[0]?.voice_id || voicesList[0]?.id;
 
     // 4. Create embed session
     const embedBody = {
