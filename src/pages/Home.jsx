@@ -248,6 +248,10 @@ export default function Home() {
             <a href="mailto:admin@glimr.com.au" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               admin@glimr.com.au
             </a>
+            <span className="hidden sm:inline text-muted-foreground/40">·</span>
+            <Link to="/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Privacy & Terms
+            </Link>
           </div>
         </div>
       </footer>
