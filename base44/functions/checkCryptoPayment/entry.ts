@@ -104,8 +104,6 @@ Deno.serve(async (req) => {
     const deposits = depRes.result || [];
     const match = findMatchingDeposit(deposits, order);
 
-    console.log('DepositStatus response:', JSON.stringify(depRes));
-
     if (match) {
       await applyBenefit(base44, order);
       await base44.asServiceRole.entities.CryptoOrder.update(order.id, { status: 'paid', paid_date: new Date().toISOString() });

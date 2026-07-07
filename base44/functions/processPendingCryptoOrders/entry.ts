@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    return Response.json({ processed, checked: pending.length, debug_deposits: debugDeposits });
+    return Response.json({ processed, checked: pending.length });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
