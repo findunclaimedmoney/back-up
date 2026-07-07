@@ -55,7 +55,7 @@ const TIERS = [
   {
     id: "vip",
     name: "VIP",
-    price: 299,
+    price: 349,
     description: "The full GLIMR experience",
     ctaLabel: "Request Invitation",
     badge: "vip",
