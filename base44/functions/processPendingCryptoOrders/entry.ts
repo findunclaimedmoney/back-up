@@ -11,7 +11,7 @@ const TIER_CONFIG = {
   vip: { minutes: 500, intimacy: true, twin: true },
 };
 const ADDON_PRICES = {
-  intimacy: { '15min': 4, '30min': 8, '60min': 15 },
+  intimacy: { '15min': 90, '30min': 180, '60min': 360 },
   topup: { 'pack_5': 5, 'pack_10': 10, 'pack_25': 25, 'pack_50': 50 },
 };
 

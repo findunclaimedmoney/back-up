@@ -2,16 +2,16 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 import Stripe from 'npm:stripe@17.0.0';
 
 const TIER_CONFIG = {
-  plus: { price: 2900, name: 'GLIMR Plus', description: '80 min HD video, voice replies, all companions' },
-  pro: { price: 4900, name: 'GLIMR Pro', description: '160 min HD video, intimacy & romantic layer, fantasy outfits, diary' },
-  vip: { price: 29900, name: 'GLIMR VIP', description: '500 min HD video, twin companion, GLIMR Home device, deepest intimacy' },
+  plus: { price: 48000, name: 'GLIMR Plus', description: '80 min HD video, voice replies, all companions' },
+  pro: { price: 96000, name: 'GLIMR Pro', description: '160 min HD video, intimacy & romantic layer, fantasy outfits, diary' },
+  vip: { price: 300000, name: 'GLIMR VIP', description: '500 min HD video, twin companion, GLIMR Home device, deepest intimacy' },
 };
 
 const ADDON_CONFIG = {
   intimacy: {
-    '15min': { price: 400, name: 'Intimacy Session — 15 Minutes', description: 'A 15-minute intimate session with your companion',  minutes: 15 },
-    '30min': { price: 800, name: 'Intimacy Session — 30 Minutes', description: 'A 30-minute intimate session with your companion',  minutes: 30 },
-    '60min': { price: 1500, name: 'Intimacy Session — 60 Minutes', description: 'A full hour intimate session with your companion',   minutes: 60 },
+    '15min': { price: 9000, name: 'Intimacy Session — 15 Minutes', description: 'A 15-minute intimate session with your companion',  minutes: 15 },
+    '30min': { price: 18000, name: 'Intimacy Session — 30 Minutes', description: 'A 30-minute intimate session with your companion',  minutes: 30 },
+    '60min': { price: 36000, name: 'Intimacy Session — 60 Minutes', description: 'A full hour intimate session with your companion',   minutes: 60 },
   },
   topup: {
     'pack_5':  { price: 500,  name: 'GLIMR Credit — $5',  description: '$5 added to your credit balance', credit: 5 },

@@ -24,7 +24,7 @@ const TIERS = [
   {
     id: "plus",
     name: "Plus",
-    price: 29,
+    price: 480,
     description: "See and hear your companion",
     ctaLabel: "Upgrade to Plus",
     features: [
@@ -38,7 +38,7 @@ const TIERS = [
   {
     id: "pro",
     name: "Pro",
-    price: 49,
+    price: 960,
     description: "Deep connection & romance",
     ctaLabel: "Upgrade to Pro",
     highlighted: true,
@@ -55,7 +55,7 @@ const TIERS = [
   {
     id: "vip",
     name: "VIP",
-    price: 299,
+    price: 3000,
     description: "The full GLIMR experience",
     ctaLabel: "Request Invitation",
     badge: "vip",

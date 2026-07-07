@@ -17,9 +17,9 @@ const TOPUP_OPTIONS = [
 ];
 
 const INTIMACY_OPTIONS = [
-  { id: "15min", label: "15 minutes", price: 4 },
-  { id: "30min", label: "30 minutes", price: 8 },
-  { id: "60min", label: "60 minutes", price: 15 },
+  { id: "15min", label: "15 minutes", price: 90 },
+  { id: "30min", label: "30 minutes", price: 180 },
+  { id: "60min", label: "60 minutes", price: 360 },
 ];
 
 export default function CryptoPaymentModal({ tiers, onClose, onPurchased }) {
