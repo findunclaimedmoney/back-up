@@ -40,6 +40,9 @@ export default function Home() {
           <span className="font-heading text-3xl font-semibold tracking-tight text-primary">GLIMR</span>
         </Link>
         <nav className="flex items-center gap-1">
+          <Link to="/features" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+            Features
+          </Link>
           <Link to="/pricing" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
             Pricing
           </Link>
