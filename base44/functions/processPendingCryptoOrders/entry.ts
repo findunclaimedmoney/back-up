@@ -15,14 +15,21 @@ const ADDON_PRICES = {
   topup: { 'pack_5': 5, 'pack_10': 10, 'pack_25': 25, 'pack_50': 50 },
 };
 
+let _nonceSeq = 0;
 async function krakenRequest(path, params, apiKey, apiSecret) {
-  const nonce = (Date.now() * 1000).toString();
+  _nonceSeq++;
+  const nonce = (Date.now() * 1000 + _nonceSeq).toString();
   const body = new URLSearchParams({ nonce, ...params }).toString();
   const sha256buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(nonce + body));
-  const sha256hex = Array.from(new Uint8Array(sha256buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
-  const keyBytes = Uint8Array.from(atob(apiSecret), (c) => c.charCodeAt(0));
+  const pathBytes = new TextEncoder().encode(path);
+  const combined = new Uint8Array(pathBytes.length + sha256buf.byteLength);
+  combined.set(pathBytes, 0);
+  combined.set(new Uint8Array(sha256buf), pathBytes.length);
+  const cleanSecret = apiSecret.replace(/\s/g, '').replace(/-/g, '+').replace(/_/g, '/');
+  const secretB64 = cleanSecret + '='.repeat((4 - (cleanSecret.length % 4)) % 4);
+  const keyBytes = Uint8Array.from(atob(secretB64), (c) => c.charCodeAt(0));
   const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-512' }, false, ['sign']);
-  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(path + sha256hex));
+  const sig = await crypto.subtle.sign('HMAC', key, combined);
   const sigb64 = btoa(String.fromCharCode(...new Uint8Array(sig)));
   const res = await fetch('https://api.kraken.com' + path, {
     method: 'POST',
@@ -75,8 +82,8 @@ function findMatchingDeposit(deposits, order) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const apiKey = Deno.env.get('KRAKEN_API_KEY');
-    const apiSecret = Deno.env.get('KRAKEN_PRIVATE_KEY');
+    const apiKey = (Deno.env.get('KRAKEN_API_KEY') || '').trim();
+    const apiSecret = (Deno.env.get('KRAKEN_PRIVATE_KEY') || '').trim();
     if (!apiKey || !apiSecret) return Response.json({ error: 'Kraken keys not configured' }, { status: 500 });
 
     const pending = await base44.asServiceRole.entities.CryptoOrder.filter({ status: 'pending' });
@@ -84,10 +91,12 @@ Deno.serve(async (req) => {
 
     const assets = [...new Set(pending.map((o) => o.crypto_asset))];
     const depositsByAsset = {};
+    const debugDeposits = {};
     for (const asset of assets) {
       const cfg = ASSET_CONFIG[asset];
       const res = await krakenRequest('/0/private/DepositStatus', { asset: cfg.krakenAsset }, apiKey, apiSecret);
       depositsByAsset[asset] = res.result || [];
+      debugDeposits[asset] = { error: res.error, count: (res.result || []).length, deposits: res.result };
     }
 
     let processed = 0;
@@ -104,7 +113,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    return Response.json({ processed, checked: pending.length });
+    return Response.json({ processed, checked: pending.length, debug_deposits: debugDeposits });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
