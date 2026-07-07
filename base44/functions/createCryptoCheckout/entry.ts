@@ -1,8 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
-const TIER_PRICES = { plus: 480, pro: 960, vip: 3000 };
+const TIER_PRICES = { plus: 29, pro: 49, vip: 299 };
 const ADDON_PRICES = {
-  intimacy: { '15min': 90, '30min': 180, '60min': 360 },
+  intimacy: { '15min': 4, '30min': 8, '60min': 15 },
   topup: { 'pack_5': 5, 'pack_10': 10, 'pack_25': 25, 'pack_50': 50 },
 };
 const ASSET_CONFIG = {

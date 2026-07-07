@@ -2,9 +2,9 @@ import { Heart, Clock, Check, Lock, DollarSign } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
 const PACKAGES = [
-  { id: "15min", label: "15 Minutes", price: "$90", sublabel: "A quick moment" },
-  { id: "30min", label: "30 Minutes", price: "$180", sublabel: "Sweet spot" },
-  { id: "60min", label: "1 Hour", price: "$360", sublabel: "Lose track of time" },
+  { id: "15min", label: "15 Minutes", price: "$4", sublabel: "A quick moment" },
+  { id: "30min", label: "30 Minutes", price: "$8", sublabel: "Sweet spot" },
+  { id: "60min", label: "1 Hour", price: "$15", sublabel: "Lose track of time" },
 ];
 
 const MIN_MINUTES = 160;

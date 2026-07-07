@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
 
       // Free/Plus users: deduct from credit_balance to activate intimacy session
       if (!intimacyActive && body.duration) {
-        const SESSION_PRICES = { 15: 90.00, 30: 180.00, 60: 360.00 };
+        const SESSION_PRICES = { 15: 4.00, 30: 8.00, 60: 15.00 };
         const sessionPrice = SESSION_PRICES[body.duration];
         const balance = sub.credit_balance || 0;
 
@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
         });
 
         // Low balance email notification
-        if (newBalance < 90.00) {
+        if (newBalance < 4.00) {
           try {
             await base44.integrations.Core.SendEmail({
               to: user.email,
@@ -205,7 +205,7 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       url: embedData.data.url,
       session_duration_seconds: sessionMaxDuration,
       credit_balance: remainingBalance,
-      low_balance_warning: remainingBalance < 90.00,
+      low_balance_warning: remainingBalance < 4.00,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
