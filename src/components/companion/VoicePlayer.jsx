@@ -2,13 +2,16 @@ import { useState, useRef } from "react";
 import { Volume2, Loader2, Pause } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
+// Companions using custom ElevenLabs voices (via generateVoice backend function)
+const ELEVENLABS_VOICES = ["zac"];
+
+// Built-in preset voices for everyone else
 const VOICE_MAP = {
   jess: "honey",
   mia: "sunny",
   luna: "river",
   sophie: "spark",
   natalie: "honey",
-  zac: "river",
 };
 
 export default function VoicePlayer({ text, companionId }) {
@@ -32,11 +35,20 @@ export default function VoicePlayer({ text, companionId }) {
 
     setLoading(true);
     try {
-      const result = await base44.integrations.Core.GenerateSpeech({
-        text: text.slice(0, 5000),
-        voice: VOICE_MAP[companionId] || "honey",
-      });
-      const url = result?.url;
+      let url;
+      if (ELEVENLABS_VOICES.includes(companionId)) {
+        const res = await base44.functions.invoke("generateVoice", {
+          text: text.slice(0, 5000),
+          companion_id: companionId,
+        });
+        url = res.data?.url;
+      } else {
+        const result = await base44.integrations.Core.GenerateSpeech({
+          text: text.slice(0, 5000),
+          voice: VOICE_MAP[companionId] || "honey",
+        });
+        url = result?.url;
+      }
       if (!url) return;
       setAudioUrl(url);
       const audio = new Audio(url);
