@@ -133,10 +133,15 @@ GLIMR is built on **3 pillars:**
 - Unlimited rebuys
 
 ### Custom avatar cost (why it's excluded from packages):
-- Custom avatar creation = **$19.90 + $46 = ~$65 minimum cost** to GLIMR
-- Too expensive to include in any subscription package
+- LiveAvatar charges **$49/month** for a Custom Avatar slot (separate add-on, confirmed from LiveAvatar's Manage Add-on page)
+- This is completely separate from LiveAvatar's credit packages (Starter $19/150 credits, $99/1k credits) which only govern how long you can use the avatar per session
+- LiveAvatar's pricing page does NOT clearly mention this separation — it's buried in add-ons
+- This $49/month ongoing cost is why custom avatars cannot be included in any GLIMR subscription package
 - Instead, packages include: face-to-face video, text chat, voice messages, photos, games + memory/diary/surprise messages
 - Custom avatar purchase = triggers VIP Lounge invitation
+- **Cost structure (LiveAvatar side):**
+  - Custom Avatar slot: $49/month (LiveAvatar add-on)
+  - Credits for usage: from Starter $19/month (150 credits)
 
 ### Technical implementation:
 - `anamSession` function passes `max_session_duration` (in seconds) to Anam API
@@ -319,7 +324,7 @@ GLIMR is built on **3 pillars:**
 ## 10. VIP FEATURES & HARDWARE
 
 ### VIP Lounge access = Custom Avatar ownership:
-- User must **purchase a custom avatar** ($65 cost to GLIMR)
+- User must **purchase a custom avatar** ($49/month LiveAvatar cost to GLIMR)
 - Once they have a custom avatar, they're invited to the VIP membership room
 - VIP Lounge contains: intimacy packages (10/30/60 min), outfit swapping, twin/clone, companion's diary
 - All intimacy purchases happen INSIDE the VIP Lounge
@@ -467,7 +472,7 @@ GLIMR is built on **3 pillars:**
    - Pricing page rewrite
    - Crypto checkout updated
 
-3. **Custom avatar as separate purchase** — $65 cost ($19.90+$46), NOT included in any package. Triggers VIP Lounge access. Needs its own checkout flow.
+3. **Custom avatar as separate purchase** — $49/month LiveAvatar Custom Avatar add-on, NOT included in any package. Triggers VIP Lounge access. Needs its own checkout flow. (Credit packages for usage are a separate LiveAvatar cost.)
 
 4. **5th package feature** — User couldn't remember; likely Companion's Diary, memory system, or surprise messages. Need to confirm which.
 
@@ -497,7 +502,7 @@ GLIMR is built on **3 pillars:**
 9. ✅ 5-stage intimacy training progression with email notifications
 10. ✅ Intimacy pricing = $4/$8/$15 for 10/30/60 min (100% margin on Anam $0.12/min)
 21. ✅ Intimacy = 10/30/60 min slots (not 15/30/60)
-22. ✅ Custom avatar costs $65 ($19.90+$46) — excluded from all packages
+22. ✅ Custom avatar costs $49/month (LiveAvatar Custom Avatar add-on) — excluded from all packages; credit packages (Starter $19/150cr etc.) are separate and only govern session duration
 23. ✅ Custom avatar purchase = VIP Lounge invitation trigger
 24. ✅ VIP Lounge access = custom avatar ownership (not tier-based)
 11. ✅ Auto-stop at time limit + 30-sec pre-warning
