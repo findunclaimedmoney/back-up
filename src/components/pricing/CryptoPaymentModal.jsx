@@ -13,6 +13,7 @@ const TOPUP_OPTIONS = [
   { id: "pack_10", label: "$10 credit", price: 10 },
   { id: "pack_25", label: "$25 credit", price: 25 },
   { id: "pack_50", label: "$50 credit", price: 50 },
+  { id: "custom", label: "Custom amount", price: null },
 ];
 
 const INTIMACY_OPTIONS = [
@@ -32,6 +33,7 @@ export default function CryptoPaymentModal({ tiers, onClose, onPurchased }) {
   const [copied, setCopied] = useState(false);
   const [payStatus, setPayStatus] = useState(null);
   const [checking, setChecking] = useState(false);
+  const [customAmount, setCustomAmount] = useState("");
   const pollRef = useRef(null);
 
   useEffect(() => () => { if (pollRef.current) clearTimeout(pollRef.current); }, []);
@@ -46,11 +48,16 @@ export default function CryptoPaymentModal({ tiers, onClose, onPurchased }) {
     setCreating(true);
     setError(null);
     try {
-      const res = await base44.functions.invoke("createCryptoCheckout", {
+      const payload = {
         type: tab,
         reference: selected.id,
         asset: chosenAsset,
-      });
+      };
+      if (selected.id === "custom" && customAmount) {
+        payload.custom_amount = parseFloat(customAmount);
+        payload.reference = "custom";
+      }
+      const res = await base44.functions.invoke("createCryptoCheckout", payload);
       if (res.data?.error) {
         setError(res.data.message || res.data.error);
         setCreating(false);
@@ -105,6 +112,7 @@ export default function CryptoPaymentModal({ tiers, onClose, onPurchased }) {
     setPayment(null);
     setPayStatus(null);
     setError(null);
+    setCustomAmount("");
     if (pollRef.current) clearTimeout(pollRef.current);
   };
 
@@ -157,10 +165,27 @@ export default function CryptoPaymentModal({ tiers, onClose, onPurchased }) {
                   className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${selected?.id === item.id ? "border-primary bg-primary/5" : "border-border hover:border-foreground/20"}`}
                 >
                   <span className="font-medium text-sm">{item.label}</span>
-                  <span className="text-sm text-muted-foreground">${item.price}</span>
+                  <span className="text-sm text-muted-foreground">{item.price !== null ? `$${item.price}` : ""}</span>
                 </button>
               ))}
             </div>
+
+            {selected?.id === "custom" && (
+              <div className="mb-6">
+                <p className="text-xs text-muted-foreground mb-3">Enter amount (min $5):</p>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+                  <input
+                    type="number"
+                    min="5"
+                    value={customAmount}
+                    onChange={(e) => setCustomAmount(e.target.value)}
+                    placeholder="1000"
+                    className="w-full pl-8 pr-4 py-3 rounded-2xl bg-muted/40 border border-border text-sm focus:outline-none focus:border-primary"
+                  />
+                </div>
+              </div>
+            )}
 
             {error && (
               <div className="flex items-start gap-2 p-3 rounded-xl bg-destructive/10 border border-destructive/20 mb-4">
@@ -169,7 +194,7 @@ export default function CryptoPaymentModal({ tiers, onClose, onPurchased }) {
               </div>
             )}
 
-            {selected && (
+            {selected && !(selected.id === "custom" && !customAmount) && (
               <>
                 <p className="text-xs text-muted-foreground mb-3">Choose your asset:</p>
                 <div className="grid grid-cols-3 gap-2">

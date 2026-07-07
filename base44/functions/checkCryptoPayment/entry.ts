@@ -55,7 +55,7 @@ async function applyBenefit(base44, order) {
     if (subs.length) await base44.asServiceRole.entities.Subscription.update(subs[0].id, payload);
     else await base44.asServiceRole.entities.Subscription.create(payload);
   } else {
-    const credit = ADDON_PRICES[order.order_type]?.[order.reference] || 0;
+    const credit = order.order_type === 'topup' ? order.usd_amount : (ADDON_PRICES[order.order_type]?.[order.reference] || 0);
     if (subs.length) {
       await base44.asServiceRole.entities.Subscription.update(subs[0].id, {
         credit_balance: (subs[0].credit_balance || 0) + credit,

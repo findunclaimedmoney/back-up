@@ -52,12 +52,13 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { type, reference, asset } = await req.json();
+    const { type, reference, asset, custom_amount } = await req.json();
     if (!ASSET_CONFIG[asset]) return Response.json({ error: 'Unsupported asset' }, { status: 400 });
 
     let usdAmount;
     if (type === 'tier') usdAmount = TIER_PRICES[reference];
-    else if (type === 'topup' || type === 'intimacy') usdAmount = ADDON_PRICES[type]?.[reference];
+    else if (type === 'topup') usdAmount = custom_amount || ADDON_PRICES.topup?.[reference];
+    else if (type === 'intimacy') usdAmount = ADDON_PRICES.intimacy?.[reference];
 
     if (!usdAmount) return Response.json({ error: 'Invalid purchase' }, { status: 400 });
 
@@ -84,12 +85,32 @@ Deno.serve(async (req) => {
     }
 
     const krakenAsset = ASSET_CONFIG[asset].krakenAsset;
-    const addrParams = { asset: krakenAsset, method: ASSET_CONFIG[asset].method };
 
-    const addrRes = await krakenRequest('/0/private/DepositAddresses', addrParams, apiKey, apiSecret);
+    // Fetch available deposit methods to find the correct one for this asset
+    const methodsRes = await krakenRequest('/0/private/DepositMethods', { asset: krakenAsset }, apiKey, apiSecret);
+    const methods = methodsRes.result || [];
+    // Pick the right method: Bitcoin for BTC, Ethereum (native) for ETH, Ethereum network for USDC
+    let method = ASSET_CONFIG[asset].method;
+    if (methods.length > 0) {
+      if (asset === 'BTC') {
+        method = (methods.find((m) => m.method.toLowerCase().includes('bitcoin')) || methods[0]).method;
+      } else if (asset === 'ETH') {
+        method = (methods.find((m) => m.method === 'Ethereum' || m.method === 'Ethereum (Unified)') || methods[0]).method;
+      } else if (asset === 'USDC') {
+        method = (methods.find((m) => m.method.includes('Ethereum')) || methods[0]).method;
+      }
+    }
+
+    const addrParams = { asset: krakenAsset, method };
+
+    let addrRes = await krakenRequest('/0/private/DepositAddresses', addrParams, apiKey, apiSecret);
+    // If no existing addresses, try forcing new address generation
+    if ((!addrRes.result || addrRes.result.length === 0) && !addrRes.error?.length) {
+      addrRes = await krakenRequest('/0/private/DepositAddresses', { ...addrParams, new: 'true' }, apiKey, apiSecret);
+    }
     if (addrRes.error && (!addrRes.result || addrRes.result.length === 0)) {
       const errMsg = Array.isArray(addrRes.error) ? addrRes.error.join('; ') : (typeof addrRes.error === 'string' ? addrRes.error : 'Kraken error');
-      return Response.json({ error: errMsg, debug_addr_params: addrParams }, { status: 502 });
+      return Response.json({ error: errMsg || 'No deposit address available' }, { status: 502 });
     }
     const addresses = addrRes.result || [];
     let address = null;
