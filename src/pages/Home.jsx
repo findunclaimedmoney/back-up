@@ -36,7 +36,7 @@ export default function Home() {
       {/* Header */}
       <header className="px-6 py-5 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <Sparkles className="w-7 h-7 text-primary" />
+          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/6f8efe5a8_generated_image.png" alt="GLIMR" className="h-9 w-9 rounded-lg" />
           <span className="font-heading text-3xl font-semibold tracking-tight text-primary">GLIMR</span>
         </Link>
         <nav className="flex items-center gap-1">
@@ -232,7 +232,7 @@ export default function Home() {
       <footer className="border-t border-border px-6 py-10">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2">
-            <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-7 w-auto rounded-md" />
+            <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/6f8efe5a8_generated_image.png" alt="GLIMR" className="h-7 w-auto rounded-md" />
           </Link>
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <a href="mailto:hello@glimr.com.au" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
