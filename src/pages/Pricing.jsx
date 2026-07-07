@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Sparkles, ArrowLeft, CheckCircle, Settings } from "lucide-react";
+import { Sparkles, ArrowLeft, CheckCircle, Settings, Bitcoin } from "lucide-react";
 import { Link } from "react-router-dom";
 import TierCard from "@/components/pricing/TierCard";
 import IntimacyAddOnCard from "@/components/pricing/IntimacyAddOnCard";
 import TopUpCard from "@/components/pricing/TopUpCard";
+import CryptoPaymentModal from "@/components/pricing/CryptoPaymentModal";
 
 const TIERS = [
   {
@@ -80,6 +81,7 @@ export default function Pricing() {
   const [addonLoading, setAddonLoading] = useState(null);
   const [topupLoading, setTopupLoading] = useState(null);
   const [billingLoading, setBillingLoading] = useState(false);
+  const [cryptoOpen, setCryptoOpen] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -245,6 +247,13 @@ export default function Pricing() {
             <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto leading-relaxed">
               From casual conversation to the deepest connection you've ever felt.
             </p>
+            <button
+              onClick={() => setCryptoOpen(true)}
+              className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+            >
+              <Bitcoin className="w-4 h-4" />
+              Pay with crypto
+            </button>
             {currentTier !== "free" && (
               <button
                 onClick={handleManageBilling}
@@ -293,6 +302,14 @@ export default function Pricing() {
             </div>
           </section>
         </>
+      )}
+
+      {cryptoOpen && (
+        <CryptoPaymentModal
+          tiers={TIERS}
+          onClose={() => setCryptoOpen(false)}
+          onPurchased={loadSubscription}
+        />
       )}
     </div>
   );
