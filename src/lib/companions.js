@@ -2,6 +2,7 @@ import { MIA_EMOTIONAL_SYSTEM_PROMPT } from "@/lib/miaEmotions";
 import { ZAC_SYSTEM_PROMPT } from "@/lib/zacBrain";
 import { SOFIA_SYSTEM_PROMPT } from "@/lib/sofiaBrain";
 import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
+import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
 
 export const COMPANIONS = [
   {
@@ -54,6 +55,19 @@ export const COMPANIONS = [
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/ba7d734da_ElegantHallwayPose.png",
     accent: "from-amber-500/20 to-orange-500/10",
     personality: SOFIA_SYSTEM_PROMPT,
+    avatar_id: null,
+  },
+  {
+    id: "natalie",
+    name: "Natalie",
+    tagline: "She nurtures",
+    subtitle: "Warm, cozy, and completely safe to be around",
+    description:
+      "Natalie is the comfort at the end of a long day. She creates space, holds the quiet, and makes you feel completely at ease — no performance, no pressure, just presence.",
+    image:
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/7d94f0b1f_generated_image.png",
+    accent: "from-emerald-500/20 to-teal-500/10",
+    personality: NATALIE_SYSTEM_PROMPT,
     avatar_id: null,
   },
   {
