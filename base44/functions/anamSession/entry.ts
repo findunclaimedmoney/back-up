@@ -81,6 +81,7 @@ Deno.serve(async (req) => {
       await base44.entities.Subscription.update(sub.id, {
         credit_balance: newBalance,
         video_minutes_used: used + body.duration,
+        intimacy_sessions_completed: (sub.intimacy_sessions_completed || 0) + 1,
       });
 
       // Create SessionLog for admin cost tracking

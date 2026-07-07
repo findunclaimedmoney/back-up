@@ -38,7 +38,7 @@ const TIERS = [
   {
     id: "pro",
     name: "Pro",
-    price: 49,
+    price: 89,
     description: "Deep connection & romance",
     ctaLabel: "Upgrade to Pro",
     highlighted: true,
@@ -78,6 +78,7 @@ export default function Pricing() {
   const [intimacyPackage, setIntimacyPackage] = useState(false);
   const [creditBalance, setCreditBalance] = useState(0);
   const [minutesUsed, setMinutesUsed] = useState(0);
+  const [sessionsCompleted, setSessionsCompleted] = useState(0);
   const [addonLoading, setAddonLoading] = useState(null);
   const [topupLoading, setTopupLoading] = useState(null);
   const [billingLoading, setBillingLoading] = useState(false);
@@ -102,6 +103,7 @@ export default function Pricing() {
       setIntimacyPackage(res.data?.intimacy_package || false);
       setCreditBalance(res.data?.credit_balance || 0);
       setMinutesUsed(res.data?.video_minutes_used || 0);
+      setSessionsCompleted(res.data?.intimacy_sessions_completed || 0);
     } catch (err) {
       console.error(err);
     }
@@ -278,6 +280,31 @@ export default function Pricing() {
               ))}
             </div>
           </section>
+
+          {sessionsCompleted >= 2 && currentTier !== "pro" && currentTier !== "vip" && (
+            <section className="px-6 pb-2">
+              <div className="max-w-3xl mx-auto rounded-[2rem] border border-primary/40 bg-gradient-to-br from-primary/15 to-primary/5 p-6 flex flex-col sm:flex-row items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="font-heading text-lg font-semibold mb-1">
+                    You've spent ${sessionsCompleted * 6}+ on sessions
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Pro includes unlimited intimacy for $89/month. Stop paying per session.
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleUpgrade("pro")}
+                  disabled={loading === "pro"}
+                  className="px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm whitespace-nowrap hover:opacity-90 transition-opacity disabled:opacity-50 flex-shrink-0"
+                >
+                  {loading === "pro" ? "Loading…" : "Upgrade to Pro"}
+                </button>
+              </div>
+            </section>
+          )}
 
           <section className="px-6 pb-12">
             <div className="max-w-3xl mx-auto">

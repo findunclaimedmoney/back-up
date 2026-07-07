@@ -23,6 +23,11 @@
       "default": 0,
       "description": "Max video minutes for this tier per month"
     },
+    "intimacy_sessions_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Total completed intimacy sessions"
+    },
     "intimacy_package": {
       "type": "boolean",
       "default": false,
