@@ -153,6 +153,10 @@ export default function Chat() {
   const loadData = useCallback(async () => {
     if (!companion) { if (!(isCustom && customLoading)) setLoading(false); return; }
 
+    // Reset messages when switching companions
+    setMessages([]);
+    setLoading(true);
+
     // Fetch subscription for intimacy layer + daily message limit
     base44.functions.invoke("getSubscription", {}).then((res) => {
       if (res.data?.tier) setSubscription(res.data);
