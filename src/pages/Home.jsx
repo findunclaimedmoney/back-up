@@ -53,6 +53,12 @@ export default function Home() {
             <Gamepad2 className="w-4 h-4" />
             Games
           </Link>
+          <Link to="/companions" className="flex items-center gap-1.5 px-4 py-2 text-sm text-foreground hover:text-primary transition-colors rounded-full hover:bg-muted">
+            Companions
+          </Link>
+          <Link to="/zac" className="flex items-center gap-1.5 px-4 py-2 text-sm text-foreground hover:text-primary transition-colors rounded-full hover:bg-muted">
+            Zac
+          </Link>
           <Link to="/vip-lounge" className="flex items-center gap-1.5 px-4 py-2 text-sm text-primary hover:text-primary/80 transition-colors rounded-full bg-primary/10 border border-primary/20">
             <Crown className="w-4 h-4" />
             VIP Lounge
