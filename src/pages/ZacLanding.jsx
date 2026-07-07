@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ArrowRight, MessageCircle, Mic, Video, Crown, ChevronLeft } from "lucide-react";
 
 const ZAC_VIDEOS = [
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/aa045e66c_Zac_Bedroom_Clip_2.mp4",
   "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/127075288_Zac_Bedroom_Clip_3.mp4",
   "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/307f5321d_Zac_Shower_Clip.mp4",
 ];
