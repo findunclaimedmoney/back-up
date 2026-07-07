@@ -36,7 +36,7 @@ export default function Home() {
       {/* Header */}
       <header className="px-6 py-5 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="w-10 h-10 object-contain" style={{ mixBlendMode: "screen" }} />
+          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d163d0bcf_generated_image.png" alt="GLIMR" className="w-8 h-8 object-contain" style={{ mixBlendMode: "screen" }} />
           <span className="font-heading text-3xl font-semibold tracking-tight text-primary">GLIMR</span>
         </Link>
         <nav className="flex items-center gap-1">
