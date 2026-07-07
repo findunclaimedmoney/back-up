@@ -72,8 +72,7 @@ export default function Manual() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="px-6 py-5 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <span className="font-heading text-lg font-semibold tracking-tight">GLIMR</span>
+          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-8 w-auto rounded-md" />
         </Link>
         <Link
           to="/"

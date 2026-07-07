@@ -107,7 +107,7 @@ export default function Dashboard() {
       <header className="border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Sparkles className="w-5 h-5 text-primary" />
+            <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-8 w-auto rounded-md" />
             <h1 className="font-heading text-xl font-semibold tracking-tight">Dashboard</h1>
           </div>
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

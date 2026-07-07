@@ -120,7 +120,7 @@ export default function CreateCompanion() {
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary" />
+          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-8 w-auto rounded-md" />
           <span className="font-heading text-lg font-semibold tracking-tight">Create Companion</span>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">

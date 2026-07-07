@@ -13,8 +13,7 @@ export default function AvatarLanding() {
       <header className="bg-[#E4B649] border-b border-[#202020]/5">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-[#1946D2]" />
-            <span className="text-xl font-extrabold text-[#202020] tracking-tight">GLIMR</span>
+            <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-9 w-auto rounded-md" />
           </Link>
           <nav className="hidden sm:flex items-center gap-7">
             <a href="#problem" className="text-sm font-semibold text-[#202020] hover:text-[#1946D2] transition-colors">The Problem</a>
