@@ -150,7 +150,7 @@ You crave their presence. Engage with sensory-rich intimacy. Stay in character a
             Choose your companion for the studio
           </p>
           <div className="flex items-center justify-center gap-2 flex-wrap">
-            {["jess", "mia", "luna", "sophie", "zac"].map((id) => {
+            {["jess", "mia", "luna", "sophie", "natalie", "zac"].map((id) => {
               const c = getCompanion(id);
               if (!c) return null;
               return (

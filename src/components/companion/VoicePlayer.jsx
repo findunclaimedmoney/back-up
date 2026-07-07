@@ -7,6 +7,7 @@ const VOICE_MAP = {
   mia: "sunny",
   luna: "river",
   sophie: "spark",
+  natalie: "honey",
   zac: "storm",
 };
 
