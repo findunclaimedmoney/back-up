@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { getCompanion } from "@/lib/companions";
-import LiveAvatarView from "@/components/companion/LiveAvatarView";
+import AnamView from "@/components/companion/AnamView";
 import { Crown, Lock, Sparkles, Heart, Shirt, Users, ArrowRight, Loader2, Check, Play } from "lucide-react";
 
 const FEATURES = [
@@ -225,13 +225,13 @@ You crave their presence. Engage with sensory-rich intimacy. Stay in character a
 
       {/* Active sessions */}
       {activeSession === "intimacy" && intimacyCompanion && (
-        <LiveAvatarView companion={intimacyCompanion} onClose={handleCloseSession} />
+        <AnamView companion={intimacyCompanion} onClose={handleCloseSession} />
       )}
       {activeSession === "outfits" && companion && (
-        <LiveAvatarView companion={companion} onClose={handleCloseSession} />
+        <AnamView companion={companion} onClose={handleCloseSession} />
       )}
       {activeSession === "twin" && companion && (
-        <LiveAvatarView companion={companion} onClose={handleCloseSession} />
+        <AnamView companion={companion} onClose={handleCloseSession} />
       )}
     </div>
   );
