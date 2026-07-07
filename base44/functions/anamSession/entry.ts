@@ -3,6 +3,11 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 const ANAM_API = 'https://api.anam.ai/v1';
 const ANAM_COST_PER_MIN = 0.12;
 
+// Map companion names to Anam voice IDs (so the video avatar uses the correct gender voice)
+const ANAM_VOICE_MAP = {
+  zac: '91b4ce0f-4fc0-11f1-84b0-52bacf74fa75', // Male CARTESIA voice
+};
+
 // Intimacy session pricing: 15/30/60 min at $6/$11/$20
 const SESSION_PRICES = { 15: 6.00, 30: 11.00, 60: 20.00 };
 
@@ -186,6 +191,11 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       } catch (e) {
         // LLM may be optional with Anam default
       }
+    }
+
+    // Use companion voice map if no voice was resolved from personas
+    if (!voiceId && ANAM_VOICE_MAP[companion_name.toLowerCase()]) {
+      voiceId = ANAM_VOICE_MAP[companion_name.toLowerCase()];
     }
 
     // 2. Create session token
