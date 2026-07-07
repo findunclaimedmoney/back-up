@@ -17,16 +17,12 @@ const FEATURES = [
 export default function Home() {
   const { greetings, loading } = useGreetings();
   const [customCompanions, setCustomCompanions] = React.useState([]);
-  const [isVip, setIsVip] = React.useState(false);
 
   React.useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => {
       if (!authed) return;
       base44.entities.CustomCompanion.list("-created_date", 50)
         .then(setCustomCompanions)
-        .catch(() => {});
-      base44.functions.invoke("getSubscription", {})
-        .then((res) => setIsVip(res.data?.tier === "vip"))
         .catch(() => {});
     });
   }, []);
@@ -57,12 +53,10 @@ export default function Home() {
             <Gamepad2 className="w-4 h-4" />
             Games
           </Link>
-          {isVip && (
-            <Link to="/vip-lounge" className="flex items-center gap-1.5 px-4 py-2 text-sm text-primary hover:text-primary/80 transition-colors rounded-full bg-primary/10 border border-primary/20">
-              <Crown className="w-4 h-4" />
-              VIP Lounge
-            </Link>
-          )}
+          <Link to="/vip-lounge" className="flex items-center gap-1.5 px-4 py-2 text-sm text-primary hover:text-primary/80 transition-colors rounded-full bg-primary/10 border border-primary/20">
+            <Crown className="w-4 h-4" />
+            VIP Lounge
+          </Link>
         </nav>
         </header>
 
