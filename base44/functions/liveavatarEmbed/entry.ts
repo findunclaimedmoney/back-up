@@ -23,6 +23,7 @@ Deno.serve(async (req) => {
     const sub = subs[0];
 
     let effectivePersonality = personality;
+    let sessionMaxDuration = null;
 
     if (sub) {
       const used = sub.video_minutes_used || 0;
@@ -39,7 +40,6 @@ Deno.serve(async (req) => {
 
       // Inject Intimacy Layer if included in tier
       let intimacyActive = sub.intimacy_package || false;
-      let sessionMaxDuration = null;
 
       // Free/Plus users: deduct from credit_balance to activate intimacy session
       if (!intimacyActive && body.duration) {
