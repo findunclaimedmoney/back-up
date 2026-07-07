@@ -1,15 +1,11 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
-const DAILY_MESSAGE_LIMITS = {
-  free: 20,
+const MONTHLY_MESSAGE_LIMITS = {
+  free: 10,
   plus: 0,
   pro: 0,
   vip: 0,
 };
-
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 Deno.serve(async (req) => {
   try {
@@ -28,9 +24,9 @@ Deno.serve(async (req) => {
         credit_balance: 0,
         twin_enabled: false,
         remaining: 0,
-        daily_messages_used: 0,
-        daily_messages_limit: DAILY_MESSAGE_LIMITS.free,
-        daily_messages_remaining: DAILY_MESSAGE_LIMITS.free,
+        messages_used: 0,
+        messages_limit: MONTHLY_MESSAGE_LIMITS.free,
+        messages_remaining: MONTHLY_MESSAGE_LIMITS.free,
       });
     }
 
@@ -39,18 +35,8 @@ Deno.serve(async (req) => {
     const limit = sub.video_minutes_limit || 0;
     const tier = sub.tier || 'free';
 
-    // Reset daily message counter if it's a new day
-    const today = todayStr();
-    let dailyUsed = sub.daily_messages_used || 0;
-    if (sub.daily_message_date !== today) {
-      dailyUsed = 0;
-      await base44.entities.Subscription.update(sub.id, {
-        daily_messages_used: 0,
-        daily_message_date: today,
-      });
-    }
-
-    const dailyLimit = DAILY_MESSAGE_LIMITS[tier] ?? 0;
+    const monthlyUsed = sub.daily_messages_used || 0;
+    const monthlyLimit = MONTHLY_MESSAGE_LIMITS[tier] ?? 0;
 
     return Response.json({
       tier,
@@ -60,9 +46,9 @@ Deno.serve(async (req) => {
       credit_balance: sub.credit_balance || 0,
       twin_enabled: sub.twin_enabled || false,
       remaining: Math.max(0, limit - used),
-      daily_messages_used: dailyUsed,
-      daily_messages_limit: dailyLimit,
-      daily_messages_remaining: dailyLimit > 0 ? Math.max(0, dailyLimit - dailyUsed) : -1,
+      messages_used: monthlyUsed,
+      messages_limit: monthlyLimit,
+      messages_remaining: monthlyLimit > 0 ? Math.max(0, monthlyLimit - monthlyUsed) : -1,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

@@ -59,12 +59,12 @@
     "daily_messages_used": {
       "type": "number",
       "default": 0,
-      "description": "Messages sent today (resets daily)"
+      "description": "Messages sent this billing period (resets monthly)"
     },
     "daily_message_date": {
       "type": "string",
       "format": "date",
-      "description": "The date the daily message counter was last reset"
+      "description": "Legacy field, no longer used for monthly counter"
     }
   },
   "required": [],
