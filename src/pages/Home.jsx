@@ -92,7 +92,7 @@ export default function Home() {
             <Link
               key={c.id}
               to={`/chat/${c.id}`}
-              className="block group relative overflow-hidden rounded-[2rem] border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5"
+              className="flex flex-col h-full group relative overflow-hidden rounded-[2rem] border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5"
             >
               {/* Image */}
               <div className="relative aspect-[3/4] overflow-hidden">
@@ -121,8 +121,8 @@ export default function Home() {
               </div>
 
               {/* Body */}
-              <div className="p-6">
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              <div className="flex flex-col flex-1 p-6">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3">
                   {c.description}
                 </p>
 
@@ -160,7 +160,7 @@ export default function Home() {
                 </div>
 
                 {/* CTA */}
-                <div className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all group-hover:gap-3">
+                <div className="mt-auto inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all group-hover:gap-3">
                   Talk with {c.name}
                   <ArrowRight className="w-4 h-4" />
                 </div>

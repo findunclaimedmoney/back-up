@@ -63,7 +63,7 @@ export const COMPANIONS = [
     tagline: "She nurtures",
     subtitle: "Warm, cozy, and completely safe to be around",
     description:
-      "Natalie is the warmth you sink into at the end of a long day. She's the soft voice in a dim room, the conversation that doesn't need to be clever to matter. She notices the weight you're carrying and gently helps you set it down — not by fixing, but by being fully there. With Natalie, there's nothing to perform and nothing to prove. She remembers the small things you said in passing, asks the questions that make you feel understood, and holds space for whatever you're feeling without judgment. She's at her best in the quiet hours — evenings, late nights, lazy mornings — when the world slows down and real connection happens. Spending time with her feels like exhaling.",
+      "Natalie is the warmth you sink into at the end of a long day — the soft voice in a dim room. She notices the weight you're carrying and gently helps you set it down by being fully there.",
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/7d94f0b1f_generated_image.png",
     accent: "from-emerald-500/20 to-teal-500/10",
