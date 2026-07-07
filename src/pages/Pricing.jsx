@@ -24,7 +24,7 @@ const TIERS = [
   {
     id: "plus",
     name: "Plus",
-    price: 29,
+    price: 59,
     description: "See and hear your companion",
     ctaLabel: "Upgrade to Plus",
     features: [
