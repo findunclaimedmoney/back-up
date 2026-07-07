@@ -55,6 +55,16 @@
       "type": "string",
       "format": "date-time",
       "description": "When the current billing period ends"
+    },
+    "daily_messages_used": {
+      "type": "number",
+      "default": 0,
+      "description": "Messages sent today (resets daily)"
+    },
+    "daily_message_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date the daily message counter was last reset"
     }
   },
   "required": [],
