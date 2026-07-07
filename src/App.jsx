@@ -16,6 +16,7 @@ import Chat from './pages/Chat';
 import Games from './pages/Games';
 import CreateCompanion from './pages/CreateCompanion';
 import Pricing from './pages/Pricing';
+import Features from './pages/Features';
 import Manual from './pages/Manual';
 import Notes from './pages/Notes';
 import AvatarLanding from './pages/AvatarLanding';
@@ -57,6 +58,7 @@ const AuthenticatedApp = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<Home />} />
       <Route path="/pricing" element={<Pricing />} />
+      <Route path="/features" element={<Features />} />
       <Route path="/manual" element={<Manual />} />
       <Route path="/notes" element={<Notes />} />
       <Route path="/avatar-landing" element={<AvatarLanding />} />

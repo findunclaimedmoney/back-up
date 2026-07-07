@@ -19,6 +19,11 @@ const ADDON_CONFIG = {
     'pack_25': { price: 2500, name: 'GLIMR Credit — $25', description: '$25 added to your credit balance', credit: 25 },
     'pack_50': { price: 5000, name: 'GLIMR Credit — $50', description: '$50 added to your credit balance', credit: 50 },
   },
+  feature_session: {
+    '15min': { price: 299, name: 'Feature Session — 15 Minutes', description: 'Voice replies, selfie photos, and proactive check-ins', minutes: 15 },
+    '30min': { price: 499, name: 'Feature Session — 30 Minutes', description: 'Voice replies, selfie photos, and proactive check-ins', minutes: 30 },
+    '60min': { price: 899, name: 'Feature Session — 60 Minutes', description: 'Voice replies, selfie photos, and proactive check-ins', minutes: 60 },
+  },
 };
 
 Deno.serve(async (req) => {
