@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Sparkles, ArrowLeft, CheckCircle } from "lucide-react";
+import { Sparkles, ArrowLeft, CheckCircle, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import TierCard from "@/components/pricing/TierCard";
 import IntimacyAddOnCard from "@/components/pricing/IntimacyAddOnCard";
@@ -79,6 +79,7 @@ export default function Pricing() {
   const [minutesUsed, setMinutesUsed] = useState(0);
   const [addonLoading, setAddonLoading] = useState(null);
   const [topupLoading, setTopupLoading] = useState(null);
+  const [billingLoading, setBillingLoading] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -166,6 +167,19 @@ export default function Pricing() {
     }
   };
 
+  const handleManageBilling = async () => {
+    setBillingLoading(true);
+    try {
+      const res = await base44.functions.invoke("manageBilling", {});
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err) {
+      console.error(err);
+      setBillingLoading(false);
+    }
+  };
+
   const handleUpgrade = async (tierId) => {
     if (tierId === "free") {
       window.location.href = "/login";
@@ -231,6 +245,16 @@ export default function Pricing() {
             <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto leading-relaxed">
               From casual conversation to the deepest connection you've ever felt.
             </p>
+            {currentTier !== "free" && (
+              <button
+                onClick={handleManageBilling}
+                disabled={billingLoading}
+                className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors disabled:opacity-50"
+              >
+                <Settings className="w-4 h-4" />
+                {billingLoading ? "Loading…" : "Manage or cancel subscription"}
+              </button>
+            )}
           </section>
 
           <section className="px-6 pb-24">
