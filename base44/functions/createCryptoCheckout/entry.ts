@@ -81,7 +81,11 @@ Deno.serve(async (req) => {
 
     // Some assets (e.g. USDC) have multiple deposit networks — fetch the method list and pick one.
     const methodsRes = await krakenRequest('/0/private/DepositMethods', { asset: krakenAsset }, apiKey, apiSecret);
-    const methods = methodsRes.result || [];
+    if (methodsRes.error || !methodsRes.result || methodsRes.result.length === 0) {
+      const errMsg = methodsRes.error ? (Array.isArray(methodsRes.error) ? methodsRes.error.join('; ') : methodsRes.error) : 'No methods returned';
+      return Response.json({ error: `DepositMethods for ${krakenAsset}: ${errMsg}`, debug: methodsRes }, { status: 502 });
+    }
+    const methods = methodsRes.result;
     if (methods.length > 0 && methods[0].method) {
       addrParams.method = methods[0].method;
     }
@@ -89,7 +93,7 @@ Deno.serve(async (req) => {
     const addrRes = await krakenRequest('/0/private/DepositAddresses', addrParams, apiKey, apiSecret);
     if (addrRes.error && (!addrRes.result || addrRes.result.length === 0)) {
       const errMsg = Array.isArray(addrRes.error) ? addrRes.error.join('; ') : (typeof addrRes.error === 'string' ? addrRes.error : 'Kraken error');
-      return Response.json({ error: errMsg }, { status: 502 });
+      return Response.json({ error: `DepositAddresses: ${errMsg}`, debug_methods: methods, debug_addr_params: addrParams }, { status: 502 });
     }
     const addresses = addrRes.result || [];
     let address = null;
