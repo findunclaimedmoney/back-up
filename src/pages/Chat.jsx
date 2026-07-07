@@ -147,18 +147,18 @@ export default function Chat() {
   const [thinking, setThinking] = useState(false);
   const [videoMode, setVideoMode] = useState(false);
   const bottomRef = useRef(null);
-  const [msgRemaining, setMsgRemaining] = useState(null);
-  const [msgLimit, setMsgLimit] = useState(null);
+  const [dailyRemaining, setDailyRemaining] = useState(null);
+  const [dailyLimit, setDailyLimit] = useState(null);
 
   const loadData = useCallback(async () => {
     if (!companion) { if (!(isCustom && customLoading)) setLoading(false); return; }
 
-    // Fetch subscription for intimacy layer + monthly message limit
+    // Fetch subscription for intimacy layer + daily message limit
     base44.functions.invoke("getSubscription", {}).then((res) => {
       if (res.data?.tier) setSubscription(res.data);
-      if (res.data?.monthly_messages_remaining !== undefined) {
-        setMsgRemaining(res.data.monthly_messages_remaining);
-        setMsgLimit(res.data.monthly_messages_limit);
+      if (res.data?.messages_remaining !== undefined) {
+        setDailyRemaining(res.data.messages_remaining);
+        setDailyLimit(res.data.messages_limit);
       }
     }).catch(() => {});
 
@@ -268,8 +268,8 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
   };
 
   const handleSend = async (text, photoFile) => {
-    // Free tier monthly message limit
-    if (msgLimit > 0 && msgRemaining !== null && msgRemaining <= 0) return;
+    // Free tier daily message limit
+    if (dailyLimit > 0 && dailyRemaining !== null && dailyRemaining <= 0) return;
 
     let imageUrl = null;
     let fileUrls = [];
@@ -292,10 +292,10 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
     try {
       await base44.entities.Message.create(userMsg);
 
-      // Increment monthly message counter
+      // Increment message counter
       base44.functions.invoke("trackMessageUsage", {}).then((res) => {
-        if (res.data?.monthly_messages_remaining !== undefined) {
-          setMsgRemaining(res.data.monthly_messages_remaining);
+        if (res.data?.messages_remaining !== undefined) {
+          setDailyRemaining(res.data.messages_remaining);
         }
       }).catch(() => {});
 
@@ -440,9 +440,9 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
                 {memories.length} {memories.length === 1 ? "memory" : "memories"}
               </span>
             )}
-            {msgLimit > 0 && msgRemaining !== null && msgRemaining > 0 && (
-              <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-muted" title={`${msgRemaining} messages left this month`}>
-                {msgRemaining} left
+            {dailyLimit > 0 && dailyRemaining !== null && dailyRemaining > 0 && (
+              <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-muted" title={`${dailyRemaining} messages left this month`}>
+                {dailyRemaining} left
               </span>
             )}
             {hasMessages && (
@@ -519,15 +519,15 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
       </div>
 
       {/* Input */}
-      {msgLimit > 0 && msgRemaining !== null && msgRemaining <= 0 ? (
+      {dailyLimit > 0 && dailyRemaining !== null && dailyRemaining <= 0 ? (
         <div className="flex-shrink-0 border-t border-border bg-card px-4 py-6">
           <div className="max-w-2xl mx-auto flex flex-col items-center text-center gap-3">
             <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center">
               <Lock className="w-5 h-5 text-primary" />
             </div>
-            <p className="font-heading text-base font-semibold">That's all 10 messages for this month</p>
+            <p className="font-heading text-base font-semibold">That's all 10 free messages for this month</p>
             <p className="text-sm text-muted-foreground max-w-xs">
-              You've used your free monthly messages. Upgrade for unlimited chat with your companion.
+              You've used your free monthly messages. Upgrade for unlimited chat.
             </p>
             <Link
               to="/pricing"
