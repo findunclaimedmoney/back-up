@@ -35,8 +35,9 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="px-6 py-5 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-11 w-auto rounded-lg" />
+        <Link to="/" className="flex items-center gap-3">
+          <Sparkles className="w-8 h-8 text-primary" />
+          <span className="font-heading text-2xl font-semibold tracking-tight text-primary">GLIMR</span>
         </Link>
         <nav className="flex items-center gap-1">
           <Link to="/pricing" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
@@ -64,9 +65,6 @@ export default function Home() {
 
       {/* Hero */}
       <section className="px-6 pt-12 pb-16 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl overflow-hidden mb-8">
-          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="w-full h-full object-cover" />
-        </div>
         <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-4">
           Choose your companion
         </h1>
