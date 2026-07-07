@@ -1,8 +1,10 @@
-import { MIA_EMOTIONAL_SYSTEM_PROMPT } from "@/lib/miaEmotions";
+import { MIA_EMOTIONAL_SYSTEM_PROMPT, MIA_EMOTION_STATES_PROMPT } from "@/lib/miaEmotions";
 import { ZAC_SYSTEM_PROMPT } from "@/lib/zacBrain";
 import { SOFIA_SYSTEM_PROMPT } from "@/lib/sofiaBrain";
 import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
 import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
+
+const withEmotions = (prompt) => `${prompt}\n\n${MIA_EMOTION_STATES_PROMPT}`;
 
 export const COMPANIONS = [
   {
@@ -15,7 +17,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png",
     accent: "from-amber-500/20 to-rose-500/10",
-    personality: MIA_EMOTIONAL_SYSTEM_PROMPT,
+    personality: withEmotions(MIA_EMOTIONAL_SYSTEM_PROMPT),
     avatar_id: null,
   },
   {
@@ -28,7 +30,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png",
     accent: "from-emerald-500/20 to-green-500/10",
-    personality: SOFIA_SYSTEM_PROMPT,
+    personality: withEmotions(SOFIA_SYSTEM_PROMPT),
     avatar_id: null,
   },
   {
@@ -41,7 +43,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/1a1420690_image-1782886782778.png",
     accent: "from-teal-500/20 to-blue-500/10",
-    personality: LUNA_SYSTEM_PROMPT,
+    personality: withEmotions(LUNA_SYSTEM_PROMPT),
     avatar_id: null,
   },
   {
@@ -54,7 +56,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/ba7d734da_ElegantHallwayPose.png",
     accent: "from-amber-500/20 to-orange-500/10",
-    personality: SOFIA_SYSTEM_PROMPT,
+    personality: withEmotions(SOFIA_SYSTEM_PROMPT),
     avatar_id: null,
   },
   {
@@ -67,7 +69,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/7d94f0b1f_generated_image.png",
     accent: "from-emerald-500/20 to-teal-500/10",
-    personality: NATALIE_SYSTEM_PROMPT,
+    personality: withEmotions(NATALIE_SYSTEM_PROMPT),
     avatar_id: null,
   },
   {
@@ -80,7 +82,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png",
     accent: "from-sky-500/20 to-slate-500/10",
-    personality: ZAC_SYSTEM_PROMPT,
+    personality: withEmotions(ZAC_SYSTEM_PROMPT),
     avatar_id: null,
   },
 ];
