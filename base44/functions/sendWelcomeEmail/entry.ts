@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: `${senderLabel} <admin@lensflow.com.au>`,
+        from: `${senderLabel} <admin@glimr.com.au>`,
         to: [to_email],
         subject: custom_subject || `Welcome to GLIMR, ${firstName} 🌟`,
         html: custom_html || html,

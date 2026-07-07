@@ -102,6 +102,17 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Send welcome email after successful tier upgrade
+    try {
+      await base44.functions.invoke('sendWelcomeEmail', {
+        to_email: user.email,
+        to_name: user.full_name || '',
+      });
+    } catch (emailErr) {
+      // Don't fail the confirmation if email fails
+      console.error('Welcome email failed:', emailErr);
+    }
+
     return Response.json({ tier, minutes: config.minutes, intimacy: config.intimacy });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

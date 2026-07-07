@@ -232,6 +232,25 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="border-t border-border px-6 py-10">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="font-heading text-sm font-semibold tracking-tight">GLIMR</span>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+            <a href="mailto:hello@glimr.com.au" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              hello@glimr.com.au
+            </a>
+            <span className="hidden sm:inline text-muted-foreground/40">·</span>
+            <a href="mailto:admin@glimr.com.au" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              admin@glimr.com.au
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
