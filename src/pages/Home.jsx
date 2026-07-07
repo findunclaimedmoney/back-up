@@ -35,12 +35,9 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="px-6 py-5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <span className="font-heading text-lg font-semibold tracking-tight">
-            GLIMR
-          </span>
-        </div>
+        <Link to="/" className="flex items-center gap-2">
+          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-8 w-auto rounded-md" />
+        </Link>
         <nav className="flex items-center gap-1">
           <Link to="/pricing" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
             Pricing
@@ -236,10 +233,9 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border px-6 py-10">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="font-heading text-sm font-semibold tracking-tight">GLIMR</span>
-          </div>
+          <Link to="/" className="flex items-center gap-2">
+            <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-7 w-auto rounded-md" />
+          </Link>
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <a href="mailto:hello@glimr.com.au" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               hello@glimr.com.au
