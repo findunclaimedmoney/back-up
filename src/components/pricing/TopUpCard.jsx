@@ -33,8 +33,8 @@ export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
 
         <p className="text-sm text-muted-foreground leading-relaxed mb-6">
           Credit is used when you start an intimate video session. Each session
-          deducts from your balance based on duration — $4 for 15 min, $8 for
-          30 min, $15 for 1 hour. Top up anytime; credit never expires.
+          deducts from your balance based on duration — $6 for 15 min, $11 for
+          30 min, $20 for 1 hour. Top up anytime; credit never expires.
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -70,7 +70,7 @@ export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
         {creditBalance > 0 && (
           <div className="flex items-center gap-2 mt-6 text-xs text-muted-foreground">
             <Check className="w-3.5 h-3.5 text-primary" />
-            You have enough credit for {Math.floor(creditBalance / 4)} more session{Math.floor(creditBalance / 4) === 1 ? "" : "s"}.
+            You have enough credit for {Math.floor(creditBalance / 6)} more session{Math.floor(creditBalance / 6) === 1 ? "" : "s"}.
           </div>
         )}
       </div>

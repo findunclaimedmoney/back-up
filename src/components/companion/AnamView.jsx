@@ -12,9 +12,9 @@ const OUTFITS = [
 ];
 
 const DURATIONS = [
-  { value: 10, label: "10 min", price: 4 },
-  { value: 30, label: "30 min", price: 8 },
-  { value: 60, label: "1 hour", price: 15 },
+  { value: 15, label: "15 min", price: 6 },
+  { value: 30, label: "30 min", price: 11 },
+  { value: 60, label: "1 hour", price: 20 },
 ];
 
 export default function AnamView({ companion, onClose }) {
@@ -328,7 +328,7 @@ export default function AnamView({ companion, onClose }) {
               })}
             </div>
 
-            {subscription.credit_balance < 4 && (
+            {subscription.credit_balance < 6 && (
               <Link to="/pricing" className="text-sm text-primary hover:underline">
                 Add credit →
               </Link>

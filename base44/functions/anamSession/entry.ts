@@ -3,8 +3,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 const ANAM_API = 'https://api.anam.ai/v1';
 const ANAM_COST_PER_MIN = 0.12;
 
-// Intimacy session pricing: 10/30/60 min at $4/$8/$15 (100% margin on $0.12/min Anam cost)
-const SESSION_PRICES = { 10: 4.00, 30: 8.00, 60: 15.00 };
+// Intimacy session pricing: 15/30/60 min at $6/$11/$20
+const SESSION_PRICES = { 15: 6.00, 30: 11.00, 60: 20.00 };
 
 Deno.serve(async (req) => {
   try {
@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
       if (!sessionPrice) {
         return Response.json({
           error: 'Invalid duration',
-          message: 'Select a valid session duration (10, 30, or 60 minutes).',
+          message: 'Select a valid session duration (15, 30, or 60 minutes).',
           duration_required: true,
           credit_balance: balance,
         }, { status: 400 });
@@ -99,7 +99,7 @@ Deno.serve(async (req) => {
       }
 
       // Low balance email notification
-      if (newBalance < 4.00) {
+      if (newBalance < 6.00) {
         try {
           await base44.integrations.Core.SendEmail({
             to: user.email,
@@ -223,7 +223,7 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       sessionToken: tokenData.sessionToken,
       session_duration_seconds: sessionMaxDuration,
       credit_balance: remainingBalance,
-      low_balance_warning: remainingBalance < 4.00,
+      low_balance_warning: remainingBalance < 6.00,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
