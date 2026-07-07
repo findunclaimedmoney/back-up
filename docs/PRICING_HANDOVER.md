@@ -119,15 +119,24 @@ GLIMR is built on **3 pillars:**
 2. User must have spent **minimum 160 video minutes** with their companion (trust gate)
 3. Intimacy training progression must reach "Ready" stage
 
-### Current pricing (100% margin on $0.12/min Anam cost):
+### Pricing (100% margin on $0.12/min Anam cost):
 | Duration | Anam Cost | Price (100% margin) | Profit |
 |----------|-----------|---------------------|--------|
-| 15 min | $1.80 | $4 | $2.20 |
+| 10 min | $1.20 | $4 | $2.80 |
 | 30 min | $3.60 | $8 | $4.40 |
 | 60 min | $7.20 | $15 | $7.80 |
 
-### ⚠️ CONFIRM NEEDED:
-These prices ($4/$8/$15) are based on the OLD tier structure. User needs to confirm whether to keep them in the new Spark/Flame/Live structure.
+### CONFIRMED:
+- Intimacy sessions = **10 / 30 / 60 minute slots** (not 15/30/60)
+- Sold separately inside the VIP Lounge only
+- Available ONLY to users who have created a custom avatar (VIP Lounge access = custom avatar ownership)
+- Unlimited rebuys
+
+### Custom avatar cost (why it's excluded from packages):
+- Custom avatar creation = **$19.90 + $46 = ~$65 minimum cost** to GLIMR
+- Too expensive to include in any subscription package
+- Instead, packages include: face-to-face video, text chat, voice messages, photos, games + memory/diary/surprise messages
+- Custom avatar purchase = triggers VIP Lounge invitation
 
 ### Technical implementation:
 - `anamSession` function passes `max_session_duration` (in seconds) to Anam API
@@ -309,10 +318,11 @@ These prices ($4/$8/$15) are based on the OLD tier structure. User needs to conf
 
 ## 10. VIP FEATURES & HARDWARE
 
-### VIP is "Invitation Only" — earned, not bought:
-- Must be Pro member for 3+ months
-- 50+ meaningful conversations
-- Genuine connection demonstrated
+### VIP Lounge access = Custom Avatar ownership:
+- User must **purchase a custom avatar** ($65 cost to GLIMR)
+- Once they have a custom avatar, they're invited to the VIP membership room
+- VIP Lounge contains: intimacy packages (10/30/60 min), outfit swapping, twin/clone, companion's diary
+- All intimacy purchases happen INSIDE the VIP Lounge
 
 ### VIP exclusive features:
 1. **Companion's Diary** — monthly diary entry from companion about user (viral hook, shareable page)
@@ -449,7 +459,7 @@ These prices ($4/$8/$15) are based on the OLD tier structure. User needs to conf
 ## 15. OPEN ITEMS / CONFIRMATION NEEDED
 
 ### Critical (blocking):
-1. **Intimacy package prices** — Currently $4/$8/$15 for 15/30/60 min (100% margin on $0.12/min Anam). Keep these in new Spark/Flame/Live structure? **User confirmed they had these but needs to verify they're correct.**
+1. **Intimacy package prices** — CONFIRMED: $4/$8/$15 for 10/30/60 min (100% margin on $0.12/min Anam). ✅ Resolved.
 
 2. **New tier migration** — Code currently has Free/Plus/Pro/VIP. Need to migrate to Free/Spark/Flame/Live + One-Off Session. This requires:
    - Subscription entity enum update
@@ -457,7 +467,9 @@ These prices ($4/$8/$15) are based on the OLD tier structure. User needs to conf
    - Pricing page rewrite
    - Crypto checkout updated
 
-3. **Session credits vs minute credits** — One-off sessions (Anam, 5-min each) and top-up minutes (LiveAvatar, real-time) — are these separate credit pools? Need to clarify.
+3. **Custom avatar as separate purchase** — $65 cost ($19.90+$46), NOT included in any package. Triggers VIP Lounge access. Needs its own checkout flow.
+
+4. **5th package feature** — User couldn't remember; likely Companion's Diary, memory system, or surprise messages. Need to confirm which.
 
 ### Non-critical:
 4. **Surprise messages** — What integration powers them? (LLM text + GenerateImage for selfies?)
@@ -483,7 +495,11 @@ These prices ($4/$8/$15) are based on the OLD tier structure. User needs to conf
 7. ✅ Intimacy = separate session-based add-on (not tier-locked)
 8. ✅ Intimacy gated behind 160 min video usage
 9. ✅ 5-stage intimacy training progression with email notifications
-10. ✅ Intimacy pricing = $4/$8/$15 (100% margin on Anam $0.12/min)
+10. ✅ Intimacy pricing = $4/$8/$15 for 10/30/60 min (100% margin on Anam $0.12/min)
+21. ✅ Intimacy = 10/30/60 min slots (not 15/30/60)
+22. ✅ Custom avatar costs $65 ($19.90+$46) — excluded from all packages
+23. ✅ Custom avatar purchase = VIP Lounge invitation trigger
+24. ✅ VIP Lounge access = custom avatar ownership (not tier-based)
 11. ✅ Auto-stop at time limit + 30-sec pre-warning
 12. ✅ SessionLog tracks cost/revenue/profit per session
 13. ✅ Safety = erotic-adjacent roleplay, silent middleware catches refusals
