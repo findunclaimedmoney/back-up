@@ -23,6 +23,7 @@ import AvatarLanding from './pages/AvatarLanding';
 import Dashboard from './pages/Dashboard';
 import VipLounge from './pages/VipLounge';
 import ZacLanding from './pages/ZacLanding';
+import JessLanding from './pages/JessLanding';
 import CompanionLanding from './pages/CompanionLanding';
 import HealthCheck from './pages/HealthCheck';
 import Legal from './pages/Legal';
@@ -69,6 +70,7 @@ const AuthenticatedApp = () => {
       <Route path="/legal" element={<Legal />} />
       <Route path="/vip-lounge" element={<VipLounge />} />
       <Route path="/zac" element={<ZacLanding />} />
+      <Route path="/jess" element={<JessLanding />} />
       <Route path="/companions" element={<CompanionLanding />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/chat/:companionId" element={<Chat />} />
