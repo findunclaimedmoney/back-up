@@ -62,8 +62,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    const apiKey = Deno.env.get('KRAKEN_API_KEY');
-    const apiSecret = Deno.env.get('KRAKEN_PRIVATE_KEY');
+    const apiKey = (Deno.env.get('KRAKEN_API_KEY') || '').trim();
+    const apiSecret = (Deno.env.get('KRAKEN_PRIVATE_KEY') || '').trim();
     if (!apiKey || !apiSecret) return Response.json({ error: 'Kraken keys not configured' }, { status: 500 });
 
     const price = await getPrice(asset);
