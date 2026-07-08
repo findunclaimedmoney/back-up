@@ -31,7 +31,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="px-6 py-5 flex items-center justify-between">
+      <header className="hidden md:flex px-6 py-5 items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
           <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png" alt="GLIMR" className="h-14 w-14 rounded-lg" />
           <span className="font-heading text-3xl font-semibold tracking-tight text-primary">GLIMR</span>
@@ -250,7 +250,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border px-6 py-10">
+      <footer className="border-t border-border px-6 pt-10 pb-24">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2">
             <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png" alt="GLIMR" className="h-7 w-auto rounded-md" />

@@ -30,6 +30,7 @@ import CompanionLanding from './pages/CompanionLanding';
 import HealthCheck from './pages/HealthCheck';
 import Legal from './pages/Legal';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import MobileShell from '@/components/MobileShell';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -61,25 +62,27 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/" element={<Home />} />
-      <Route path="/pricing" element={<Pricing />} />
-      <Route path="/features" element={<Features />} />
-      <Route path="/manual" element={<Manual />} />
-      <Route path="/notes" element={<Notes />} />
-      <Route path="/avatar-landing" element={<AvatarLanding />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/health" element={<HealthCheck />} />
-      <Route path="/legal" element={<Legal />} />
-      <Route path="/vip-lounge" element={<VipLounge />} />
-      <Route path="/zac" element={<ZacLanding />} />
-      <Route path="/jess" element={<JessLanding />} />
-      <Route path="/marketing" element={<MarketingHub />} />
-      <Route path="/crypto" element={<CryptoPayment />} />
-      <Route path="/companions" element={<CompanionLanding />} />
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
-        <Route path="/chat/:companionId" element={<Chat />} />
-        <Route path="/games" element={<Games />} />
-      <Route path="/create" element={<CreateCompanion />} />
+      <Route element={<MobileShell />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/features" element={<Features />} />
+        <Route path="/manual" element={<Manual />} />
+        <Route path="/notes" element={<Notes />} />
+        <Route path="/avatar-landing" element={<AvatarLanding />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/health" element={<HealthCheck />} />
+        <Route path="/legal" element={<Legal />} />
+        <Route path="/vip-lounge" element={<VipLounge />} />
+        <Route path="/zac" element={<ZacLanding />} />
+        <Route path="/jess" element={<JessLanding />} />
+        <Route path="/marketing" element={<MarketingHub />} />
+        <Route path="/crypto" element={<CryptoPayment />} />
+        <Route path="/companions" element={<CompanionLanding />} />
+        <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+          <Route path="/chat/:companionId" element={<Chat />} />
+          <Route path="/games" element={<Games />} />
+          <Route path="/create" element={<CreateCompanion />} />
+        </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

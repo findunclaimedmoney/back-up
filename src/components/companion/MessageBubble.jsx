@@ -22,7 +22,7 @@ export default function MessageBubble({ message, companionId }) {
             />
           )}
           {message.content && (
-            <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">
+            <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words selectable-text">
               {message.content}
             </p>
           )}
@@ -46,14 +46,14 @@ export default function MessageBubble({ message, companionId }) {
             className="rounded-3xl rounded-bl-lg border border-border shadow-sm max-w-full"
           />
           {message.content && (
-            <p className="text-[14px] leading-relaxed text-muted-foreground whitespace-pre-wrap break-words mt-1.5 px-1">
+            <p className="text-[14px] leading-relaxed text-muted-foreground whitespace-pre-wrap break-words selectable-text mt-1.5 px-1">
               {message.content}
             </p>
           )}
         </div>
       ) : (
         <div className="max-w-[80%] sm:max-w-[70%] rounded-3xl rounded-bl-lg bg-card border border-border px-5 py-3 shadow-sm">
-          <p className="text-[15px] leading-relaxed text-foreground whitespace-pre-wrap break-words">
+          <p className="text-[15px] leading-relaxed text-foreground whitespace-pre-wrap break-words selectable-text">
             {message.content}
           </p>
           <VoicePlayer text={message.content} companionId={companionId} />

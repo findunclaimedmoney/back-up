@@ -115,7 +115,7 @@ export default function CreateCompanion() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="px-6 py-5 flex items-center justify-between border-b border-border">
+      <header className="hidden md:flex px-6 py-5 items-center justify-between border-b border-border">
         <button onClick={() => navigate("/")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back
         </button>

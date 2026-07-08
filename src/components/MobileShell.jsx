@@ -1,0 +1,74 @@
+import React, { useState, useEffect } from "react";
+import { Outlet, useLocation, useNavigate, Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import MobileBottomTabs from "@/components/MobileBottomTabs";
+
+const SUB_ROUTE_PATTERNS = [/^\/chat\//, /^\/create$/];
+const SKIP_HEADER_PATTERNS = [/^\/chat\//];
+
+function isSubRoute(pathname) {
+  return SUB_ROUTE_PATTERNS.some((p) => p.test(pathname));
+}
+
+function shouldSkipHeader(pathname) {
+  return SKIP_HEADER_PATTERNS.some((p) => p.test(pathname));
+}
+
+export default function MobileShell() {
+  const isMobile = useIsMobile();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const onChange = () => {
+      setKeyboardOpen(vv.height < window.innerHeight * 0.75);
+    };
+    vv.addEventListener("resize", onChange);
+    onChange();
+    return () => vv.removeEventListener("resize", onChange);
+  }, []);
+
+  if (!isMobile) return <Outlet />;
+
+  const subRoute = isSubRoute(location.pathname);
+  const skipHeader = shouldSkipHeader(location.pathname);
+  const showHeader = !skipHeader;
+  const showBack = subRoute && !skipHeader;
+  const showTabs = !subRoute && !keyboardOpen;
+
+  return (
+    <>
+      {showHeader && (
+        <header
+          className="sticky top-0 z-50 flex items-center justify-between px-4 border-b border-border bg-card/95 backdrop-blur-md"
+          style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))", paddingBottom: "0.75rem" }}
+        >
+          {showBack ? (
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-1.5 text-sm text-foreground hover:text-primary transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Back
+            </button>
+          ) : (
+            <Link to="/" className="flex items-center gap-2">
+              <img
+                src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png"
+                alt="GLIMR"
+                className="h-8 w-8 rounded-lg"
+              />
+              <span className="font-heading text-lg font-semibold text-primary">GLIMR</span>
+            </Link>
+          )}
+        </header>
+      )}
+      <Outlet />
+      {showTabs && <MobileBottomTabs />}
+    </>
+  );
+}
