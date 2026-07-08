@@ -152,7 +152,7 @@ export default function TicTacToe({ players }) {
           const isWinning = winner && winner !== "draw" && WIN_LINES.find((line) => line.includes(idx) && line.every((i) => board[i] === winner));
           return (
             <button key={idx} onClick={() => handleCellClick(idx)} disabled={!!cell || !!winner || thinking}
-              className={`aspect-square rounded-2xl border flex items-center justify-center text-3xl font-heading font-semibold transition-all ${
+              className={`aspect-square rounded-2xl border flex items-center justify-center text-3xl font-heading font-semibold transition-all select-none ${
                 isWinning ? "border-primary bg-primary/10" : cell ? "border-border bg-card" : "border-border bg-card hover:border-primary/40 hover:bg-muted"
               } ${cell === "X" ? "text-primary" : "text-foreground"}`}>
               {cell}
@@ -167,7 +167,7 @@ export default function TicTacToe({ players }) {
           <p className="font-heading text-xl font-semibold mb-3">
             {winner === "draw" ? "It's a draw!" : `${winnerPlayer.name} wins!`}
           </p>
-          <button onClick={reset} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+          <button onClick={reset} className="inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity select-none">
             <RotateCcw className="w-4 h-4" /> Play again
           </button>
         </div>

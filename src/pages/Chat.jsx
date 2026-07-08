@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { getCompanion } from "@/lib/companions";
 import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
+import PullToRefresh from "@/components/PullToRefresh";
 import { ArrowLeft, Video, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnamView from "@/components/companion/AnamView";
@@ -481,6 +482,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto scrollbar-thin">
+        <PullToRefresh onRefresh={loadData}>
         <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
           {loading ? (
             <div className="flex items-center justify-center py-20">
@@ -538,6 +540,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
           )}
           <div ref={bottomRef} />
         </div>
+        </PullToRefresh>
       </div>
 
       {/* Input */}

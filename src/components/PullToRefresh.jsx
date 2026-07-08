@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Loader2, ChevronDown } from "lucide-react";
 
 const THRESHOLD = 70;
@@ -9,52 +9,70 @@ export default function PullToRefresh({ onRefresh, children }) {
   const [refreshing, setRefreshing] = useState(false);
   const startY = useRef(0);
   const pulling = useRef(false);
+  const containerRef = useRef(null);
+  const refreshingRef = useRef(false);
+  const pullingRef = useRef(false);
 
-  const onTouchStart = useCallback(
-    (e) => {
-      if (window.scrollY > 0 || refreshing) return;
-      startY.current = e.touches[0].clientY;
-      pulling.current = true;
-    },
-    [refreshing]
-  );
+  useEffect(() => {
+    refreshingRef.current = refreshing;
+  }, [refreshing]);
 
-  const onTouchMove = useCallback(
-    (e) => {
-      if (!pulling.current || refreshing) return;
-      const delta = e.touches[0].clientY - startY.current;
-      if (delta <= 0) return;
-      const resisted = Math.min(delta * 0.5, MAX_PULL);
-      setPullDistance(resisted);
-    },
-    [refreshing]
-  );
+  const onTouchStart = useCallback((e) => {
+    if (window.scrollY > 0 || refreshingRef.current) return;
+    startY.current = e.touches[0].clientY;
+    pullingRef.current = true;
+    pulling.current = true;
+  }, []);
+
+  const onTouchMove = useCallback((e) => {
+    if (!pullingRef.current || refreshingRef.current) return;
+    const delta = e.touches[0].clientY - startY.current;
+    if (delta <= 0) return;
+    // Prevent default so Android WebView overscroll doesn't take over the gesture
+    if (e.cancelable) e.preventDefault();
+    const resisted = Math.min(delta * 0.5, MAX_PULL);
+    setPullDistance(resisted);
+  }, []);
 
   const onTouchEnd = useCallback(async () => {
-    if (!pulling.current) return;
+    if (!pullingRef.current) return;
+    pullingRef.current = false;
     pulling.current = false;
-    if (pullDistance >= THRESHOLD) {
-      setRefreshing(true);
-      setPullDistance(THRESHOLD);
-      try {
-        await onRefresh();
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setRefreshing(false);
-        setPullDistance(0);
+    setPullDistance((cur) => {
+      if (cur >= THRESHOLD) {
+        setRefreshing(true);
+        (async () => {
+          try {
+            await onRefresh();
+          } catch (err) {
+            console.error(err);
+          } finally {
+            setRefreshing(false);
+            setPullDistance(0);
+          }
+        })();
+        return THRESHOLD;
       }
-    } else {
-      setPullDistance(0);
-    }
-  }, [pullDistance, onRefresh, refreshing]);
+      return 0;
+    });
+  }, [onRefresh]);
+
+  // Attach non-passive touchmove listener so preventDefault works on Android
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [onTouchStart, onTouchMove, onTouchEnd]);
 
   return (
-    <div
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
-    >
+    <div ref={containerRef}>
       <div
         className="flex items-center justify-center overflow-hidden"
         style={{

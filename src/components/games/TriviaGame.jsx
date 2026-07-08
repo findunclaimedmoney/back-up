@@ -219,7 +219,7 @@ export default function TriviaGame({ players }) {
               })}
             </div>
           )}
-          <button onClick={nextQuestion} className="w-full px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+          <button onClick={nextQuestion} className="w-full min-h-[44px] px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 select-none">
             Next question <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -254,7 +254,7 @@ export default function TriviaGame({ players }) {
               className="flex-1 rounded-full bg-card border border-border px-5 py-3 text-sm outline-none focus:border-primary/40 disabled:opacity-50"
             />
             {!userSubmitted && (
-              <button onClick={handleSubmit} disabled={!userAnswer.trim()} className="px-5 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium disabled:opacity-40 transition-opacity">
+              <button onClick={handleSubmit} disabled={!userAnswer.trim()} className="min-h-[44px] px-5 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium disabled:opacity-40 transition-opacity select-none">
                 Submit
               </button>
             )}

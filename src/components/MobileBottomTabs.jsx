@@ -58,12 +58,12 @@ export default function MobileBottomTabs() {
           <button
             key={tab.to}
             onClick={() => handleTabClick(tab)}
-            className={`flex flex-col items-center gap-0.5 py-2.5 px-4 transition-colors ${
+            className={`flex flex-col items-center justify-center gap-0.5 min-h-[44px] min-w-[44px] py-2.5 px-4 transition-colors select-none ${
               isActive ? "text-primary" : "text-muted-foreground"
             }`}
           >
             <tab.icon className="w-5 h-5" />
-            <span className="text-[10px] font-medium">{tab.label}</span>
+            <span className="text-[10px] font-medium select-none">{tab.label}</span>
           </button>
         );
       })}

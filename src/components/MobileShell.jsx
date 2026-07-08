@@ -71,7 +71,7 @@ export default function MobileShell() {
           {showHeader && !showBack && (
             <button
               onClick={() => setSettingsOpen(true)}
-              className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground select-none"
               aria-label="Settings"
             >
               <Settings className="w-5 h-5" />
