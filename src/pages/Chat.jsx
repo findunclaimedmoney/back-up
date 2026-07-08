@@ -106,8 +106,8 @@ ${recentExchange}`;
 
 export default function Chat() {
   const { companionId } = useParams();
-  const navigate = useNavigate();
-
+const navigate = useNavigate();
+  const goBack = () => { const idx = window.history.state?.idx; if (typeof idx === "number" && idx > 0) { navigate(-1); } else { navigate("/"); } };
   const isCustom = companionId?.startsWith("custom-");
   const customId = isCustom ? companionId.replace("custom-", "") : null;
 
@@ -425,8 +425,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate(-1)}
-              className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-muted transition-colors select-none"
+onClick={goBack}              className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-muted transition-colors select-none"
               aria-label="Back"
             >
               <ArrowLeft className="w-4 h-4" />
