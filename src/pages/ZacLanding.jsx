@@ -16,8 +16,9 @@ const TRAITS = [
 
 export default function ZacLanding() {
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
-  const [activeVideo, setActiveVideo] = useState(0);
+const navigate = useNavigate();
+  const goBack = () => { const idx = window.history.state?.idx; if (typeof idx === "number" && idx > 0) { navigate(-1); } else { navigate("/"); } };
+    const [activeVideo, setActiveVideo] = useState(0);
   const heroVideoRef = useRef(null);
 
   return (
@@ -28,8 +29,8 @@ export default function ZacLanding() {
           <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png" alt="GLIMR" className="h-12 w-12 rounded-lg" />
           <span className="font-heading text-2xl font-semibold tracking-tight text-primary">GLIMR</span>
         </Link>
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10 select-none">
-          <ChevronLeft className="w-4 h-4" />
+<button onClick={goBack} className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10 select-none">          
+<ChevronLeft className="w-4 h-4" />
           All companions
         </button>
       </header>
