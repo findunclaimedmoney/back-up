@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MessageCircle, Mic, Video, Crown, Heart, ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -73,6 +73,7 @@ function VideoCard({ videos, name, tagline, description, accentText, chatId }) {
 
 export default function CompanionLanding() {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -81,10 +82,10 @@ export default function CompanionLanding() {
           <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png" alt="GLIMR" className="h-12 w-12 rounded-lg" />
           <span className="font-heading text-2xl font-semibold tracking-tight text-primary">GLIMR</span>
         </Link>
-        <Link to="/" className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10 select-none">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10 select-none">
           <ChevronLeft className="w-4 h-4" />
           All companions
-        </Link>
+        </button>
       </header>
 
       {/* Hero */}
