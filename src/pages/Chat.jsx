@@ -8,6 +8,7 @@ import { ArrowLeft, Video, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnamView from "@/components/companion/AnamView";
 import { decidePhotoAction, generateCompanionPhoto } from "@/lib/companionPhotos";
+import { getDeviceFingerprint } from "@/lib/deviceFingerprint";
 
 const SUGGESTIONS = [
   "Hey, how's your day going?",
@@ -296,12 +297,23 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
     try {
       await base44.entities.Message.create(userMsg);
 
-      // Increment message counter
-      base44.functions.invoke("trackMessageUsage", {}).then((res) => {
-        if (res.data?.messages_remaining !== undefined) {
-          setDailyRemaining(res.data.messages_remaining);
-        }
-      }).catch(() => {});
+      // Increment message counter + device fingerprint check
+      getDeviceFingerprint().then((fp) => {
+        base44.functions.invoke("trackMessageUsage", { device_fingerprint: fp }).then((res) => {
+          if (res.data?.messages_remaining !== undefined) {
+            setDailyRemaining(res.data.messages_remaining);
+          }
+          if (res.data?.blocked) {
+            setDailyRemaining(0);
+          }
+        }).catch(() => {});
+      }).catch(() => {
+        base44.functions.invoke("trackMessageUsage", {}).then((res) => {
+          if (res.data?.messages_remaining !== undefined) {
+            setDailyRemaining(res.data.messages_remaining);
+          }
+        }).catch(() => {});
+      });
 
       const history = updatedMessages
         .slice(-20)

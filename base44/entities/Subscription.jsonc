@@ -70,6 +70,14 @@
       "type": "string",
       "format": "date",
       "description": "Legacy field, no longer used for monthly counter"
+    },
+    "device_fingerprint": {
+      "type": "string",
+      "description": "Browser device fingerprint to prevent duplicate free accounts"
+    },
+    "signup_ip": {
+      "type": "string",
+      "description": "IP address at signup to prevent duplicate free accounts"
     }
   },
   "required": [],
