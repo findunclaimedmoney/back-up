@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, MessageCircle, Mic, Video, Camera, ChevronLeft } from "lucide-react";
 
-const JESS_IMAGE =
-  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png";
+const JESS_VIDEO =
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/14f0062f2_Jesss_Engaging_Greeting.mp4";
 
 const TRAITS = [
   { icon: MessageCircle, label: "Text chat" },
@@ -29,10 +29,13 @@ export default function JessLanding() {
 
       {/* Hero */}
       <section className="relative h-screen min-h-[700px] w-full overflow-hidden">
-        <img
-          src={JESS_IMAGE}
-          alt="Jess"
-          className="absolute inset-0 w-full h-full object-contain object-top"
+        <video
+          src={JESS_VIDEO}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover object-top"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-background/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent" />
