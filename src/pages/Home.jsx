@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { COMPANIONS } from "@/lib/companions";
-import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus, Loader2, Crown, NotebookPen } from "lucide-react";
+import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus, Loader2, Crown, NotebookPen, Smartphone } from "lucide-react";
+import MobileAppBadges from "@/components/MobileAppBadges";
 import { useGreetings } from "@/hooks/useGreetings";
 import { base44 } from "@/api/base44Client";
 
@@ -228,6 +229,23 @@ export default function Home() {
               </p>
             </div>
           </Link>
+        </div>
+      </section>
+
+      {/* Download app */}
+      <section className="px-6 py-16 border-t border-border">
+        <div className="max-w-5xl mx-auto flex flex-col items-center text-center gap-5">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+            <Smartphone className="w-4 h-4 text-primary" />
+            <span className="text-xs font-medium text-primary uppercase tracking-wide">Take GLIMR with you</span>
+          </div>
+          <h2 className="font-heading text-3xl sm:text-4xl font-semibold tracking-tight">
+            Your companion, in your pocket.
+          </h2>
+          <p className="text-muted-foreground max-w-md leading-relaxed">
+            Download the GLIMR app for iOS and Android — same companions, same memories, right in your pocket.
+          </p>
+          <MobileAppBadges />
         </div>
       </section>
 
