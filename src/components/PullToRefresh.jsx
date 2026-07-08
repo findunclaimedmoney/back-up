@@ -17,12 +17,28 @@ export default function PullToRefresh({ onRefresh, children }) {
     refreshingRef.current = refreshing;
   }, [refreshing]);
 
+  // Detects whether the touch started at the top of the nearest scrollable
+  // ancestor (or window). In Chat.jsx the scroll container is a nested
+  // overflow-y-auto div, so window.scrollY is always 0 — checking it would
+  // make pull-to-refresh fire even when the user is scrolled down.
+  const isAtScrollTop = useCallback(() => {
+    let el = containerRef.current?.parentElement;
+    while (el) {
+      if (el.scrollHeight > el.clientHeight) {
+        return el.scrollTop <= 0;
+      }
+      el = el.parentElement;
+    }
+    return window.scrollY <= 0;
+  }, []);
+
   const onTouchStart = useCallback((e) => {
-    if (window.scrollY > 0 || refreshingRef.current) return;
+    if (refreshingRef.current) return;
+    if (!isAtScrollTop()) return;
     startY.current = e.touches[0].clientY;
     pullingRef.current = true;
     pulling.current = true;
-  }, []);
+  }, [isAtScrollTop]);
 
   const onTouchMove = useCallback((e) => {
     if (!pullingRef.current || refreshingRef.current) return;
