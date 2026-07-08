@@ -44,8 +44,11 @@ export default function MobileShell() {
   const skipHeader = shouldSkipHeader(location.pathname);
   const showHeader = !skipHeader;
   const showBack = !rootView && !skipHeader;
-  const showTabs = rootView && !keyboardOpen;
-
+const showTabs = rootView && !keyboardOpen;
+  const goBack = () => {
+        const idx = window.history.state?.idx;
+            if (typeof idx === "number" && idx > 0) { navigate(-1); } else { navigate("/"); }
+  };  
   return (
     <>
       {showHeader && (
@@ -55,8 +58,7 @@ export default function MobileShell() {
         >
           {showBack ? (
             <button
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-1.5 min-h-[44px] px-2 text-sm text-foreground hover:text-primary transition-colors select-none"
+onClick={goBack}              className="flex items-center gap-1.5 min-h-[44px] px-2 text-sm text-foreground hover:text-primary transition-colors select-none"
             >
               <ArrowLeft className="w-5 h-5" />
               Back
