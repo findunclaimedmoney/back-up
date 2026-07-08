@@ -24,6 +24,7 @@ import Dashboard from './pages/Dashboard';
 import VipLounge from './pages/VipLounge';
 import ZacLanding from './pages/ZacLanding';
 import JessLanding from './pages/JessLanding';
+import MarketingHub from './pages/MarketingHub';
 import CompanionLanding from './pages/CompanionLanding';
 import HealthCheck from './pages/HealthCheck';
 import Legal from './pages/Legal';
@@ -71,6 +72,7 @@ const AuthenticatedApp = () => {
       <Route path="/vip-lounge" element={<VipLounge />} />
       <Route path="/zac" element={<ZacLanding />} />
       <Route path="/jess" element={<JessLanding />} />
+      <Route path="/marketing" element={<MarketingHub />} />
       <Route path="/companions" element={<CompanionLanding />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/chat/:companionId" element={<Chat />} />
