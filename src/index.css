@@ -108,15 +108,26 @@
 @layer base {
   body {
     overscroll-behavior: none;
-    -webkit-user-select: none;
-    user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
 
-  input,
-  textarea,
+  /* Disable text selection on interactive elements only */
+  button,
+  a,
+  nav,
+  header,
+  [role="button"],
+  .icon-action {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Ensure text content stays fully selectable */
+  p,
+  .selectable-text,
   [contenteditable],
-  .selectable-text {
+  input,
+  textarea {
     -webkit-user-select: text;
     user-select: text;
   }
