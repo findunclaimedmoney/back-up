@@ -37,13 +37,31 @@ export default function Notes() {
   };
 
   const handleSave = async (note) => {
-    if (note.id) {
-      await base44.entities.CompanionNote.update(note.id, note);
-    } else {
-      await base44.entities.CompanionNote.create(note);
-    }
     setEditing(null);
-    loadNotes();
+    if (note.id) {
+      // Optimistic update — patch in place before backend confirms
+      const prev = notes;
+      setNotes((cur) => cur.map((n) => (n.id === note.id ? { ...n, ...note, updated_date: new Date().toISOString() } : n)));
+      try {
+        await base44.entities.CompanionNote.update(note.id, note);
+      } catch (err) {
+        console.error(err);
+        setNotes(prev);
+      }
+    } else {
+      // Optimistic create — insert with a temp ID, then swap for the real one
+      const tempId = `temp-${Date.now()}`;
+      const optimistic = { ...note, id: tempId, updated_date: new Date().toISOString(), created_date: new Date().toISOString() };
+      const prev = notes;
+      setNotes((cur) => [optimistic, ...cur]);
+      try {
+        const created = await base44.entities.CompanionNote.create(note);
+        setNotes((cur) => cur.map((n) => (n.id === tempId ? created : n)));
+      } catch (err) {
+        console.error(err);
+        setNotes(prev);
+      }
+    }
   };
 
   const handleDelete = async (id) => {
