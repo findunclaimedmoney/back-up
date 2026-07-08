@@ -23,7 +23,7 @@ export default function AvatarLanding() {
           </nav>
           <Link
             to="/pricing"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1946D2] text-white text-sm font-bold hover:bg-[#1538A8] transition-colors"
+            className="inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-xl bg-[#1946D2] text-white text-sm font-bold hover:bg-[#1538A8] transition-colors select-none"
           >
             Meet Your Companion
           </Link>
@@ -55,7 +55,7 @@ export default function AvatarLanding() {
           </p>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-[#1946D2] text-white text-base font-bold hover:bg-[#1538A8] transition-colors"
+            className="inline-flex items-center gap-2 min-h-[44px] px-8 py-4 rounded-xl bg-[#1946D2] text-white text-base font-bold hover:bg-[#1538A8] transition-colors select-none"
           >
             Choose your companion
             <Sparkles className="w-4 h-4" />

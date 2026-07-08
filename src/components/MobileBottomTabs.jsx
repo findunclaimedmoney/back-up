@@ -10,7 +10,7 @@ const TABS = [
   { to: "/pricing", icon: CreditCard, label: "Plans" },
 ];
 
-const ROOT_PATHS = new Set(TABS.map((t) => t.to));
+export const ROOT_PATHS = new Set(TABS.map((t) => t.to));
 
 export default function MobileBottomTabs() {
   const isMobile = useIsMobile();

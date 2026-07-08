@@ -270,15 +270,15 @@ export default function Home() {
             <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png" alt="GLIMR" className="h-7 w-auto rounded-md" />
           </Link>
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-            <a href="mailto:hello@glimr.com.au" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <a href="mailto:hello@glimr.com.au" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors select-none">
               hello@glimr.com.au
             </a>
             <span className="hidden sm:inline text-muted-foreground/40">·</span>
-            <a href="mailto:admin@glimr.com.au" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <a href="mailto:admin@glimr.com.au" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors select-none">
               admin@glimr.com.au
             </a>
             <span className="hidden sm:inline text-muted-foreground/40">·</span>
-            <Link to="/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/legal" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors select-none">
               Privacy & Terms
             </Link>
           </div>

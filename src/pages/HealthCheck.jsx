@@ -74,7 +74,7 @@ export default function HealthCheck() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate("/dashboard")}
-              className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-muted transition-colors"
+              className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-muted transition-colors select-none"
               aria-label="Back"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -84,7 +84,7 @@ export default function HealthCheck() {
           <button
             onClick={runCheck}
             disabled={loading}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted disabled:opacity-50"
+            className="flex items-center gap-2 min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted disabled:opacity-50 select-none"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             Re-check
@@ -167,7 +167,7 @@ export default function HealthCheck() {
         {results && !loading && (
           <button
             onClick={runCheck}
-            className="w-full mt-8 flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity"
+            className="w-full mt-8 flex items-center justify-center gap-2 min-h-[44px] px-6 py-3.5 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity select-none"
           >
             <RefreshCw className="w-4 h-4" />
             Run Health Check

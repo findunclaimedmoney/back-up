@@ -125,7 +125,7 @@ export default function Notes() {
           </div>
           <button
             onClick={() => setEditing({ title: "", content: "", note_type: "personality", companion_id: "all" })}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:gap-3"
+            className="inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:gap-3 select-none"
           >
             <Plus className="w-4 h-4" />
             New Note
@@ -192,7 +192,7 @@ export default function Notes() {
             </p>
             <button
               onClick={() => setEditing({ title: "", content: "", note_type: "personality", companion_id: "all" })}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-medium text-sm"
+              className="inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-medium text-sm select-none"
             >
               <Plus className="w-4 h-4" />
               Write your first note
@@ -240,7 +240,7 @@ export default function Notes() {
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDelete(note.id); }}
-                    className="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all flex-shrink-0"
+                    className="opacity-0 group-hover:opacity-100 w-11 h-11 rounded-full flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all flex-shrink-0 select-none"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

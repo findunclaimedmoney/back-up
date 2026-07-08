@@ -3,15 +3,18 @@ import { Outlet, useLocation, useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Settings } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import MobileBottomTabs from "@/components/MobileBottomTabs";
+import MobileBottomTabs, { ROOT_PATHS } from "@/components/MobileBottomTabs";
 import SettingsModal from "@/components/SettingsModal";
 
-const SUB_ROUTE_PATTERNS = [/^\/chat\//, /^\/create$/];
-const SKIP_HEADER_PATTERNS = [/^\/chat\//];
-
-function isSubRoute(pathname) {
-  return SUB_ROUTE_PATTERNS.some((p) => p.test(pathname));
-}
+const SKIP_HEADER_PATTERNS = [
+  /^\/chat\//,
+  /^\/zac$/,
+  /^\/jess$/,
+  /^\/companions$/,
+  /^\/avatar-landing$/,
+  /^\/health$/,
+  /^\/dashboard$/,
+];
 
 function shouldSkipHeader(pathname) {
   return SKIP_HEADER_PATTERNS.some((p) => p.test(pathname));
@@ -37,11 +40,11 @@ export default function MobileShell() {
 
   if (!isMobile) return <Outlet />;
 
-  const subRoute = isSubRoute(location.pathname);
+  const rootView = ROOT_PATHS.has(location.pathname);
   const skipHeader = shouldSkipHeader(location.pathname);
   const showHeader = !skipHeader;
-  const showBack = subRoute && !skipHeader;
-  const showTabs = !subRoute && !keyboardOpen;
+  const showBack = !rootView && !skipHeader;
+  const showTabs = rootView && !keyboardOpen;
 
   return (
     <>
@@ -53,7 +56,7 @@ export default function MobileShell() {
           {showBack ? (
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-1.5 text-sm text-foreground hover:text-primary transition-colors"
+              className="flex items-center gap-1.5 min-h-[44px] px-2 text-sm text-foreground hover:text-primary transition-colors select-none"
             >
               <ArrowLeft className="w-5 h-5" />
               Back

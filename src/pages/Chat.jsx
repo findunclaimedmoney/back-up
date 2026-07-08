@@ -426,7 +426,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate(-1)}
-              className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-muted transition-colors"
+              className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-muted transition-colors select-none"
               aria-label="Back"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -453,7 +453,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
           <div className="flex items-center gap-2">
             <button
               onClick={() => setVideoMode(true)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted"
+              className="flex items-center gap-1.5 min-h-[44px] text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted select-none"
             >
               <Video className="w-3.5 h-3.5" />
               Face to face
@@ -471,7 +471,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
             {hasMessages && (
               <button
                 onClick={handleClear}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted"
+                className="min-h-[44px] text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted select-none"
               >
                 Clear
               </button>
