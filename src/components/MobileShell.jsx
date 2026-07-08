@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation, useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Settings } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileBottomTabs from "@/components/MobileBottomTabs";
+import SettingsModal from "@/components/SettingsModal";
 
 const SUB_ROUTE_PATTERNS = [/^\/chat\//, /^\/create$/];
 const SKIP_HEADER_PATTERNS = [/^\/chat\//];
@@ -21,6 +22,7 @@ export default function MobileShell() {
   const location = useLocation();
   const navigate = useNavigate();
   const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     const vv = window.visualViewport;
@@ -66,6 +68,15 @@ export default function MobileShell() {
               <span className="font-heading text-lg font-semibold text-primary">GLIMR</span>
             </Link>
           )}
+          {showHeader && !showBack && (
+            <button
+              onClick={() => setSettingsOpen(true)}
+              className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              aria-label="Settings"
+            >
+              <Settings className="w-5 h-5" />
+            </button>
+          )}
         </header>
       )}
       <AnimatePresence mode="wait">
@@ -80,6 +91,7 @@ export default function MobileShell() {
         </motion.div>
       </AnimatePresence>
       {showTabs && <MobileBottomTabs />}
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </>
   );
 }

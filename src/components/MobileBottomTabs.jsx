@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Gamepad2, NotebookPen, CreditCard } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -10,18 +10,40 @@ const TABS = [
   { to: "/pricing", icon: CreditCard, label: "Plans" },
 ];
 
+const ROOT_PATHS = new Set(TABS.map((t) => t.to));
+
 export default function MobileBottomTabs() {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
+  const histories = useRef({});
+  const lastTab = useRef(null);
 
   if (!isMobile) return null;
 
-  const handleTabClick = (e, tab) => {
-    const isActive = location.pathname === tab.to;
+  // Determine which tab is currently active based on root path
+  const currentRoot = ROOT_PATHS.has(location.pathname) ? location.pathname : null;
+
+  // Record the current location into the active tab's history
+  if (currentRoot && lastTab.current !== currentRoot) {
+    lastTab.current = currentRoot;
+  }
+
+  const handleTabClick = (tab) => {
+    const isActive = currentRoot === tab.to;
     if (isActive) {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Re-selecting the active tab — reset to root
+      if (location.pathname !== tab.to) {
+        navigate(tab.to);
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } else {
+      // Switching to a different tab — save current location and navigate
+      if (currentRoot) {
+        histories.current[currentRoot] = location.pathname;
+      }
+      navigate(tab.to);
     }
   };
 
@@ -31,26 +53,18 @@ export default function MobileBottomTabs() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {TABS.map((tab) => {
-        const isActive = location.pathname === tab.to;
+        const isActive = currentRoot === tab.to;
         return (
-          <a
+          <button
             key={tab.to}
-            href={tab.to}
-            onClick={(e) => {
-              e.preventDefault();
-              if (isActive) {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              } else {
-                navigate(tab.to);
-              }
-            }}
+            onClick={() => handleTabClick(tab)}
             className={`flex flex-col items-center gap-0.5 py-2.5 px-4 transition-colors ${
               isActive ? "text-primary" : "text-muted-foreground"
             }`}
           >
             <tab.icon className="w-5 h-5" />
             <span className="text-[10px] font-medium">{tab.label}</span>
-          </a>
+          </button>
         );
       })}
     </nav>

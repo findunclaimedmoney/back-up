@@ -4,18 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { COMPANIONS } from "@/lib/companions";
 import NoteEditor from "@/components/notes/NoteEditor";
 import PullToRefresh from "@/components/PullToRefresh";
-import { Sparkles, Plus, ArrowLeft, FileText, Heart, User, Globe, Coffee, Trash2, Loader2, Settings } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
+import { Sparkles, Plus, ArrowLeft, FileText, Heart, User, Globe, Coffee, Trash2, Loader2 } from "lucide-react";
 
 const TYPE_META = {
   personality: { label: "Personality", icon: Sparkles, color: "text-primary", bg: "bg-primary/10" },
@@ -31,8 +20,6 @@ export default function Notes() {
   const [filter, setFilter] = useState("all");
   const [companionFilter, setCompanionFilter] = useState("all");
   const [editing, setEditing] = useState(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     loadNotes();
@@ -59,22 +46,15 @@ export default function Notes() {
     loadNotes();
   };
 
-  const handleDeleteAccount = async () => {
-    setDeleting(true);
-    try {
-      await base44.functions.invoke("deleteAccount", {});
-      await base44.auth.logout("/login");
-    } catch (err) {
-      console.error(err);
-      setDeleting(false);
-      setDeleteOpen(false);
-    }
-  };
-
   const handleDelete = async (id) => {
     if (!confirm("Delete this note?")) return;
-    await base44.entities.CompanionNote.delete(id);
-    loadNotes();
+    setNotes((prev) => prev.filter((n) => n.id !== id));
+    try {
+      await base44.entities.CompanionNote.delete(id);
+    } catch (err) {
+      console.error(err);
+      loadNotes();
+    }
   };
 
   const filtered = notes.filter((n) => {
@@ -252,55 +232,6 @@ export default function Notes() {
           </div>
         )}
 
-        {/* Account / Settings */}
-        <section className="mt-12 pt-8 border-t border-border">
-          <div className="rounded-2xl border border-border bg-card p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
-                <Settings className="w-5 h-5 text-destructive" />
-              </div>
-              <div>
-                <h2 className="font-heading text-lg font-semibold">Account</h2>
-                <p className="text-sm text-muted-foreground">Manage your account and data</p>
-              </div>
-            </div>
-
-            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-              <AlertDialogTrigger asChild>
-                <button className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-destructive/30 text-destructive text-sm font-medium hover:bg-destructive/10 transition-colors">
-                  <Trash2 className="w-4 h-4" />
-                  Delete Account
-                </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete your account?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will permanently delete all your data, including:
-                    <ul className="mt-3 space-y-1 text-sm">
-                      <li>&bull; All conversations and messages</li>
-                      <li>&bull; All memories your companions have of you</li>
-                      <li>&bull; All personality notes</li>
-                      <li>&bull; All custom companions</li>
-                      <li>&bull; Subscription and billing data</li>
-                    </ul>
-                    <span className="block mt-3 font-medium text-destructive">This action cannot be undone.</span>
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={(e) => { e.preventDefault(); handleDeleteAccount(); }}
-                    disabled={deleting}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete everything"}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </section>
       </div>
       </PullToRefresh>
     </div>

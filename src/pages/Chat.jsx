@@ -405,11 +405,13 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
 
   const handleClear = async () => {
     if (!confirm("Clear your conversation? Memories are kept.")) return;
+    const previous = messages;
+    setMessages([]);
     try {
       await base44.entities.Message.deleteMany({ companion_id: companion.id });
-      setMessages([]);
     } catch (err) {
       console.error(err);
+      setMessages(previous);
     }
   };
 
