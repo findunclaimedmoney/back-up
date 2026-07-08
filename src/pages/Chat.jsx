@@ -276,26 +276,30 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
     // Free tier daily message limit
     if (dailyLimit > 0 && dailyRemaining !== null && dailyRemaining <= 0) return;
 
-    let imageUrl = null;
-    let fileUrls = [];
-
-    if (photoFile) {
-      try {
-        const uploadRes = await base44.integrations.Core.UploadFile({ file: photoFile });
-        imageUrl = uploadRes.file_url;
-        fileUrls = [imageUrl];
-      } catch (err) {
-        console.error("Photo upload failed:", err);
-      }
-    }
-
-    const userMsg = { role: "user", content: text, companion_id: companion.id, image_url: imageUrl };
+    // Show the user message instantly — local object URL for attached photos
+    const localImageUrl = photoFile ? URL.createObjectURL(photoFile) : null;
+    const userMsg = { role: "user", content: text, companion_id: companion.id, image_url: localImageUrl };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setThinking(true);
 
     try {
-      await base44.entities.Message.create(userMsg);
+      // Upload the photo in the background (skipped if none), then swap the local preview for the real URL
+      const finalImageUrl = await (photoFile
+        ? base44.integrations.Core.UploadFile({ file: photoFile })
+            .then((res) => res.file_url)
+            .catch((err) => { console.error("Photo upload failed:", err); return null; })
+        : Promise.resolve(null));
+
+      if (finalImageUrl && localImageUrl) {
+        URL.revokeObjectURL(localImageUrl);
+        userMsg.image_url = finalImageUrl;
+        setMessages((prev) => prev.map((m) => (m === userMsg ? { ...m, image_url: finalImageUrl } : m)));
+      }
+      const fileUrls = finalImageUrl ? [finalImageUrl] : [];
+
+      // Persist the message in the background — doesn't block the LLM reply
+      base44.entities.Message.create(userMsg).catch((err) => console.error(err));
 
       // Increment message counter + device fingerprint check
       getDeviceFingerprint().then((fp) => {
@@ -350,10 +354,10 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
       await base44.entities.Message.create(reply);
 
       // Maybe send a photo — selfie, together, or nothing
-      const photoExchange = `Me: ${text || "[photo]"}${imageUrl ? " [photo]" : ""}\n${companion.name}: ${replyText.trim()}`;
-      decidePhotoAction(companion, photoExchange, !!imageUrl).then(async (photoDecision) => {
+      const photoExchange = `Me: ${text || "[photo]"}${finalImageUrl ? " [photo]" : ""}\n${companion.name}: ${replyText.trim()}`;
+      decidePhotoAction(companion, photoExchange, !!finalImageUrl).then(async (photoDecision) => {
         if (photoDecision.action !== "none" && photoDecision.description) {
-          const photoUrl = await generateCompanionPhoto(companion, photoDecision.description, photoDecision.action, imageUrl);
+          const photoUrl = await generateCompanionPhoto(companion, photoDecision.description, photoDecision.action, finalImageUrl);
           if (photoUrl) {
             const photoMsg = {
               role: "assistant",

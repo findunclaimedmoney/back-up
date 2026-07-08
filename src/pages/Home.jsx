@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { COMPANIONS } from "@/lib/companions";
 import { Sparkles, ArrowRight, MessageCircle, Mic, Video, Camera, Gamepad2, Plus, Loader2, Crown, NotebookPen, Smartphone } from "lucide-react";
 import MobileAppBadges from "@/components/MobileAppBadges";
+import PullToRefresh from "@/components/PullToRefresh";
 import { useGreetings } from "@/hooks/useGreetings";
 import { base44 } from "@/api/base44Client";
 
@@ -16,7 +17,7 @@ const FEATURES = [
 ];
 
 export default function Home() {
-  const { greetings, loading } = useGreetings();
+  const { greetings, loading, refresh: refreshGreetings } = useGreetings();
   const [customCompanions, setCustomCompanions] = React.useState([]);
 
   React.useEffect(() => {
@@ -27,6 +28,16 @@ export default function Home() {
         .catch(() => {});
     });
   }, []);
+
+  const handleRefresh = async () => {
+    const authed = await base44.auth.isAuthenticated();
+    if (authed) {
+      base44.entities.CustomCompanion.list("-created_date", 50)
+        .then(setCustomCompanions)
+        .catch(() => {});
+    }
+    await refreshGreetings();
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -67,6 +78,7 @@ export default function Home() {
         </nav>
         </header>
 
+      <PullToRefresh onRefresh={handleRefresh}>
       {/* Hero */}
       <section className="px-6 pt-12 pb-16 text-center">
         <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-4">
@@ -248,6 +260,8 @@ export default function Home() {
           <MobileAppBadges />
         </div>
       </section>
+
+      </PullToRefresh>
 
       {/* Footer */}
       <footer className="border-t border-border px-6 pt-10 pb-24">

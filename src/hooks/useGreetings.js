@@ -102,5 +102,5 @@ export function useGreetings() {
     loadGreetings();
   }, [loadGreetings]);
 
-  return { greetings, loading };
+  return { greetings, loading, refresh: loadGreetings };
 }

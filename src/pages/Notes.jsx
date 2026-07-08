@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { COMPANIONS } from "@/lib/companions";
 import NoteEditor from "@/components/notes/NoteEditor";
+import PullToRefresh from "@/components/PullToRefresh";
 import { Sparkles, Plus, ArrowLeft, FileText, Heart, User, Globe, Coffee, Trash2, Loader2, Settings } from "lucide-react";
 import {
   AlertDialog,
@@ -115,6 +116,7 @@ export default function Notes() {
         </Link>
       </header>
 
+      <PullToRefresh onRefresh={loadNotes}>
       <div className="max-w-5xl mx-auto px-6 pt-8 pb-24">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -300,6 +302,7 @@ export default function Notes() {
           </div>
         </section>
       </div>
+      </PullToRefresh>
     </div>
   );
 }

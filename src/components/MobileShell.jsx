@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation, useNavigate, Link } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileBottomTabs from "@/components/MobileBottomTabs";
@@ -67,7 +68,17 @@ export default function MobileShell() {
           )}
         </header>
       )}
-      <Outlet />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+        >
+          <Outlet />
+        </motion.div>
+      </AnimatePresence>
       {showTabs && <MobileBottomTabs />}
     </>
   );
