@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Crown, Lock, Plus, Sparkles } from "lucide-react";
 import { CreatePersona } from "@/components/CreatePersona";
 import type { useSubscription } from "@/hooks/use-subscription";
-import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
+import { SiteNav, SiteFooter } from "@/components/SiteChrome";
 
 const base = import.meta.env.BASE_URL;
 const PORTRAITS: Record<string, string> = {
@@ -80,10 +80,10 @@ export function PersonaSelect({ onSelect, subscription, onUpgrade }: Props) {
   }
 
   return (
-    <div className="min-h-[100dvh] flex flex-col items-center p-6">
-      <SiteHeader />
+    <div className="min-h-[100dvh] flex flex-col items-center">
+      <SiteNav />
 
-      <main className="flex w-full flex-1 flex-col items-center justify-center space-y-12 py-10">
+      <main className="flex w-full flex-1 flex-col items-center justify-center space-y-12 py-10 px-6">
         <section className="text-center space-y-4 max-w-xl mx-auto">
           <div className="mx-auto w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center mb-8">
             <Sparkles className="w-8 h-8 text-primary" />
