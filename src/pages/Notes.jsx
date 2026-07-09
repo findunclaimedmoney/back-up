@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { base44 } from "@/api/base44Client";
 import { COMPANIONS } from "@/lib/companions";
 import NoteEditor from "@/components/notes/NoteEditor";
@@ -15,6 +16,7 @@ const TYPE_META = {
 };
 
 export default function Notes() {
+  const goBack = useGoBack();
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -104,14 +106,14 @@ export default function Notes() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="hidden md:flex px-6 py-5 items-center justify-between border-b border-border">
+      <header className="hidden md:flex px-6 py-5 items-center justify-between border-b border-border" style={{ paddingTop: "max(1.25rem, env(safe-area-inset-top))" }}>
         <Link to="/" className="flex items-center gap-2">
           <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-8 w-auto rounded-md" />
         </Link>
-        <Link to="/" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <button onClick={goBack} className="flex items-center gap-1.5 min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors select-none">
           <ArrowLeft className="w-4 h-4" />
           Back
-        </Link>
+        </button>
       </header>
 
       <PullToRefresh onRefresh={loadNotes}>

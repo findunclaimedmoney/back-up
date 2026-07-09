@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Sparkles, ArrowLeft, CheckCircle, Settings, Bitcoin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import TierCard from "@/components/pricing/TierCard";
 import IntimacyAddOnCard from "@/components/pricing/IntimacyAddOnCard";
 import TopUpCard from "@/components/pricing/TopUpCard";
@@ -73,6 +74,7 @@ const TIERS = [
 ];
 
 export default function Pricing() {
+  const goBack = useGoBack();
   const [currentTier, setCurrentTier] = useState("free");
   const [loading, setLoading] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -214,17 +216,17 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="hidden md:flex px-6 py-5 items-center justify-between">
+      <header className="hidden md:flex px-6 py-5 items-center justify-between" style={{ paddingTop: "max(1.25rem, env(safe-area-inset-top))" }}>
         <Link to="/" className="flex items-center gap-2">
           <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png" alt="GLIMR" className="h-8 w-auto rounded-md" />
         </Link>
-        <Link
-          to="/"
-          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        <button
+          onClick={goBack}
+          className="flex items-center gap-1.5 min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors select-none"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
-        </Link>
+        </button>
       </header>
 
             <PullToRefresh onRefresh={handleRefresh}>

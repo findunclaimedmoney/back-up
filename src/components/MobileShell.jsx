@@ -5,6 +5,7 @@ import { ArrowLeft, Settings } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileBottomTabs, { ROOT_PATHS } from "@/components/MobileBottomTabs";
 import SettingsModal from "@/components/SettingsModal";
+import { useGoBack } from "@/hooks/useGoBack";
 
 const SKIP_HEADER_PATTERNS = [
   /^\/chat\//,
@@ -26,6 +27,7 @@ export default function MobileShell() {
   const navigate = useNavigate();
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const goBack = useGoBack();
 
   useEffect(() => {
     const vv = window.visualViewport;
@@ -45,9 +47,6 @@ export default function MobileShell() {
   const showHeader = !skipHeader;
   const showBack = !rootView && !skipHeader;
 const showTabs = rootView && !keyboardOpen;
-  const goBack = () => {
-        if (window.history.length > 1) { navigate(-1); } else { navigate("/"); }
-          };
   return (
     <>
       {showHeader && (

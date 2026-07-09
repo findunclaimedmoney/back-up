@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ArrowRight, MessageCircle, Mic, Video, Crown, Heart, ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useGoBack } from "@/hooks/useGoBack";
 
 const ZAC_VIDEOS = [
   "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/307f5321d_Zac_Shower_Clip.mp4",
@@ -73,12 +74,11 @@ function VideoCard({ videos, name, tagline, description, accentText, chatId }) {
 
 export default function CompanionLanding() {
   const isMobile = useIsMobile();
-const navigate = useNavigate();
-  const goBack = () => { const idx = window.history.state?.idx; if (typeof idx === "number" && idx > 0) { navigate(-1); } else { navigate("/"); } };
+const goBack = useGoBack();
     return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-20 px-6 py-5 flex items-center justify-between">
+      <header className="absolute top-0 left-0 right-0 z-20 px-6 flex items-center justify-between" style={{ paddingTop: "max(1.25rem, env(safe-area-inset-top))", paddingBottom: "1.25rem" }}>
         <Link to="/" className="flex items-center gap-3">
           <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png" alt="GLIMR" className="h-12 w-12 rounded-lg" />
           <span className="font-heading text-2xl font-semibold tracking-tight text-primary">GLIMR</span>

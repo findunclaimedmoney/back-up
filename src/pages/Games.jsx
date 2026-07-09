@@ -60,7 +60,7 @@ export default function Games() {
   if (started && selectedGame) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        <header className="px-6 py-5 flex items-center justify-between border-b border-border">
+        <header className="px-6 py-5 flex items-center justify-between border-b border-border" style={{ paddingTop: "max(1.25rem, env(safe-area-inset-top))" }}>
           <button onClick={exitGame} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-4 h-4" /> Exit game
           </button>
@@ -78,7 +78,7 @@ export default function Games() {
   // Game picker
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="hidden md:flex px-6 py-5 items-center justify-between">
+      <header className="hidden md:flex px-6 py-5 items-center justify-between" style={{ paddingTop: "max(1.25rem, env(safe-area-inset-top))" }}>
         <Link to="/" className="flex items-center gap-2">
           <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-8 w-auto rounded-md" />
           <span className="font-heading text-lg font-semibold tracking-tight">Games</span>

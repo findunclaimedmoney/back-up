@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import AnamView from "@/components/companion/AnamView";
 import { decidePhotoAction, generateCompanionPhoto } from "@/lib/companionPhotos";
 import { getDeviceFingerprint } from "@/lib/deviceFingerprint";
+import { useGoBack } from "@/hooks/useGoBack";
 
 const SUGGESTIONS = [
   "Hey, how's your day going?",
@@ -107,7 +108,7 @@ ${recentExchange}`;
 export default function Chat() {
   const { companionId } = useParams();
 const navigate = useNavigate();
-  const goBack = () => { const idx = window.history.state?.idx; if (typeof idx === "number" && idx > 0) { navigate(-1); } else { navigate("/"); } };
+  const goBack = useGoBack();
   const isCustom = companionId?.startsWith("custom-");
   const customId = isCustom ? companionId.replace("custom-", "") : null;
 
@@ -421,8 +422,8 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="flex-shrink-0 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+      <header className="flex-shrink-0 border-b border-border bg-background/80 backdrop-blur-md" style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}>
+        <div className="max-w-2xl mx-auto px-4 pb-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
 onClick={goBack}              className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-muted transition-colors select-none"
@@ -544,7 +545,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
 
       {/* Input */}
       {dailyLimit > 0 && dailyRemaining !== null && dailyRemaining <= 0 ? (
-        <div className="flex-shrink-0 border-t border-border bg-card px-4 py-6">
+        <div className="flex-shrink-0 border-t border-border bg-card px-4 py-6" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
           <div className="max-w-2xl mx-auto flex flex-col items-center text-center gap-3">
             <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center">
               <Lock className="w-5 h-5 text-primary" />

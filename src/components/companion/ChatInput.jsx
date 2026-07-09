@@ -46,7 +46,7 @@ export default function ChatInput({ onSend, disabled }) {
   }, [text]);
 
   return (
-    <div className="border-t border-border bg-background/80 backdrop-blur-md px-4 py-4">
+    <div className="border-t border-border bg-background/80 backdrop-blur-md px-4 py-4" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
       <div className="max-w-2xl mx-auto">
         {photoPreview && (
           <div className="mb-2 relative inline-block">
