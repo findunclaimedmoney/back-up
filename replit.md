@@ -68,6 +68,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 - HeyGen avatar **group** IDs (same values used in HEYGEN_GROUP_* env vars / hardcoded defaults): Mia=`1602766f0e7344199b7b1a8bcf7b7855`, Oliver=`b88ace7a30a34a76ae92a16dd84c18af`, Sophie=`267832a040cd46998928c37498777215`, James=`9f2454deef0840008f9d6f6753c6de7b` — verified 2026-06-08 via `/v2/avatar_group/{id}/avatars`
 - Oliver's looks were originally named "James in ..." in HeyGen and were renamed in the dashboard on 2026-06-08; server also applies `replace(/^James/i, "Oliver")` as safety net
 - Shotstack: sandbox key → `https://api.shotstack.io/edit/stage`; prod key → `https://api.shotstack.io/edit/v1`; `colour` asset type removed — use `shape`; `fadeOut`/`fadeIn` → `fade`; trim whitespace from keys; HeyGen CDN video URLs expire — always use freshly-generated URLs in Shotstack renders
+- HeyGen `POST /v3/videos` rejects some avatars with `avatar_consent_required` unless a one-time likeness-consent flow has been completed on the account; when adding a new HeyGen video feature, reuse an already-approved avatar ID from `lib/heygen.ts` (e.g. `AVATAR_MIA`) rather than picking a fresh ID off `/v2/avatars` — Glimr's companion video route reuses the LensFlow Mia ID for this reason
+- Glimr companion is a separate product embedded in this same monorepo (`artifacts/api-server/src/routes/companion.ts`, `lib/db/src/schema/companion.ts`); it intentionally does not reuse LensFlow's job/pipeline schema — `companion_subscribers` (billing/tier) replaced the ground-truth export's raw `companion_messages` chat log, which was dropped since the product only needs summarized memory (`companion_sessions.summary`) + structured facts (`companion_facts`)
 
 ## Pointers
 

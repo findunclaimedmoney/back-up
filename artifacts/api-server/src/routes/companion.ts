@@ -1,6 +1,8 @@
 import { Router, type IRouter } from "express";
 import { db, companionSessionsTable, companionFactsTable, companionOutfitsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { generateVoiceover } from "./elevenlabs";
+import { ObjectStorageService } from "../lib/objectStorage";
 import {
   GetPersonasResponse,
   CreateCompanionPersonaBody,
@@ -707,29 +709,44 @@ router.post("/companion/video", async (req, res): Promise<void> => {
     return;
   }
 
-  const AVATAR_ID = "05f1da4dc12744c087dace9e0651a6e0";
+  // Ground-truth Base44 export shares a single avatar across both personas
+  // (mia/alex differ by voice + persona prompt, not visual avatar). The
+  // original hardcoded avatar_id doesn't exist on this HeyGen account. Other
+  // "Mia" library avatars on this account require a one-time likeness-consent
+  // flow before HeyGen will render them, so we reuse the avatar ID already
+  // approved and working for this account (see AVATAR_MIA in lib/heygen.ts).
+  const AVATAR_ID = process.env["HEYGEN_COMPANION_AVATAR_ID"] ?? "bbed326b42fc45778ac396cdc194a0c6";
   const VOICE_MAP: Record<string, string> = {
     mia: process.env["ELEVENLABS_VOICE_ID"] ?? "x3PfG9wL6FOEApZ1VJ9H",
     alex: "pNInz6obpgDQGcFmaJgB",
   };
   const voiceId = VOICE_MAP[personaId] ?? VOICE_MAP["mia"]!;
 
+  const elKey = process.env["ELEVENLABS_API_KEY"];
+  if (!elKey) {
+    res.status(503).json({ error: "ElevenLabs not configured" });
+    return;
+  }
+
   try {
-    const createRes = await fetch("https://api.heygen.com/v2/video/generate", {
+    // HeyGen's v2 video/generate no longer accepts an inline ElevenLabs voice
+    // (`voice.type: "elevenlabs"` was removed from their API) — synthesise the
+    // line ourselves and lip-sync HeyGen's v3 avatar to the resulting audio,
+    // matching the pattern already used by this project's presenter pipeline.
+    const audioBuffer = await generateVoiceover(text.slice(0, 1500), voiceId);
+    const storage = new ObjectStorageService();
+    const audioUrl = await storage.uploadPublicAudio(audioBuffer, `companion-video/${Date.now()}-${personaId}.mp3`);
+
+    const createRes = await fetch("https://api.heygen.com/v3/videos", {
       method: "POST",
       headers: {
         "x-api-key": heygenKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        video_inputs: [
-          {
-            character: { type: "avatar", avatar_id: AVATAR_ID, avatar_style: "normal" },
-            voice: { type: "elevenlabs", voice_id: voiceId, input_text: text },
-            background: { type: "color", value: "#0a0a0a" },
-          },
-        ],
-        dimension: { width: 720, height: 720 },
+        type: "avatar",
+        avatar_id: AVATAR_ID,
+        audio_url: audioUrl,
         aspect_ratio: "1:1",
       }),
     });
@@ -751,7 +768,7 @@ router.post("/companion/video", async (req, res): Promise<void> => {
     let videoUrl: string | null = null;
     for (let attempt = 0; attempt < 20; attempt++) {
       await new Promise((r) => setTimeout(r, 4000));
-      const pollRes = await fetch(`https://api.heygen.com/v1/video_status.get?video_id=${videoId}`, {
+      const pollRes = await fetch(`https://api.heygen.com/v3/videos/${videoId}`, {
         headers: { "x-api-key": heygenKey },
       });
       if (!pollRes.ok) continue;
