@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useGetPersonas } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import { Crown, Lock, Plus, Sparkles, UserCircle, WalletCards } from "lucide-react";
+import { Crown, Lock, Plus, Sparkles } from "lucide-react";
 import { CreatePersona } from "@/components/CreatePersona";
 import type { useSubscription } from "@/hooks/use-subscription";
 import { siteHref } from "@/components/SiteChrome";
@@ -57,7 +57,6 @@ export function PersonaSelect({ onSelect, subscription, onUpgrade }: Props) {
   const [showCreate, setShowCreate] = useState(false);
   const [customPersona, setCustomPersona] = useState<CustomPersona | null>(loadCustomPersona);
   const visiblePersonas = personas && personas.length > 0 ? personas : FALLBACK_PERSONAS;
-  const signedIn = Boolean(subscription.status.email);
 
   const handleCreateClick = () => {
     if (!subscription.canUseCustomPersona) {
@@ -70,6 +69,7 @@ export function PersonaSelect({ onSelect, subscription, onUpgrade }: Props) {
   if (showCreate) {
     return (
       <CreatePersona
+        email={subscription.status.email}
         onComplete={(p) => {
           setCustomPersona(p);
           setShowCreate(false);
@@ -90,18 +90,8 @@ export function PersonaSelect({ onSelect, subscription, onUpgrade }: Props) {
           <span className="text-xl font-semibold tracking-wide">GLIMR</span>
         </a>
         <nav className="flex items-center gap-2">
-          <a className="hidden rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground sm:block" href={siteHref("/features")}>
-            Features
-          </a>
-          <a className="hidden rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground sm:block" href={siteHref("/pricing")}>
+          <a className="rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground" href={siteHref("/pricing")}>
             Pricing
-          </a>
-          <a
-            className="inline-flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/10 px-3 py-2 text-sm text-foreground"
-            href={siteHref(signedIn ? "/account" : "/login")}
-          >
-            <UserCircle className="h-4 w-4 text-primary" />
-            {signedIn ? "Account" : "Sign in"}
           </a>
         </nav>
       </header>
@@ -112,15 +102,7 @@ export function PersonaSelect({ onSelect, subscription, onUpgrade }: Props) {
             <Sparkles className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-4xl font-light tracking-tight md:text-5xl">Choose your presence</h1>
-          <p className="text-muted-foreground text-lg leading-8">
-            Voice, memory, activities, and an account area where customers can manage everything after sign-in.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
-            <span className="rounded-lg border border-white/8 px-3 py-2">Plan</span>
-            <span className="rounded-lg border border-white/8 px-3 py-2">Balance</span>
-            <span className="rounded-lg border border-white/8 px-3 py-2">Credits</span>
-            <span className="rounded-lg border border-white/8 px-3 py-2">Settings</span>
-          </div>
+          <p className="text-muted-foreground text-lg leading-8">Voice, memory, and something that feels real.</p>
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
@@ -220,26 +202,6 @@ export function PersonaSelect({ onSelect, subscription, onUpgrade }: Props) {
               )}
             </>
           )}
-        </section>
-
-        <section className="w-full max-w-4xl rounded-lg border border-white/8 bg-card p-5">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-start gap-3">
-              <WalletCards className="mt-1 h-5 w-5 text-primary" />
-              <div>
-                <h2 className="font-medium">Customer account area</h2>
-                <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  View balance, credits, bonus, settings, plan access, account details, and secure card management.
-                </p>
-              </div>
-            </div>
-            <a
-              className="inline-flex items-center justify-center rounded-lg border border-primary/20 bg-primary/10 px-4 py-2 text-sm text-foreground"
-              href={siteHref(signedIn ? "/account" : "/login")}
-            >
-              {signedIn ? "Open account" : "Sign in"}
-            </a>
-          </div>
         </section>
 
         <div className="text-center">
