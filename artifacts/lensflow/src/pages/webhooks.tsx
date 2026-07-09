@@ -35,7 +35,7 @@ export default function Webhooks() {
   const [showForm, setShowForm] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema as any),
     defaultValues: { url: "", events: ["job.complete", "job.failed"], secret: "" },
   });
 

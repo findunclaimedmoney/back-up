@@ -106,6 +106,51 @@ router.post("/stripe/portal", async (req: Request, res: Response) => {
   }
 });
 
+// POST /api/stripe/credit-checkout — requires auth; creates one-time checkout for credit packs
+router.post("/stripe/credit-checkout", async (req: Request, res: Response) => {
+  const user = (req as any).user;
+  if (!user?.id) { res.status(401).json({ error: "Not authenticated" }); return; }
+
+  const { packId } = req.body as { packId?: string };
+  if (!packId) { res.status(400).json({ error: "packId is required" }); return; }
+
+  // Credit pack price IDs (Stripe one-time prices). In production these would be env vars.
+  const CREDIT_PACKS: Record<string, { priceId: string; credits: number }> = {
+    starter: { priceId: "price_credit_starter", credits: 100 },
+    pro:     { priceId: "price_credit_pro",     credits: 500 },
+    agency:  { priceId: "price_credit_agency",  credits: 2000 },
+  };
+
+  const pack = CREDIT_PACKS[packId];
+  if (!pack) { res.status(400).json({ error: "Unknown pack" }); return; }
+
+  try {
+    const dbUser = await stripeStorage.getUser(user.id);
+    let customerId = dbUser?.stripeCustomerId ?? null;
+    if (!customerId) {
+      const customer = await stripeService.createCustomer(
+        dbUser?.email ?? user.email ?? "",
+        user.id
+      );
+      await stripeStorage.updateUserStripeInfo(user.id, { stripeCustomerId: customer.id });
+      customerId = customer.id;
+    }
+
+    const origin = `${req.protocol}://${req.get("host")}`;
+    const session = await stripeService.createCheckoutSession(
+      customerId,
+      pack.priceId,
+      `${origin}/pipeline/billing?credits=success`,
+      `${origin}/pipeline/billing?credits=cancel`
+    );
+
+    res.json({ url: session.url });
+  } catch (err) {
+    logger.error({ err }, "stripe/credit-checkout error");
+    res.status(500).json({ error: "Failed to create credit checkout" });
+  }
+});
+
 // GET /api/stripe/subscription — requires auth; returns current subscription
 router.get("/stripe/subscription", async (req: Request, res: Response) => {
   const user = (req as any).user;

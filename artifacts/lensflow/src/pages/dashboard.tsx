@@ -1,42 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { useGetJobStats, useGetMarketBrief, useRefreshMarketBrief, getGetMarketBriefQueryKey } from "@workspace/api-client-react";
 import { Link } from "wouter";
-import { ChevronDown, TrendingUp, TrendingDown, Minus, RefreshCw, MapPin, MessageSquare, BarChart2, ArrowRight, Play } from "lucide-react";
+import {
+  ChevronDown, TrendingUp, TrendingDown, Minus, RefreshCw, MapPin,
+  MessageSquare, BarChart2, Play, Sparkles, Link2, ImageIcon, Video,
+  Mic, ArrowRight, Clock, Globe, CheckCircle2, DollarSign, Zap,
+  ChevronRight, Wallet,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import buildKitImage from "@assets/LensFlow-The-Build-Kit-every-tool-you-need_1780215479239.png";
 import { useAuth } from "@workspace/replit-auth-web";
 import { useQueryClient } from "@tanstack/react-query";
 
-// ── Cosmic palette ────────────────────────────────────────────────────────────
+// ── V2 Premium palette ────────────────────────────────────────────────────────────────
 const C = {
-  paper:     "#0a0d1a",
-  panel:     "#0d1120",
+  bg:        "#070710",
+  panel:     "#0d0d18",
   card:      "#10162a",
-  deep:      "#151b31",
-  line:      "#1a213a",
+  line:      "#1a1a2e",
+  gold:      "#f59e0b",
+  goldDark:  "#d97706",
+  goldLight: "#fbbf24",
   ink:       "#f9f3ea",
-  text:      "#f2ecdf",
-  muted:     "#8f99b2",
-  goldLight: "#dfb44d",
-  gold:      "#c99a2e",
-  goldDark:  "#8d6c20",
+  text:      "#e5e7eb",
+  muted:     "#6b7280",
+  blue:      "#60a5fa",
+  green:     "#34d399",
+  purple:    "#a78bfa",
 };
-
-const PROPERTY_IMAGES = [
-  "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=82",
-  "https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=900&q=82",
-  "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=900&q=82",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=82",
-  "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=900&q=82",
-];
 
 type Presenter = "Mia" | "Oliver" | "Sophie" | "James";
 
 const PRESENTER_GRADIENT: Record<Presenter, string> = {
-  Mia:    "linear-gradient(135deg, #151b31 0%, #2a1535 55%, #c99a2e 100%)",
-  Oliver: "linear-gradient(135deg, #151b31 0%, #132a2a 55%, #c99a2e 100%)",
-  Sophie: "linear-gradient(135deg, #151b31 0%, #1f1535 55%, #8d6c20 100%)",
-  James:  "linear-gradient(135deg, #151b31 0%, #152235 55%, #c99a2e 100%)",
+  Mia:    "linear-gradient(135deg, #151b31 0%, #2a1535 55%, #f59e0b 100%)",
+  Oliver: "linear-gradient(135deg, #151b31 0%, #132a2a 55%, #f59e0b 100%)",
+  Sophie: "linear-gradient(135deg, #151b31 0%, #1f1535 55%, #d97706 100%)",
+  James:  "linear-gradient(135deg, #151b31 0%, #152235 55%, #f59e0b 100%)",
 };
 
 const PRESENTER_DESC: Record<Presenter, string> = {
@@ -46,6 +44,13 @@ const PRESENTER_DESC: Record<Presenter, string> = {
   James:  "Authoritative and sharp. Best for prestige, coastal and inner-city listings.",
 };
 
+const PROPERTY_IMAGES = [
+  "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=82",
+  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=82",
+  "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=900&q=82",
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=82",
+];
+
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 12) return "Good morning";
@@ -53,212 +58,178 @@ function getGreeting() {
   return "Good evening";
 }
 
-// ── Eyebrow label (gold bar + uppercase text) ─────────────────────────────────
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ display: "inline-flex", alignItems: "center", gap: 8, color: C.goldDark, fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1 }}>
-      <div style={{ width: 24, height: 2, background: C.gold, flexShrink: 0 }} />
-      {children}
-    </div>
-  );
+// ── Credit balance hook (manual fetch until codegen) ───────────────────────────────────────
+function useCreditBalance() {
+  const [balance, setBalance] = React.useState<number | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  useEffect(() => {
+    fetch("/api/credits/balance", { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setBalance(d.balance); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+  return { balance, loading };
 }
 
-// ── Ghost button ──────────────────────────────────────────────────────────────
-function Ghost({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "9px 14px", background: C.card, color: C.text, fontWeight: 700, cursor: "pointer", fontSize: 13, whiteSpace: "nowrap" }}
-    >
-      {children}
-    </button>
-  );
+// ── Trend icon helper ────────────────────────────────────────────────────────────────────────────
+function TrendIcon({ trend }: { trend: string }) {
+  const cls = "w-3.5 h-3.5";
+  if (trend === "up") return <TrendingUp className={cls} style={{ color: C.green }} />;
+  if (trend === "down") return <TrendingDown className={cls} style={{ color: "#f87171" }} />;
+  return <Minus className={cls} style={{ color: C.muted }} />;
 }
 
+// ── Main Dashboard ───────────────────────────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const { data: stats, isLoading } = useGetJobStats();
   const { user } = useAuth();
+  const { balance: creditBalance } = useCreditBalance();
   const firstName = user?.firstName ?? user?.email?.split("@")[0] ?? null;
-  const [selectedPresenter, setSelectedPresenter] = useState<"Mia" | "Oliver" | "Sophie" | "James">("Mia");
+  const [selectedPresenter, setSelectedPresenter] = useState<Presenter>("Mia");
 
   const completed = stats?.complete ?? 0;
-  const estimatedReach = completed * 5400;
 
   if (isLoading) {
     return (
-      <div style={{ padding: 24, display: "grid", gap: 16 }}>
-        {[1, 2, 3].map(i => (
-          <div key={i} style={{ height: i === 1 ? 310 : 96, background: C.panel, borderRadius: 8, animation: "pulse 2s infinite" }} />
+      <div className="p-6 space-y-5">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="rounded-xl animate-pulse" style={{ height: i === 1 ? 260 : 96, background: C.panel }} />
         ))}
       </div>
     );
   }
 
   return (
-    <div style={{ color: C.text, fontFamily: "inherit" }}>
+    <div className="space-y-5 pb-8">
 
-      {/* ── Topbar ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20, padding: "14px 0 20px" }}>
+      {/* Top bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          {firstName && <div style={{ color: C.muted, fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>{getGreeting()}, {firstName}</div>}
-          <div style={{ color: C.ink, fontSize: 22, fontWeight: 800 }}>Create Campaign is the main event</div>
+          <span className="text-xs font-mono" style={{ color: C.muted }}>
+            {getGreeting()}{firstName ? `, ${firstName}` : ""}
+          </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 12px", border: `1px solid ${C.line}`, borderRadius: 8, background: "rgba(13,17,32,0.9)", flexShrink: 0 }}>
-          <div style={{ width: 34, height: 34, borderRadius: 8, background: `linear-gradient(135deg, ${C.panel}, ${C.gold})`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, color: "white" }}>
-            {selectedPresenter[0]}
-          </div>
-          <div>
-            <div style={{ color: C.ink, fontSize: 13, fontWeight: 700 }}>AI Presenter Ready</div>
-            <div style={{ color: C.gold, fontSize: 12, fontWeight: 700 }}>{selectedPresenter} selected</div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Hero ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 360px", gap: 22, marginBottom: 20 }}>
-
-        {/* Property photo + headline */}
-        <div style={{
-          minHeight: 300,
-          padding: 34,
-          borderRadius: 8,
-          color: "white",
-          background: `linear-gradient(90deg, rgba(10,13,26,0.92), rgba(10,13,26,0.48)), url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=82') center / cover`,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-end",
-          boxShadow: "0 18px 45px rgba(0,0,0,0.18)",
-        }}>
-          <h1 style={{ margin: "0 0 12px", fontSize: "clamp(30px,4vw,52px)", lineHeight: 1, letterSpacing: 0, fontWeight: 900 }}>
-            Create Luxury Property Campaigns in Minutes
-          </h1>
-          <p style={{ maxWidth: 620, margin: 0, color: "rgba(255,255,255,0.82)", fontSize: 16, lineHeight: 1.5 }}>
-            Turn listings, photos and videos into AI-powered marketing campaigns, social reels and property presentations.
-          </p>
-        </div>
-
-        {/* Launcher panel */}
-        <div style={{ padding: 22, borderRadius: 8, background: C.panel, border: `1px solid ${C.line}`, boxShadow: "0 18px 45px rgba(0,0,0,0.18)" }}>
-          <Eyebrow>Start New Campaign</Eyebrow>
-          <h2 style={{ margin: "10px 0 14px", color: C.ink, fontSize: 22, lineHeight: 1.12, fontWeight: 800 }}>Generate Property Campaign</h2>
-          <div style={{ display: "grid", gap: 8, margin: "16px 0" }}>
-            <label style={{ color: C.muted, fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.5 }}>Property URL</label>
-            <Link href="/jobs/new">
-              <div style={{ width: "100%", border: `1px solid ${C.line}`, borderRadius: 8, padding: "12px 14px", background: C.card, color: C.muted, fontSize: 14, cursor: "pointer" }}>
-                https://domain.com.au/your-listing
-              </div>
-            </Link>
-          </div>
+        <div className="flex items-center gap-3">
+          {creditBalance !== null && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono border" style={{ borderColor: C.line, background: C.panel, color: C.gold }}>
+              <Wallet className="w-3.5 h-3.5" />
+              {creditBalance} credits
+            </div>
+          )}
           <Link href="/jobs/new">
-            <button
-              style={{
-                width: "100%", border: 0, borderRadius: 8, padding: "14px 18px", color: "white",
-                background: `linear-gradient(135deg, ${C.goldLight}, ${C.gold} 48%, ${C.goldDark})`,
-                fontWeight: 800, cursor: "pointer", fontSize: 15,
-                boxShadow: "0 14px 28px rgba(143,103,29,0.28)",
-              }}
-            >
-              Generate Property Campaign
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all hover:scale-105" style={{ background: C.gold, color: "#000" }}>
+              <Sparkles className="w-3.5 h-3.5" />
+              New Campaign
             </button>
           </Link>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 16 }}>
-            {[
-              { tag: "URL", label: "Property URL", href: "/jobs/new" },
-              { tag: "IMG", label: "Upload Photos", href: "/jobs/new" },
-              { tag: "VID", label: "Upload Video", href: "/jobs/new" },
-              { tag: "REC", label: "Record with Teleprompter", href: "/teleprompter" },
-            ].map(({ tag, label, href }) => (
-              <Link key={tag} href={href}>
-                <div style={{ minHeight: 70, border: `1px solid ${C.line}`, borderRadius: 8, background: C.card, padding: 12, display: "flex", flexDirection: "column", justifyContent: "space-between", cursor: "pointer" }}>
-                  <div style={{ width: 26, height: 26, borderRadius: 8, background: C.deep, color: C.goldDark, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 900 }}>{tag}</div>
-                  <strong style={{ color: C.ink, fontSize: 13 }}>{label}</strong>
-                </div>
-              </Link>
-            ))}
-          </div>
         </div>
       </div>
 
-      {/* ── Advantage strip ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 0, marginBottom: 20, padding: "0 4px", flexWrap: "wrap" as const }}>
-        {[
-          "AI Script Writer",
-          "AI Presenters",
-          "Teleprompter",
-          "Social Reels",
-          "Property Videos",
-          "Listing Campaigns",
-        ].map((feat, i, arr) => (
-          <React.Fragment key={feat}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", background: i % 2 === 0 ? C.panel : "transparent", borderRadius: 8, border: i % 2 === 0 ? `1px solid ${C.line}` : "none" }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <circle cx="7" cy="7" r="7" fill={C.gold} fillOpacity="0.18" />
-                <path d="M4 7l2 2 4-4" stroke={C.gold} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span style={{ color: C.ink, fontSize: 13, fontWeight: 700, whiteSpace: "nowrap" as const }}>{feat}</span>
-            </div>
-            {i < arr.length - 1 && <div style={{ width: 1, height: 20, background: C.line, margin: "0 2px", flexShrink: 0 }} />}
-          </React.Fragment>
-        ))}
-      </div>
-
-      {/* ── Metrics ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 14, marginBottom: 20 }}>
-        {[
-          { val: completed.toString(), label: "Campaigns Created" },
-          { val: (stats?.scriptsGenerated ?? 0).toString(), label: "Listings Processed" },
-          { val: `${stats?.timeSavedHours ?? 0}h`, label: "Time Saved" },
-          { val: estimatedReach > 0 ? `${Math.round(estimatedReach / 1000)}k` : "—", label: "Estimated Reach" },
-        ].map(({ val, label }) => (
-          <div key={label} style={{ padding: 18, border: `1px solid ${C.line}`, borderRadius: 8, background: "rgba(13,17,32,0.92)" }}>
-            <strong style={{ display: "block", color: C.ink, fontSize: 30, lineHeight: 1, marginBottom: 8 }}>{val}</strong>
-            <span style={{ color: C.muted, fontSize: 13, fontWeight: 700 }}>{label}</span>
+      {/* Hero banner */}
+      <div className="relative rounded-2xl overflow-hidden border p-6 sm:p-8" style={{ borderColor: `${C.gold}25`, background: `linear-gradient(135deg, #0f0d1a 0%, #070710 50%, #0a0a14 100%)` }}>
+        <div className="absolute top-0 right-0 w-72 h-72 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" style={{ background: `${C.gold}08` }} />
+        <div className="absolute bottom-0 left-1/3 w-48 h-48 rounded-full blur-3xl translate-y-1/2" style={{ background: `${C.purple}06` }} />
+        <div className="relative">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 text-[11px] font-mono uppercase tracking-widest" style={{ background: `${C.gold}10`, border: `1px solid ${C.gold}25`, color: C.gold }}>
+            <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.gold }} />
+            AI Property Marketing
           </div>
-        ))}
-      </div>
-
-      {/* ── Main grid ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.4fr) minmax(280px,0.6fr)", gap: 20, alignItems: "start" }}>
-
-        {/* Left: campaigns + market intelligence */}
-        <div>
-
-          {/* Recent Campaigns heading */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, marginBottom: 14 }}>
-            <div>
-              <h2 style={{ color: C.ink, margin: "0 0 4px", fontSize: 22, fontWeight: 800 }}>Recent Campaigns</h2>
-              <p style={{ margin: 0, color: C.muted, fontSize: 13, lineHeight: 1.45 }}>Your latest property marketing campaigns.</p>
-            </div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-none mb-3" style={{ color: C.ink }}>
+            Your Property Marketing<br />
+            <span style={{ color: C.gold }}>Operating System</span>
+          </h1>
+          <p className="text-sm leading-relaxed mb-5 max-w-lg" style={{ color: C.muted }}>
+            From listing URL to professional presenter video with AI script, ElevenLabs voiceover, and full social media pack — in under 5 minutes.
+          </p>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Link href="/jobs/new">
+              <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg transition-all hover:scale-105" style={{ background: C.gold, color: "#000", boxShadow: `0 10px 30px ${C.gold}30` }}>
+                <Sparkles className="w-4 h-4" />
+                Generate Property Campaign
+              </button>
+            </Link>
             <Link href="/jobs">
-              <Ghost>View All</Ghost>
+              <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm transition-colors hover:border-white/20" style={{ borderColor: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)" }}>
+                <Play className="w-4 h-4" />
+                Watch Examples
+              </button>
             </Link>
           </div>
+        </div>
 
-          {/* Campaign cards or empty state */}
-          {(stats?.recentJobs?.length ?? 0) === 0 ? (
-            <div style={{ padding: "48px 24px", border: `1px solid ${C.line}`, borderRadius: 8, background: C.panel, textAlign: "center", marginBottom: 24 }}>
-              <div style={{ width: 48, height: 48, borderRadius: "50%", background: `${C.gold}18`, border: `1px solid ${C.gold}30`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
-                <Play style={{ width: 20, height: 20, color: C.gold, marginLeft: 2 }} />
+        {/* Quick actions row */}
+        <div className="relative grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+          {[
+            { icon: Link2, label: "Property URL", sub: "Paste listing" },
+            { icon: ImageIcon, label: "Photo Campaign", sub: "Upload images" },
+            { icon: Video, label: "Video Upload", sub: "Your footage" },
+            { icon: Mic, label: "Teleprompter", sub: "Self-record mode" },
+          ].map(({ icon: Icon, label, sub }) => (
+            <Link key={label} href="/jobs/new">
+              <div className="group flex items-center gap-3 p-3 rounded-xl border transition-all text-left cursor-pointer hover:border-opacity-30" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)" }}>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors" style={{ background: `${C.gold}10` }}>
+                  <Icon className="w-4 h-4" style={{ color: C.gold }} />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold" style={{ color: "#fff" }}>{label}</p>
+                  <p className="text-[10px]" style={{ color: C.muted }}>{sub}</p>
+                </div>
               </div>
-              <p style={{ color: C.ink, fontWeight: 700, margin: "0 0 6px" }}>No campaigns yet</p>
-              <p style={{ color: C.muted, fontSize: 13, margin: "0 0 18px", maxWidth: 320, marginLeft: "auto", marginRight: "auto" }}>
-                Paste a property listing URL and LensFlow will write the script, record the voiceover, and render a presenter video.
-              </p>
-              <Link href="/jobs/new">
-                <button style={{ border: 0, borderRadius: 8, padding: "12px 22px", color: "white", background: `linear-gradient(135deg, ${C.goldLight}, ${C.gold} 48%, ${C.goldDark})`, fontWeight: 800, cursor: "pointer", fontSize: 14 }}>
-                  Generate Your First Campaign
-                </button>
-              </Link>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          { title: "Campaigns Created", value: completed.toString(), sub: `${stats?.processing ?? 0} active`, icon: CheckCircle2, accent: C.gold },
+          { title: "Scripts Generated", value: (stats?.scriptsGenerated ?? 0).toString(), sub: "AI written", icon: Zap, accent: C.blue },
+          { title: "Hours Saved", value: `${stats?.timeSavedHours ?? 0}h`, sub: "vs manual", icon: Clock, accent: C.green },
+          { title: "Credit Balance", value: creditBalance !== null ? `${creditBalance}` : "—", sub: "available", icon: DollarSign, accent: C.purple },
+        ].map(({ title, value, sub, icon: Icon, accent }) => (
+          <div key={title} className="rounded-xl p-4 relative overflow-hidden border" style={{ background: C.panel, borderColor: "rgba(255,255,255,0.04)" }}>
+            <div className="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${accent}15` }}>
+              <Icon className="w-4 h-4" style={{ color: accent }} />
             </div>
-          ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 14, marginBottom: 24 }}>
-              {(stats?.recentJobs ?? []).slice(0, 3).map((job, i) => {
+            <p className="text-[11px] font-mono uppercase tracking-wider mb-2" style={{ color: accent }}>{title}</p>
+            <p className="text-2xl sm:text-3xl font-black font-mono mb-1" style={{ color: C.ink }}>{value}</p>
+            <p className="text-[11px] font-mono" style={{ color: C.muted }}>{sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Main grid: campaigns + presenter */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        {/* Recent Campaigns */}
+        <div className="lg:col-span-2 rounded-xl border overflow-hidden" style={{ background: C.panel, borderColor: "rgba(255,255,255,0.04)" }}>
+          <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+            <span className="text-xs font-mono font-semibold uppercase tracking-wider" style={{ color: C.text }}>Recent Campaigns</span>
+            <Link href="/jobs">
+              <span className="text-xs font-mono cursor-pointer" style={{ color: C.gold }}>View all →</span>
+            </Link>
+          </div>
+          <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.03)" }}>
+            {(stats?.recentJobs?.length ?? 0) === 0 ? (
+              <div className="p-8 text-center">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: `${C.gold}15`, border: `1px solid ${C.gold}25` }}>
+                  <Play className="w-5 h-5" style={{ color: C.gold, marginLeft: 2 }} />
+                </div>
+                <p className="font-semibold mb-1" style={{ color: C.ink }}>No campaigns yet</p>
+                <p className="text-sm mb-4" style={{ color: C.muted }}>Paste a property listing URL to get started.</p>
+                <Link href="/jobs/new">
+                  <button className="px-4 py-2 rounded-lg text-sm font-bold" style={{ background: C.gold, color: "#000" }}>Generate Your First Campaign</button>
+                </Link>
+              </div>
+            ) : (
+              (stats?.recentJobs ?? []).slice(0, 4).map((job) => {
                 const statusColors: Record<string, string> = {
                   complete: C.gold,
-                  processing: "#1269cf",
+                  processing: "#60a5fa",
                   queued: "#a78bfa",
-                  failed: "#ef4444",
+                  failed: "#f87171",
                 };
                 const statusLabels: Record<string, string> = {
                   complete: "Ready",
@@ -267,173 +238,106 @@ export default function Dashboard() {
                   failed: "Failed",
                 };
                 const color = statusColors[job.status] ?? C.muted;
-                const fallbackImg = PROPERTY_IMAGES[i % PROPERTY_IMAGES.length];
                 const videoUrl = (job as unknown as { videoUrl?: string }).videoUrl;
                 const hasVideo = job.status === "complete" && videoUrl;
-                const tags = job.status === "complete"
-                  ? ["Reel", "Script", "Voiceover"]
-                  : job.status === "processing"
-                  ? ["Script", "Voiceover"]
-                  : ["Script"];
                 return (
                   <Link key={job.id} href={`/jobs/${job.id}`}>
-                    <article style={{ border: `1px solid ${C.line}`, borderRadius: 8, overflow: "hidden", background: C.panel, cursor: "pointer", transition: "border-color 0.2s" }}>
-                      <div style={{ aspectRatio: "16/10", position: "relative", background: "black" }}>
-                        {hasVideo ? (
-                          <video
-                            src={videoUrl}
-                            muted
-                            loop
-                            playsInline
-                            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                            onMouseEnter={e => (e.currentTarget as HTMLVideoElement).play()}
-                            onMouseLeave={e => { (e.currentTarget as HTMLVideoElement).pause(); (e.currentTarget as HTMLVideoElement).currentTime = 0; }}
-                          />
-                        ) : (
-                          <div style={{ width: "100%", height: "100%", backgroundImage: `url('${fallbackImg}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
-                        )}
-                        {hasVideo && (
-                          <div style={{ position: "absolute", bottom: 8, right: 8, background: "rgba(0,0,0,0.7)", borderRadius: 4, padding: "3px 7px", display: "flex", alignItems: "center", gap: 4 }}>
-                            <svg width="8" height="8" viewBox="0 0 8 8" fill={C.gold}><polygon points="1,0 7,4 1,8" /></svg>
-                            <span style={{ color: "white", fontSize: 10, fontWeight: 700 }}>Preview</span>
-                          </div>
-                        )}
+                    <div className="flex items-center gap-4 px-4 py-3 hover:bg-white/[0.02] cursor-pointer transition-colors">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style={{ background: `${color}15`, border: `1px solid ${color}30`, color }}>
+                        {hasVideo ? <Play className="w-3 h-3" /> : (job.listingTitle?.[0] ?? "C")}
                       </div>
-                      <div style={{ padding: 14 }}>
-                        <div style={{ display: "inline-flex", alignItems: "center", gap: 7, color, fontSize: 12, fontWeight: 850, textTransform: "uppercase", marginBottom: 8 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: "50%", background: color }} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate" style={{ color: C.ink }}>{job.listingTitle || job.listingUrl || `Campaign ${job.id.slice(0, 8)}`}</p>
+                        <p className="text-[11px] font-mono" style={{ color: C.muted }}>{job.status} · {formatDistanceToNow(new Date(job.createdAt), { addSuffix: true })}</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-mono border uppercase tracking-wider" style={{ background: `${color}10`, color, borderColor: `${color}25` }}>
                           {statusLabels[job.status] ?? job.status}
-                        </div>
-                        <h3 style={{ color: C.ink, margin: "0 0 10px", fontSize: 15, lineHeight: 1.2, fontWeight: 700 }}>
-                          {job.listingTitle || job.listingUrl || `Campaign ${job.id.slice(0, 8)}`}
-                        </h3>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
-                          {tags.map(t => (
-                            <span key={t} style={{ display: "inline-flex", border: `1px solid ${C.line}`, borderRadius: 999, padding: "4px 9px", background: C.card, color: C.muted, fontSize: 12, fontWeight: 700 }}>{t}</span>
-                          ))}
-                          <span style={{ display: "inline-flex", border: `1px solid ${C.line}`, borderRadius: 999, padding: "4px 9px", background: C.card, color: C.muted, fontSize: 12, fontWeight: 700 }}>
-                            {formatDistanceToNow(new Date(job.createdAt), { addSuffix: true })}
-                          </span>
-                        </div>
-                        <div style={{ display: "flex", gap: 8 }}>
-                          <div style={{ flex: 1, border: `1px solid ${C.line}`, background: C.card, borderRadius: 8, padding: "8px 6px", color: C.text, fontWeight: 800, cursor: "pointer", fontSize: 12, textAlign: "center" }}>View Campaign</div>
-                        </div>
+                        </span>
                       </div>
-                    </article>
+                      <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "#374151" }} />
+                    </div>
                   </Link>
                 );
-              })}
-            </div>
-          )}
-
-          {/* Market Intelligence */}
-          <MarketBriefCard />
-
-          {/* Sample videos & roadmap — collapsed */}
-          <div style={{ marginTop: 20, display: "grid", gap: 12 }}>
-            <SampleVideos />
-            <RoadmapCard />
+              })
+            )}
           </div>
         </div>
 
-        {/* Right sidebar */}
-        <div style={{ display: "grid", gap: 20 }}>
+        {/* Right column */}
+        <div className="space-y-5">
 
           {/* Presenter panel */}
-          <div style={{ border: `1px solid ${C.line}`, borderRadius: 8, background: C.panel, padding: 18 }}>
-            <Eyebrow>AI Presenter Ready</Eyebrow>
-
-            {/* Selected presenter hero */}
-            <div style={{ display: "grid", gridTemplateColumns: "72px minmax(0,1fr)", gap: 12, alignItems: "center", marginTop: 14 }}>
-              <div style={{
-                width: 72, height: 80, borderRadius: 8, flexShrink: 0,
-                background: PRESENTER_GRADIENT[selectedPresenter],
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 26, fontWeight: 900, color: C.goldLight,
-              }}>
-                {selectedPresenter[0]}
-              </div>
-              <div>
-                <h3 style={{ color: C.ink, margin: "0 0 4px", fontSize: 17, fontWeight: 800 }}>{selectedPresenter}</h3>
-                <p style={{ margin: 0, color: C.muted, lineHeight: 1.4, fontSize: 12 }}>
-                  {PRESENTER_DESC[selectedPresenter]}
-                </p>
-              </div>
+          <div className="rounded-xl border p-4" style={{ background: C.panel, borderColor: "rgba(255,255,255,0.04)" }}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-mono font-semibold uppercase tracking-wider" style={{ color: C.gold }}>AI Presenters</span>
+              <span className="text-[10px] font-mono border px-1.5 py-0.5 rounded" style={{ color: "#34d399", borderColor: "rgba(52,211,153,0.2)", background: "rgba(52,211,153,0.06)" }}>4 Ready</span>
             </div>
-
-            {/* 2×2 picker grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 14 }}>
-              {(["Mia", "Oliver", "Sophie", "James"] as const).map(p => (
+            <div className="space-y-2">
+              {(["Mia", "Oliver", "Sophie", "James"] as Presenter[]).map((p) => (
                 <button
                   key={p}
-                  type="button"
                   onClick={() => setSelectedPresenter(p)}
+                  className="w-full flex items-center gap-3 p-2.5 rounded-lg border transition-all text-left cursor-pointer"
                   style={{
-                    border: selectedPresenter === p ? `1px solid ${C.gold}` : `1px solid ${C.line}`,
-                    borderRadius: 8, padding: "9px 6px",
-                    background: selectedPresenter === p ? `${C.gold}18` : C.card,
-                    color: selectedPresenter === p ? C.goldLight : C.muted,
-                    fontWeight: 800, cursor: "pointer", fontSize: 13,
-                    transition: "all 0.15s",
+                    background: selectedPresenter === p ? `${C.gold}10` : "rgba(255,255,255,0.02)",
+                    borderColor: selectedPresenter === p ? `${C.gold}30` : "rgba(255,255,255,0.04)",
                   }}
                 >
-                  {p}
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0" style={{ background: PRESENTER_GRADIENT[p], border: `1px solid ${selectedPresenter === p ? C.gold : "rgba(255,255,255,0.1)"}` }}>
+                    {p[0]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold" style={{ color: selectedPresenter === p ? C.ink : C.text }}>{p}</p>
+                    <p className="text-[11px] truncate" style={{ color: C.muted }}>{PRESENTER_DESC[p].split(". ")[0]}</p>
+                  </div>
+                  {selectedPresenter === p && <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: C.gold }} />}
                 </button>
               ))}
             </div>
             <Link href="/jobs/new">
-              <button
-                type="button"
-                style={{
-                  width: "100%", border: 0, borderRadius: 8, padding: "12px 18px", color: "white", marginTop: 10,
-                  background: `linear-gradient(135deg, ${C.goldLight}, ${C.gold} 48%, ${C.goldDark})`,
-                  fontWeight: 800, cursor: "pointer", fontSize: 14,
-                  boxShadow: "0 8px 20px rgba(143,103,29,0.22)",
-                }}
-              >
+              <button className="w-full mt-3 py-2.5 rounded-lg text-sm font-bold transition-all hover:scale-[1.02]" style={{ background: `linear-gradient(135deg, ${C.goldLight}, ${C.gold} 48%, ${C.goldDark})`, color: "#000", boxShadow: `0 8px 20px ${C.gold}22` }}>
                 Generate with {selectedPresenter}
               </button>
             </Link>
           </div>
 
-          {/* Marketing value panel */}
-          <div style={{ border: `1px solid ${C.line}`, borderRadius: 8, background: C.panel, padding: 18 }}>
-            <Eyebrow>Marketing Value Generated</Eyebrow>
-            <div style={{ display: "grid", gap: 12, marginTop: 14 }}>
+          {/* Marketing value */}
+          <div className="rounded-xl border p-4" style={{ background: C.panel, borderColor: "rgba(255,255,255,0.04)" }}>
+            <p className="text-xs font-mono font-semibold uppercase tracking-wider mb-3" style={{ color: C.gold }}>Marketing Value</p>
+            <div className="space-y-3">
               {[
                 { label: "Script Creation", val: 50 },
                 { label: "Voiceover", val: 75 },
                 { label: "Video Editing", val: 250 },
-                { label: "Social Media Package", val: 150 },
+                { label: "Social Package", val: 150 },
               ].map(({ label, val }) => (
-                <div key={label} style={{ display: "flex", justifyContent: "space-between", color: C.muted, paddingBottom: 9, borderBottom: `1px solid ${C.line}` }}>
-                  <span style={{ fontSize: 14 }}>{label}</span>
-                  <strong style={{ color: C.ink, fontWeight: 800 }}>${completed > 0 ? (val * completed).toLocaleString() : val}</strong>
+                <div key={label} className="flex justify-between items-center pb-2 border-b last:border-0" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+                  <span className="text-sm" style={{ color: C.muted }}>{label}</span>
+                  <strong className="font-extrabold" style={{ color: C.ink }}>${completed > 0 ? (val * completed).toLocaleString() : val}</strong>
                 </div>
               ))}
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 14 }}>
-              <span style={{ fontSize: 13, color: C.muted }}>{completed > 0 ? `${completed} campaign${completed !== 1 ? "s" : ""}` : "Per campaign"}</span>
-              <strong style={{ fontSize: 32, fontWeight: 900, color: C.ink }}>
-                ${(completed > 0 ? completed * 525 : 525).toLocaleString()}
-              </strong>
+            <div className="flex justify-between items-baseline mt-3 pt-2" style={{ borderTop: `1px solid rgba(255,255,255,0.04)` }}>
+              <span className="text-xs" style={{ color: C.muted }}>{completed > 0 ? `${completed} campaign${completed !== 1 ? "s" : ""}` : "Per campaign"}</span>
+              <strong className="text-2xl font-black" style={{ color: C.ink }}>${(completed > 0 ? completed * 525 : 525).toLocaleString()}</strong>
             </div>
           </div>
 
         </div>
       </div>
+
+      {/* Market Intelligence */}
+      <MarketBriefCard />
+
+      {/* Sample videos */}
+      <SampleVideos />
+
     </div>
   );
 }
 
-// ── Market Brief (reskinned, logic untouched) ─────────────────────────────────
-function TrendIcon({ trend }: { trend: string }) {
-  const s = { width: 14, height: 14 };
-  if (trend === "up") return <TrendingUp style={{ ...s, color: "#34d399" }} />;
-  if (trend === "down") return <TrendingDown style={{ ...s, color: "#f87171" }} />;
-  return <Minus style={{ ...s, color: C.muted }} />;
-}
-
+// ── Market Brief Card ────────────────────────────────────────────────────────────────────────────────────────
 function MarketBriefCard() {
   const queryClient = useQueryClient();
   const { data: brief, isLoading, isError } = useGetMarketBrief();
@@ -448,58 +352,44 @@ function MarketBriefCard() {
   }
 
   return (
-    <div style={{ border: `1px solid ${C.line}`, borderRadius: 8, background: C.panel, overflow: "hidden" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: `1px solid ${C.line}` }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <BarChart2 style={{ width: 14, height: 14, color: C.gold }} />
-          <Eyebrow>AU Market Intelligence</Eyebrow>
+    <div className="rounded-xl border overflow-hidden" style={{ background: C.panel, borderColor: "rgba(255,255,255,0.04)" }}>
+      <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+        <div className="flex items-center gap-2">
+          <BarChart2 className="w-4 h-4" style={{ color: C.gold }} />
+          <span className="text-xs font-mono font-semibold uppercase tracking-wider" style={{ color: C.text }}>AU Market Intelligence</span>
         </div>
-        <button
-          type="button"
-          onClick={handleRefresh}
-          disabled={refreshing || isLoading}
-          style={{ padding: "6px", borderRadius: 6, border: "none", background: "transparent", cursor: "pointer", opacity: (refreshing || isLoading) ? 0.4 : 1 }}
-          title="Refresh"
-        >
-          <RefreshCw style={{ width: 14, height: 14, color: C.muted, animation: refreshing ? "spin 1s linear infinite" : "none" }} />
+        <button onClick={handleRefresh} disabled={refreshing || isLoading} className="p-1.5 rounded hover:bg-white/5 transition-opacity" style={{ opacity: refreshing || isLoading ? 0.4 : 1 }}>
+          <RefreshCw className="w-3.5 h-3.5" style={{ color: C.muted, animation: refreshing ? "spin 1s linear infinite" : "none" }} />
         </button>
       </div>
 
       {isLoading ? (
-        <div style={{ padding: 16, display: "grid", gap: 8 }}>
-          {[1, 2, 3].map(i => <div key={i} style={{ height: 14, background: C.card, borderRadius: 4 }} />)}
+        <div className="p-4 space-y-2">
+          {[1, 2, 3].map((i) => <div key={i} className="h-3 rounded" style={{ background: C.card }} />)}
         </div>
       ) : isError ? (
-        <div style={{ padding: 16, color: C.muted, fontSize: 13, textAlign: "center" }}>
+        <div className="p-4 text-sm text-center" style={{ color: C.muted }}>
           Could not load.{" "}
-          <button type="button" onClick={handleRefresh} style={{ color: C.gold, background: "none", border: "none", cursor: "pointer", fontWeight: 700 }}>
-            Try again
-          </button>
+          <button onClick={handleRefresh} className="font-bold underline" style={{ color: C.gold, background: "none", border: "none", cursor: "pointer" }}>Try again</button>
         </div>
       ) : brief ? (
-        <div style={{ padding: 16, display: "grid", gap: 14 }}>
-          <p style={{ margin: 0, color: C.ink, fontWeight: 700, fontSize: 14, lineHeight: 1.4 }}>{brief.headline}</p>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 10 }}>
-            {brief.keyStats.slice(0, 3).map(stat => (
-              <div key={stat.label} style={{ padding: 12, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                  <span style={{ color: C.muted, fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.5 }}>{stat.label}</span>
+        <div className="p-4 space-y-4">
+          <p className="text-sm font-semibold leading-snug" style={{ color: C.ink }}>{brief.headline}</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {brief.keyStats.slice(0, 3).map((stat: any) => (
+              <div key={stat.label} className="rounded-lg p-3 border" style={{ background: "#070710", borderColor: "rgba(255,255,255,0.04)" }}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] font-mono uppercase tracking-wide" style={{ color: C.muted }}>{stat.label}</span>
                   <TrendIcon trend={stat.trend} />
                 </div>
-                <p style={{ margin: 0, color: C.ink, fontWeight: 900, fontSize: 18 }}>{stat.value}</p>
+                <p className="text-lg font-black font-mono" style={{ color: C.ink }}>{stat.value}</p>
               </div>
             ))}
           </div>
-
-          <p style={{ margin: 0, color: C.muted, fontSize: 13, lineHeight: 1.5 }}>{brief.snapshot}</p>
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, color: C.muted, fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.5, width: "100%", marginBottom: 2 }}>
-              <MapPin style={{ width: 10, height: 10 }} /> Hot Markets
-            </div>
-            {brief.hotMarkets.map(market => (
-              <span key={market} style={{ padding: "4px 10px", background: `${C.gold}14`, color: C.gold, border: `1px solid ${C.gold}28`, borderRadius: 999, fontSize: 11, fontWeight: 700 }}>
+          <p className="text-xs leading-relaxed" style={{ color: C.muted }}>{brief.snapshot}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {brief.hotMarkets.map((market: string) => (
+              <span key={market} className="px-2 py-0.5 rounded-full text-[11px] font-mono border" style={{ background: `${C.gold}10`, color: C.gold, borderColor: `${C.gold}25` }}>
                 {market}
               </span>
             ))}
@@ -510,7 +400,7 @@ function MarketBriefCard() {
   );
 }
 
-// ── Sample Videos (unchanged logic, reskinned header) ─────────────────────────
+// ── Sample Videos ────────────────────────────────────────────────────────────────────────────────────────────────
 const SAMPLE_VIDEOS = [
   { src: "/videos/oliver-featured.mp4", label: "Oliver · Williamstown, VIC", featured: true },
   { src: "/videos/sample-v1.mp4", label: "Mia · Mosman, NSW", featured: false },
@@ -526,76 +416,41 @@ function SampleVideos() {
   const grid = SAMPLE_VIDEOS.slice(1);
 
   return (
-    <div style={{ border: `1px solid ${C.line}`, borderRadius: 8, background: C.panel, overflow: "hidden" }}>
+    <div className="rounded-xl border overflow-hidden" style={{ background: C.panel, borderColor: "rgba(255,255,255,0.04)" }}>
       <button
-        type="button"
-        onClick={() => setExpanded(o => !o)}
-        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", background: "transparent", border: "none", cursor: "pointer", color: C.text }}
+        onClick={() => setExpanded((o) => !o)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-transparent border-0 cursor-pointer"
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.gold }} />
-          <span style={{ fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: C.ink }}>Example Output Videos</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: C.muted, border: `1px solid ${C.line}`, padding: "2px 8px", borderRadius: 4 }}>{SAMPLE_VIDEOS.length} reels</span>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full" style={{ background: C.gold }} />
+          <span className="text-xs font-bold uppercase tracking-wider" style={{ color: C.ink }}>Example Output Videos</span>
+          <span className="text-[10px] font-bold border px-1.5 py-0.5 rounded" style={{ color: C.muted, borderColor: C.line }}>{SAMPLE_VIDEOS.length} reels</span>
         </div>
-        <ChevronDown style={{ width: 16, height: 16, color: C.muted, transform: expanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+        <ChevronDown className="w-4 h-4 transition-transform" style={{ color: C.muted, transform: expanded ? "rotate(180deg)" : "none" }} />
       </button>
       {expanded && (
-        <div style={{ borderTop: `1px solid ${C.line}`, padding: 16, display: "grid", gap: 10 }}>
-          <div style={{ position: "relative", borderRadius: 10, overflow: "hidden", aspectRatio: "16/9", background: "black" }}>
-            <video src={featured.src} autoPlay muted loop playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.6), transparent)", pointerEvents: "none" }} />
-            <div style={{ position: "absolute", bottom: 10, left: 12, display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: C.gold, animation: "pulse 2s infinite" }} />
-              <span style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.8)", textTransform: "uppercase", letterSpacing: 2 }}>{featured.label}</span>
+        <div className="border-t p-4 space-y-3" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+          <div className="relative rounded-xl overflow-hidden aspect-video bg-black">
+            <video src={featured.src} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+            <div className="absolute bottom-3 left-3 flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.gold }} />
+              <span className="text-[10px] font-bold text-white/80 uppercase tracking-wider">{featured.label}</span>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0,1fr))", gap: 8 }}>
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
             {grid.map((v, i) => (
-              <div key={i} style={{ position: "relative", borderRadius: 6, overflow: "hidden", aspectRatio: "16/9", background: "black", cursor: "pointer" }}>
-                <video
-                  src={v.src}
-                  muted
-                  loop
-                  playsInline
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  onMouseEnter={e => (e.currentTarget as HTMLVideoElement).play()}
-                  onMouseLeave={e => { (e.currentTarget as HTMLVideoElement).pause(); (e.currentTarget as HTMLVideoElement).currentTime = 0; }}
+              <div key={i} className="relative rounded-lg overflow-hidden aspect-video bg-black cursor-pointer">
+                <video src={v.src} muted loop playsInline className="w-full h-full object-cover"
+                  onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLVideoElement).pause(); (e.currentTarget as HTMLVideoElement).currentTime = 0; }}
                 />
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.7), transparent)", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", bottom: 4, left: 6, right: 6 }}>
-                  <span style={{ fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: 1 }}>{v.label}</span>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
+                <div className="absolute bottom-1.5 left-1.5 right-1.5">
+                  <span className="text-[8px] font-bold text-white/60 uppercase tracking-wider">{v.label}</span>
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function RoadmapCard() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div style={{ border: `1px solid ${C.line}`, borderRadius: 8, background: C.panel, overflow: "hidden" }}>
-      <button
-        type="button"
-        onClick={() => setOpen(o => !o)}
-        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", background: "transparent", border: "none", cursor: "pointer", color: C.text }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.gold, animation: "pulse 2s infinite" }} />
-          <span style={{ fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: C.ink }}>Production Roadmap</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: C.muted, border: `1px solid ${C.line}`, padding: "2px 8px", borderRadius: 4 }}>URL → VIDEO ENGINE</span>
-        </div>
-        <ChevronDown style={{ width: 16, height: 16, color: C.muted, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
-      </button>
-      {open && (
-        <div style={{ borderTop: `1px solid ${C.line}` }}>
-          <img src={buildKitImage} alt="LensFlow pipeline architecture" style={{ width: "100%", display: "block" }} />
-          <div style={{ padding: 14, borderTop: `1px solid ${C.line}`, display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: C.muted }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.gold, display: "inline-block" }} />
-            Build window 4–8 weeks · ~$2.54 cost/video · $3.95/vid margin at 20 vids/mo
           </div>
         </div>
       )}
@@ -612,7 +467,7 @@ export function JobStatusBadge({ status }: { status: string }) {
   };
   const s = colors[status] ?? colors.queued;
   return (
-    <span style={{ padding: "3px 10px", borderRadius: 999, fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.5, background: s.bg, color: s.text, border: `1px solid ${s.border}` }}>
+    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border" style={{ background: s.bg, color: s.text, borderColor: s.border }}>
       {status}
     </span>
   );

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useSearch } from "wouter";
 import { Layout } from "@/components/layout/layout";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, CreditCard, Loader2, Sparkles, Film, Video, ExternalLink, AlertCircle } from "lucide-react";
+import { CheckCircle2, CreditCard, Loader2, Sparkles, Film, Video, ExternalLink, AlertCircle, Wallet, Coins } from "lucide-react";
 import { toast } from "sonner";
 
 interface Plan {
@@ -36,13 +36,17 @@ export default function Billing() {
   const [loading, setLoading]           = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [portalLoading, setPortalLoading]     = useState(false);
+  const [creditBalance, setCreditBalance]     = useState<number | null>(null);
+  const [creditLoading, setCreditLoading]     = useState(true);
+  const [creditCheckoutLoading, setCreditCheckoutLoading] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
       try {
-        const [plansRes, subRes] = await Promise.all([
+        const [plansRes, subRes, creditsRes] = await Promise.all([
           fetch("/api/stripe/plans"),
           fetch("/api/stripe/subscription", { credentials: "include" }),
+          fetch("/api/credits/balance", { credentials: "include" }),
         ]);
         if (plansRes.ok) {
           const d = await plansRes.json();
@@ -53,12 +57,38 @@ export default function Billing() {
           setSub(d.subscription ?? null);
           setCurrentPlan(d.planName ?? null);
         }
+        if (creditsRes.ok) {
+          const d = await creditsRes.json();
+          setCreditBalance(d.balance ?? 0);
+        }
       } finally {
         setLoading(false);
+        setCreditLoading(false);
       }
     }
     load();
   }, []);
+
+  async function handleCreditCheckout(packId: string, packLabel: string) {
+    setCreditCheckoutLoading(packLabel);
+    try {
+      const res = await fetch("/api/stripe/credit-checkout", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ packId }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error ?? "Failed to start checkout");
+      }
+      const { url } = await res.json();
+      window.location.href = url;
+    } catch (err: any) {
+      toast.error(err.message ?? "Something went wrong");
+      setCreditCheckoutLoading(null);
+    }
+  }
 
   async function handleCheckout(priceId: string, planName: string) {
     setCheckoutLoading(planName);
@@ -249,6 +279,53 @@ export default function Billing() {
             </p>
           </>
         )}
+
+        {/* Credit Packs */}
+        <div className="mt-10">
+          <div className="mb-4">
+            <h2 className="text-xl font-bold font-serif mb-1">Credit Packs</h2>
+            <p className="text-sm text-muted-foreground">
+              Buy credits to use on AI features, extra renders, and premium exports.
+              {creditBalance !== null && (
+                <span className="ml-2 inline-flex items-center gap-1 text-xs font-mono" style={{ color: "#f59e0b" }}>
+                  <Wallet className="w-3 h-3" /> {creditBalance} credits available
+                </span>
+              )}
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              { id: "starter", label: "Starter Pack", credits: 100, price: 29, desc: "Great for testing the pipeline" },
+              { id: "pro", label: "Pro Pack", credits: 500, price: 99, desc: "Best value for regular agents" },
+              { id: "agency", label: "Agency Pack", credits: 2000, price: 299, desc: "For teams with high volume" },
+            ].map((pack) => {
+              const isLoading = creditCheckoutLoading === pack.label;
+              return (
+                <div key={pack.id} className="rounded-2xl border border-white/10 bg-card p-5 flex flex-col">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 rounded-xl bg-amber-500/15 flex items-center justify-center">
+                      <Coins className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <span className="font-semibold">{pack.label}</span>
+                  </div>
+                  <div className="mb-1">
+                    <span className="text-2xl font-bold">${pack.price}</span>
+                    <span className="text-muted-foreground text-sm"> AUD</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3 flex-1">{pack.desc}</p>
+                  <div className="text-xs font-mono text-amber-400 mb-3">{pack.credits.toLocaleString()} credits</div>
+                  <Button
+                    onClick={() => handleCreditCheckout(pack.id, pack.label)}
+                    disabled={!!creditCheckoutLoading}
+                    className="rounded-full w-full bg-white/10 hover:bg-white/20 text-foreground"
+                  >
+                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Buy Credits"}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </Layout>
   );

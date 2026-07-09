@@ -208,6 +208,46 @@ export default function Settings() {
         </div>
       </div>
 
+      {/* Security */}
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center gap-2">
+          <Shield className="w-4 h-4 text-muted-foreground" />
+          <h3 className="text-sm font-mono uppercase tracking-wider text-muted-foreground">Security</h3>
+          <span className="ml-auto text-[10px] font-mono text-primary border border-primary/30 bg-primary/5 px-1.5 py-0.5 rounded">ACCOUNT</span>
+        </div>
+        <div className="px-6 py-5 space-y-4">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Manage your password and two-factor authentication settings.
+          </p>
+          <div className="grid gap-3">
+            <div className="flex items-center justify-between py-2.5 border-b border-border">
+              <div className="flex items-center gap-3">
+                <Key className="w-4 h-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Password</p>
+                  <p className="text-[10px] font-mono text-muted-foreground">Last changed —</p>
+                </div>
+              </div>
+              <button disabled className="text-[10px] font-mono border border-border px-3 py-1.5 rounded opacity-50 cursor-not-allowed">
+                Change (coming soon)
+              </button>
+            </div>
+            <div className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
+              <div className="flex items-center gap-3">
+                <Shield className="w-4 h-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Two-Factor Auth</p>
+                  <p className="text-[10px] font-mono text-muted-foreground">Not enabled</p>
+                </div>
+              </div>
+              <button disabled className="text-[10px] font-mono border border-border px-3 py-1.5 rounded opacity-50 cursor-not-allowed">
+                Enable (coming soon)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Sign Out */}
       <div className="bg-card border border-border rounded-lg p-6 space-y-4">
         <div>

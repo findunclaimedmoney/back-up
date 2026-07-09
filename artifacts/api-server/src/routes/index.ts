@@ -13,6 +13,7 @@ import settingsRouter from "./settings";
 import heygenRouter from "./heygen";
 import morganMarketingRouter from "./morgan-marketing";
 import stripeRouter from "./stripe";
+import creditsRouter from "./credits";
 import devRouter from "./dev";
 
 const router: IRouter = Router();
@@ -32,5 +33,6 @@ router.use(settingsRouter);
 router.use(heygenRouter);
 router.use(morganMarketingRouter);
 router.use(stripeRouter);
+router.use(creditsRouter);
 
 export default router;
