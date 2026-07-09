@@ -6,6 +6,7 @@ import TierCard from "@/components/pricing/TierCard";
 import IntimacyAddOnCard from "@/components/pricing/IntimacyAddOnCard";
 import TopUpCard from "@/components/pricing/TopUpCard";
 import CryptoPaymentModal from "@/components/pricing/CryptoPaymentModal";
+import PullToRefresh from "@/components/PullToRefresh";
 
 const TIERS = [
   {
@@ -109,6 +110,10 @@ export default function Pricing() {
     }
   };
 
+        const handleRefresh = async () => {
+              await loadSubscription();
+                };
+        }
   const confirmSession = async (sessionId) => {
     try {
       const res = await base44.functions.invoke("confirmSubscription", { session_id: sessionId });
@@ -222,6 +227,8 @@ export default function Pricing() {
           Back
         </Link>
       </header>
+
+            <PullToRefresh onRefresh={handleRefresh}>
 
       {success ? (
         <div className="flex flex-col items-center justify-center py-24 px-6">
@@ -337,6 +344,7 @@ export default function Pricing() {
           onPurchased={loadSubscription}
         />
       )}
+    </PullToRefresh>
     </div>
   );
 }
