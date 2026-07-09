@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Loader2, UserCircle } from "lucide-react";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { useSubscription } from "@/hooks/use-subscription";
-import { siteHref } from "@/components/SiteChrome";
 
 interface Props {
   onBack: () => void;
@@ -102,13 +101,6 @@ export function Pricing({ onBack }: Props) {
             <ArrowLeft className="w-4 h-4" />
             Back
           </button>
-          <a
-            href={siteHref(status.email ? "/account" : "/login")}
-            className="inline-flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/10 px-3 py-2 text-sm text-foreground"
-          >
-            <UserCircle className="h-4 w-4 text-primary" />
-            {status.email ? "Account" : "Sign in"}
-          </a>
         </div>
 
         <div className="text-center mb-10">
@@ -176,24 +168,6 @@ export function Pricing({ onBack }: Props) {
               </div>
             );
           })}
-        </div>
-
-        <div className="mb-10 rounded-lg border border-primary/20 bg-primary/10 p-5">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="text-xl font-light">Premium human sessions</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Add paid human time for customers who want to speak with a real person using a guided
-                teleprompter workflow.
-              </p>
-            </div>
-            <a
-              href={siteHref("/human-session")}
-              className="inline-flex items-center justify-center rounded-lg border border-primary/20 bg-background px-4 py-2 text-sm"
-            >
-              View human rates
-            </a>
-          </div>
         </div>
 
         {!showActivate ? (

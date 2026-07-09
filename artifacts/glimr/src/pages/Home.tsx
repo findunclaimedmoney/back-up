@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { PersonaSelect } from "@/components/PersonaSelect";
 import { ChatScreen } from "@/components/ChatScreen";
-import { Pricing } from "@/components/Pricing";
 import { Activities } from "@/components/Activities";
 import { OutfitPicker } from "@/components/OutfitPicker";
 import { PhotoBooth } from "@/components/activities/PhotoBooth";
@@ -35,7 +35,6 @@ function loadCustomPersona(): CustomPersona | null {
 type Screen =
   | "select"
   | "chat"
-  | "pricing"
   | "activities"
   | "wardrobe"
   | "photobooth"
@@ -44,6 +43,7 @@ type Screen =
   | "20q";
 
 export default function Home() {
+  const [, setLocation] = useLocation();
   const [screen, setScreen] = useState<Screen>("select");
   const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null);
   const [gameStartMessage, setGameStartMessage] = useState<string | undefined>(undefined);
@@ -87,10 +87,7 @@ export default function Home() {
   };
 
   const sessionId = getSessionId(effectivePersonaId);
-
-  if (screen === "pricing") {
-    return <Pricing onBack={() => setScreen(selectedPersonaId ? "chat" : "select")} />;
-  }
+  const goToPricing = () => setLocation("/pricing");
 
   if (screen === "activities") {
     return (
@@ -111,7 +108,7 @@ export default function Home() {
         activeOutfitId={activeOutfitId}
         onSelect={handleOutfitSelect}
         onBack={() => setScreen("chat")}
-        onUpgrade={() => setScreen("pricing")}
+        onUpgrade={goToPricing}
         subscription={sub}
       />
     );
@@ -156,7 +153,7 @@ export default function Home() {
         initialMessage={gameStartMessage}
         portraitOverride={activeOutfitPortrait}
         onEnd={() => { setSelectedPersonaId(null); setGameStartMessage(undefined); setActiveOutfitId("default"); setActiveOutfitPortrait(null); setScreen("select"); }}
-        onUpgrade={() => setScreen("pricing")}
+        onUpgrade={goToPricing}
         onActivities={() => setScreen("activities")}
         onWardrobe={() => setScreen("wardrobe")}
       />
@@ -167,7 +164,7 @@ export default function Home() {
     <PersonaSelect
       onSelect={handlePersonaSelect}
       subscription={sub}
-      onUpgrade={() => setScreen("pricing")}
+      onUpgrade={goToPricing}
     />
   );
 }

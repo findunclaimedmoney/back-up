@@ -69,7 +69,6 @@ export function PersonaSelect({ onSelect, subscription, onUpgrade }: Props) {
   if (showCreate) {
     return (
       <CreatePersona
-        email={subscription.status.email}
         onComplete={(p) => {
           setCustomPersona(p);
           setShowCreate(false);
