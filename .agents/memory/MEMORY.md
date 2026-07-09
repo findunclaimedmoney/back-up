@@ -24,3 +24,5 @@
 - [D-ID pipeline integration](did-pipeline.md) — D-ID is primary presenter provider; pre-signed S3 URLs must be mirrored to object storage before passing to Shotstack.
 - [Shared Stripe webhook, multi-product](shared-stripe-webhook-multi-product.md) — per-product webhook create-paths must be gated on subscription metadata, not "no match elsewhere = mine"; expand nested objects before reading metadata.
 - [Stripe webhook endpoint not registered](stripe-webhook-endpoint-not-configured.md) — no webhookEndpoints exist on this Stripe account; webhook-dependent sync isn't actually live until one is set up.
+- [api-server esbuild rebuild required](api-server-rebuild-on-restart.md) — editing a lib/* package (e.g. generated Zod schemas) has no effect until the api-server workflow is restarted; it bundles from source at build time.
+- [Glimr session-first billing identity](glimr-session-first-identity.md) — session-first/email-fallback pattern; routes exposing/mutating another account's billing state must require auth, not just prefer it.

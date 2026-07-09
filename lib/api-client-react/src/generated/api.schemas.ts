@@ -783,12 +783,15 @@ export interface CompanionSubscribeVerifyResponse {
   tier: CompanionSubscribeVerifyResponseTier;
 }
 
+/**
+ * Email is only used for anonymous/free-tier lookups. Authenticated requests resolve identity from the session and ignore this field.
+ */
 export interface CompanionSubscribeStatusBody {
   /**
      * @minLength 3
      * @maxLength 254
      */
-  email: string;
+  email?: string;
 }
 
 export type CompanionSubscribeStatusResponseTier = typeof CompanionSubscribeStatusResponseTier[keyof typeof CompanionSubscribeStatusResponseTier];
@@ -809,12 +812,15 @@ export interface CompanionSubscribeStatusResponse {
   voiceRemaining: number | null;
 }
 
+/**
+ * Deprecated: identity is now derived from the authenticated session. This field is ignored server-side and kept only for backward compatibility.
+ */
 export interface CompanionSubscribePortalBody {
   /**
      * @minLength 3
      * @maxLength 254
      */
-  email: string;
+  email?: string;
 }
 
 export interface CompanionSubscribePortalResponse {

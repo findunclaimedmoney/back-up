@@ -1,5 +1,5 @@
 import { Bot, Crown, Sparkles, UserCircle } from "lucide-react";
-import { useSubscription } from "@/hooks/use-subscription";
+import { useAuth } from "@workspace/replit-auth-web";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -9,8 +9,8 @@ export function siteHref(path: string) {
 }
 
 export function SiteNav() {
-  const { status } = useSubscription();
-  const signedIn = Boolean(status.email ?? localStorage.getItem("companion_email"));
+  const { isAuthenticated } = useAuth();
+  const signedIn = isAuthenticated;
   const navItems = [
     { label: "Features", href: "/features" },
     { label: "Pricing", href: "/pricing" },

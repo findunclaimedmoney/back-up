@@ -1971,7 +1971,9 @@ components:
 
     CompanionSubscribeStatusBody:
       type: object
-      required: [email]
+      description: >-
+        Email is only used for anonymous/free-tier lookups. Authenticated requests
+        resolve identity from the session and ignore this field.
       properties:
         email:
           type: string
@@ -1995,7 +1997,9 @@ components:
 
     CompanionSubscribePortalBody:
       type: object
-      required: [email]
+      description: >-
+        Deprecated: identity is now derived from the authenticated session. This
+        field is ignored server-side and kept only for backward compatibility.
       properties:
         email:
           type: string

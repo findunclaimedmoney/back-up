@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useAuth } from "@workspace/replit-auth-web";
 import {
   useCreateCompanionCheckout,
   useCreateCompanionPortal,
@@ -6,8 +7,6 @@ import {
   useGetCompanionSubscribeStatus,
   type CompanionSubscribeStatusResponseTier,
 } from "@workspace/api-client-react";
-
-const EMAIL_KEY = "companion_email";
 
 export interface SubscriptionStatus {
   email: string | null;
@@ -25,11 +24,17 @@ const DEFAULT_STATUS: SubscriptionStatus = {
   voiceRemaining: 0,
 };
 
+/**
+ * Subscription/billing state for the signed-in user. Identity always comes from
+ * the authenticated session (`useAuth`) — there is no client-supplied-email path
+ * anymore, since that was a takeover vector on /status and /portal. Anonymous
+ * visitors always see the free-tier default; a guest can still start Stripe
+ * Checkout, and if they later sign in with the same email the subscriber row is
+ * auto-linked to their account server-side.
+ */
 export function useSubscription() {
-  const [status, setStatus] = useState<SubscriptionStatus>(() => {
-    const email = localStorage.getItem(EMAIL_KEY);
-    return email ? { ...DEFAULT_STATUS, email } : DEFAULT_STATUS;
-  });
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [status, setStatus] = useState<SubscriptionStatus>(DEFAULT_STATUS);
   const [loading, setLoading] = useState(true);
   const verifiedRef = useRef(false);
 
@@ -39,25 +44,26 @@ export function useSubscription() {
   const verifyMutation = useVerifyCompanionCheckout();
 
   const refresh = useCallback(async () => {
-    const email = localStorage.getItem(EMAIL_KEY);
-    if (!email) {
+    if (!isAuthenticated) {
       setStatus(DEFAULT_STATUS);
       setLoading(false);
       return;
     }
     setLoading(true);
     try {
-      const result = await statusMutation.mutateAsync({ data: { email } });
-      setStatus({ email, ...result });
+      const result = await statusMutation.mutateAsync({ data: {} });
+      setStatus({ email: user?.email ?? null, ...result });
     } catch {
-      setStatus({ ...DEFAULT_STATUS, email });
+      setStatus({ ...DEFAULT_STATUS, email: user?.email ?? null });
     } finally {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isAuthenticated, user?.email]);
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (verifiedRef.current) {
       refresh();
       return;
@@ -70,52 +76,31 @@ export function useSubscription() {
     if (checkoutSessionId) {
       verifyMutation
         .mutateAsync({ data: { sessionId: checkoutSessionId } })
-        .then((result) => {
-          localStorage.setItem(EMAIL_KEY, result.email);
-          setStatus((prev) => ({ ...prev, email: result.email, tier: result.tier, active: result.tier !== "free" }));
-          params.delete("session_id");
-          const next = params.toString();
-          window.history.replaceState({}, "", window.location.pathname + (next ? `?${next}` : ""));
-        })
         .catch(() => {
           // ignore — checkout may still be processing via webhook
         })
-        .finally(() => refresh());
+        .finally(() => {
+          params.delete("session_id");
+          const next = params.toString();
+          window.history.replaceState({}, "", window.location.pathname + (next ? `?${next}` : ""));
+          refresh();
+        });
     } else {
       refresh();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const activate = useCallback(async (email: string) => {
-    const result = await statusMutation.mutateAsync({ data: { email } });
-    if (!result.active) {
-      throw new Error("No active subscription found for that email");
-    }
-    localStorage.setItem(EMAIL_KEY, email);
-    setStatus({ email, ...result });
-    return result;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [authLoading, isAuthenticated]);
 
   const checkout = useCallback(async (tier: "spark" | "flame") => {
-    const email = localStorage.getItem(EMAIL_KEY) ?? undefined;
-    const result = await checkoutMutation.mutateAsync({ data: { tier, email } });
+    const result = await checkoutMutation.mutateAsync({ data: { tier } });
     window.location.href = result.checkoutUrl;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const openPortal = useCallback(async () => {
-    const email = localStorage.getItem(EMAIL_KEY);
-    if (!email) return;
-    const result = await portalMutation.mutateAsync({ data: { email } });
+    const result = await portalMutation.mutateAsync({ data: {} });
     window.location.href = result.portalUrl;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const signOut = useCallback(() => {
-    localStorage.removeItem(EMAIL_KEY);
-    setStatus(DEFAULT_STATUS);
   }, []);
 
   const canUseVoice = status.active && (status.voiceRemaining === null || status.voiceRemaining > 0);
@@ -124,14 +109,13 @@ export function useSubscription() {
 
   return {
     status,
-    loading,
+    loading: loading || authLoading,
+    isAuthenticated,
     canUseVoice,
     canUseCustomPersona,
     canUseVideoCall,
     refresh,
-    activate,
     checkout,
     openPortal,
-    signOut,
   };
 }

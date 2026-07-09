@@ -66,11 +66,14 @@ export async function findOrCreateCustomerByEmail(email: string): Promise<Stripe
 export async function createCompanionCheckoutSession(
   tier: CompanionPaidTier,
   email: string | undefined,
+  userId: string | undefined,
   successUrl: string,
   cancelUrl: string,
 ): Promise<Stripe.Checkout.Session> {
   const stripe = await getUncachableStripeClient();
   const priceId = await findPriceIdForTier(tier);
+
+  const metadata: Record<string, string> = userId ? { app: "glimr", tier, userId } : { app: "glimr", tier };
 
   const params: Stripe.Checkout.SessionCreateParams = {
     mode: "subscription",
@@ -78,8 +81,8 @@ export async function createCompanionCheckoutSession(
     success_url: successUrl,
     cancel_url: cancelUrl,
     allow_promotion_codes: true,
-    metadata: { app: "glimr", tier },
-    subscription_data: { metadata: { app: "glimr", tier } },
+    metadata,
+    subscription_data: { metadata },
   };
 
   if (email) {

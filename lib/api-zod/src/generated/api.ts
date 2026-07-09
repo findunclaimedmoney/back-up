@@ -821,8 +821,8 @@ export const getCompanionSubscribeStatusBodyEmailMax = 254;
 
 
 export const GetCompanionSubscribeStatusBody = zod.object({
-  "email": zod.string().email().min(getCompanionSubscribeStatusBodyEmailMin).max(getCompanionSubscribeStatusBodyEmailMax)
-})
+  "email": zod.string().email().min(getCompanionSubscribeStatusBodyEmailMin).max(getCompanionSubscribeStatusBodyEmailMax).optional()
+}).describe('Email is only used for anonymous\/free-tier lookups. Authenticated requests resolve identity from the session and ignore this field.')
 
 export const GetCompanionSubscribeStatusResponse = zod.object({
   "tier": zod.enum(['free', 'spark', 'flame']),
@@ -841,8 +841,8 @@ export const createCompanionPortalBodyEmailMax = 254;
 
 
 export const CreateCompanionPortalBody = zod.object({
-  "email": zod.string().email().min(createCompanionPortalBodyEmailMin).max(createCompanionPortalBodyEmailMax)
-})
+  "email": zod.string().email().min(createCompanionPortalBodyEmailMin).max(createCompanionPortalBodyEmailMax).optional()
+}).describe('Deprecated: identity is now derived from the authenticated session. This field is ignored server-side and kept only for backward compatibility.')
 
 export const CreateCompanionPortalResponse = zod.object({
   "portalUrl": zod.string()

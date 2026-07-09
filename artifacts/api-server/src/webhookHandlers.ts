@@ -80,6 +80,9 @@ async function handleCompanionSubscriptionEvent(subscription: Stripe.Subscriptio
     expand: ['items.data.price.product'],
   });
   const tier = extractCompanionTier(expanded) ?? existing?.tier ?? 'free';
+  // Only ever fill in a missing userId from checkout metadata — never overwrite or
+  // null one that's already linked, and never derive it from anything client-supplied.
+  const metadataUserId = subscription.metadata?.userId || undefined;
 
   if (existing) {
     await db
@@ -88,6 +91,7 @@ async function handleCompanionSubscriptionEvent(subscription: Stripe.Subscriptio
         tier,
         active: isActive,
         stripeSubscriptionId: isActive ? subscription.id : null,
+        ...(!existing.userId && metadataUserId ? { userId: metadataUserId } : {}),
         updatedAt: new Date(),
       })
       .where(eq(companionSubscribersTable.id, existing.id));
@@ -118,6 +122,7 @@ async function handleCompanionSubscriptionEvent(subscription: Stripe.Subscriptio
     .insert(companionSubscribersTable)
     .values({
       email: normalizedEmail,
+      userId: metadataUserId,
       stripeCustomerId: customerId,
       stripeSubscriptionId: isActive ? subscription.id : null,
       tier,

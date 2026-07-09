@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { useSubscription } from "@/hooks/use-subscription";
-import { SiteNav, SiteFooter } from "@/components/SiteChrome";
+import { SiteNav, SiteFooter, siteHref } from "@/components/SiteChrome";
 
 interface Props {
   onBack: () => void;
@@ -61,12 +61,8 @@ const TIERS = [
 ];
 
 export function Pricing({ onBack }: Props) {
-  const { status, checkout, activate } = useSubscription();
+  const { status, checkout } = useSubscription();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
-  const [showActivate, setShowActivate] = useState(false);
-  const [activateEmail, setActivateEmail] = useState("");
-  const [activateLoading, setActivateLoading] = useState(false);
-  const [activateError, setActivateError] = useState("");
 
   const handleCheckout = async (tier: "spark" | "flame") => {
     setLoadingTier(tier);
@@ -74,20 +70,6 @@ export function Pricing({ onBack }: Props) {
       await checkout(tier);
     } catch {
       setLoadingTier(null);
-    }
-  };
-
-  const handleActivate = async () => {
-    if (!activateEmail.trim()) return;
-    setActivateLoading(true);
-    setActivateError("");
-    try {
-      await activate(activateEmail.trim().toLowerCase());
-      onBack();
-    } catch {
-      setActivateError("Could not find an active subscription for that email.");
-    } finally {
-      setActivateLoading(false);
     }
   };
 
@@ -173,35 +155,12 @@ export function Pricing({ onBack }: Props) {
           })}
         </div>
 
-        {!showActivate ? (
-          <p className="text-center text-sm text-muted-foreground">
-            Already subscribed?{" "}
-            <button
-              className="text-primary hover:underline"
-              onClick={() => setShowActivate(true)}
-            >
-              Enter your email to activate
-            </button>
-          </p>
-        ) : (
-          <div className="max-w-sm mx-auto space-y-3">
-            <p className="text-center text-sm text-muted-foreground">Enter the email you subscribed with</p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                value={activateEmail}
-                onChange={(e) => setActivateEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="flex-1 bg-secondary/50 border border-white/10 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-primary/50"
-                onKeyDown={(e) => e.key === "Enter" && handleActivate()}
-              />
-              <Button size="sm" onClick={handleActivate} disabled={activateLoading || !activateEmail.trim()}>
-                {activateLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Activate"}
-              </Button>
-            </div>
-            {activateError && <p className="text-destructive text-xs text-center">{activateError}</p>}
-          </div>
-        )}
+        <p className="text-center text-sm text-muted-foreground">
+          Already subscribed?{" "}
+          <a className="text-primary hover:underline" href={siteHref("/login")}>
+            Sign in to manage your plan
+          </a>
+        </p>
       </div>
 
       <SiteFooter />

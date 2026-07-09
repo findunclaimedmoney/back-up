@@ -1,5 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import { db, companionSubscribersTable, type CompanionSubscriber } from "@workspace/db";
+import type { AuthUser } from "@workspace/api-zod";
 
 export type CompanionTier = "free" | "spark" | "flame";
 
@@ -62,6 +63,56 @@ export async function getSubscriberByEmail(email: string): Promise<CompanionSubs
     .returning();
 
   return updated ?? row;
+}
+
+/**
+ * Resolves the companion subscriber for an authenticated Replit user. Looks up by
+ * `userId` first; if no row is linked yet, falls back to a match on the user's
+ * verified session email and claims that row by stamping `userId` onto it. Never
+ * trusts a client-supplied email for this lookup — only `req.user` from the
+ * session is used, which is what closes the previous email-spoofing gap on
+ * /status and /portal.
+ */
+export async function getSubscriberForUser(user: AuthUser): Promise<CompanionSubscriber | undefined> {
+  const [byUserId] = await db
+    .select()
+    .from(companionSubscribersTable)
+    .where(eq(companionSubscribersTable.userId, user.id))
+    .limit(1);
+
+  if (byUserId) {
+    return needsVoiceReset(byUserId) ? await resetVoiceUsage(byUserId) : byUserId;
+  }
+
+  if (!user.email) return undefined;
+
+  const normalized = user.email.toLowerCase().trim();
+  const [byEmail] = await db
+    .select()
+    .from(companionSubscribersTable)
+    .where(eq(companionSubscribersTable.email, normalized))
+    .limit(1);
+
+  if (!byEmail) return undefined;
+
+  const [claimed] = await db
+    .update(companionSubscribersTable)
+    .set({ userId: user.id })
+    .where(eq(companionSubscribersTable.id, byEmail.id))
+    .returning();
+
+  const row = claimed ?? byEmail;
+  return needsVoiceReset(row) ? await resetVoiceUsage(row) : row;
+}
+
+async function resetVoiceUsage(subscriber: CompanionSubscriber): Promise<CompanionSubscriber> {
+  const [updated] = await db
+    .update(companionSubscribersTable)
+    .set({ voiceMessagesThisMonth: 0, voiceMonthResetAt: new Date(Date.now() + 30 * MS_PER_DAY) })
+    .where(eq(companionSubscribersTable.id, subscriber.id))
+    .returning();
+
+  return updated ?? subscriber;
 }
 
 export function computeEntitlements(subscriber: CompanionSubscriber | undefined): CompanionEntitlements {

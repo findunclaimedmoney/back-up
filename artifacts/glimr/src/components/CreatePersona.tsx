@@ -3,6 +3,7 @@ import { ArrowLeft, ImagePlus, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCreateCompanionPersona } from "@workspace/api-client-react";
+import { useAuth } from "@workspace/replit-auth-web";
 
 interface CustomPersona {
   id: "custom";
@@ -39,6 +40,7 @@ export function CreatePersona({ onComplete, onBack }: Props) {
   const [error, setError] = useState("");
 
   const mutation = useCreateCompanionPersona();
+  const { user } = useAuth();
 
   const handleFile = async (file: File) => {
     setError("");
@@ -52,8 +54,9 @@ export function CreatePersona({ onComplete, onBack }: Props) {
     if (!photoBase64) return;
     setError("");
     try {
-      const email = localStorage.getItem("companion_email") ?? undefined;
-      const generated = await mutation.mutateAsync({ data: { photoBase64, mimeType, email } });
+      const generated = await mutation.mutateAsync({
+        data: { photoBase64, mimeType, email: user?.email ?? undefined },
+      });
       setResult(generated);
       setName(generated.suggestedName);
     } catch {

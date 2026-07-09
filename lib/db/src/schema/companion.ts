@@ -1,8 +1,10 @@
-import { boolean, integer, pgTable, primaryKey, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, primaryKey, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { usersTable } from "./auth";
 
 export const companionSubscribersTable = pgTable("companion_subscribers", {
   id: serial("id").primaryKey(),
   email: text("email").notNull().unique(),
+  userId: varchar("user_id").references(() => usersTable.id).unique(),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id").unique(),
   tier: text("tier").notNull().default("free"),

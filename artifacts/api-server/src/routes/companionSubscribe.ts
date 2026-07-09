@@ -7,7 +7,7 @@ import {
   retrieveCheckoutSession,
   extractCompanionTier,
 } from "../lib/companionStripe";
-import { getSubscriberByEmail, computeEntitlements } from "../lib/companionEntitlements";
+import { getSubscriberForUser, computeEntitlements } from "../lib/companionEntitlements";
 import {
   CreateCompanionCheckoutBody,
   CreateCompanionCheckoutResponse,
@@ -21,10 +21,10 @@ import {
 
 const router: IRouter = Router();
 
-// The Glimr companion frontend (Task #15) isn't built yet — `/companion` is the
-// ground-truth base path convention used by the exported frontend (see
-// use-subscription hook). Update here once the frontend artifact is registered
-// if its actual served path differs.
+// Glimr is served behind the shared proxy at the /glimr/ base path (see
+// artifacts/glimr/artifact.toml). Checkout/portal redirect URLs must include it.
+const GLIMR_BASE_PATH = "/glimr";
+
 function companionOrigin(req: Request): string {
   return `${req.protocol}://${req.get("host")}`;
 }
@@ -35,15 +35,20 @@ router.post("/companion/subscribe/checkout", async (req, res): Promise<void> => 
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const { tier, email } = parsed.data;
+  const { tier } = parsed.data;
+  // Prefer the verified session email for signed-in users; the request body
+  // email is only used as a convenience prefill for anonymous checkout.
+  const email = (req.isAuthenticated() ? req.user.email : undefined) ?? parsed.data.email;
+  const userId = req.isAuthenticated() ? req.user.id : undefined;
 
   try {
     const origin = companionOrigin(req);
     const session = await createCompanionCheckoutSession(
       tier,
-      email,
-      `${origin}/companion?session_id={CHECKOUT_SESSION_ID}`,
-      `${origin}/companion`,
+      email ?? undefined,
+      userId,
+      `${origin}${GLIMR_BASE_PATH}/pricing?session_id={CHECKOUT_SESSION_ID}`,
+      `${origin}${GLIMR_BASE_PATH}/pricing`,
     );
 
     if (!session.url) {
@@ -81,11 +86,15 @@ router.post("/companion/subscribe/verify", async (req, res): Promise<void> => {
     const tier = extractCompanionTier(subscription) ?? "free";
     const isActive = subscription.status === "active" || subscription.status === "trialing";
     const customerId = typeof session.customer === "string" ? session.customer : (customer?.id ?? null);
+    // Trust only the signed-in session for linking a userId, never the checkout
+    // session's own metadata — a client can't forge req.user.
+    const userId = req.isAuthenticated() ? req.user.id : undefined;
 
     await db
       .insert(companionSubscribersTable)
       .values({
         email: normalizedEmail,
+        userId,
         stripeCustomerId: customerId,
         stripeSubscriptionId: subscription.id,
         tier,
@@ -94,6 +103,7 @@ router.post("/companion/subscribe/verify", async (req, res): Promise<void> => {
       .onConflictDoUpdate({
         target: companionSubscribersTable.email,
         set: {
+          ...(userId ? { userId } : {}),
           stripeCustomerId: customerId,
           stripeSubscriptionId: subscription.id,
           tier,
@@ -116,7 +126,9 @@ router.post("/companion/subscribe/status", async (req, res): Promise<void> => {
     return;
   }
 
-  const subscriber = await getSubscriberByEmail(parsed.data.email);
+  // Identity must come from the authenticated session — a client-supplied email
+  // is never trusted for looking up someone else's subscription/billing state.
+  const subscriber = req.isAuthenticated() ? await getSubscriberForUser(req.user) : undefined;
   const entitlements = computeEntitlements(subscriber);
 
   res.json(
@@ -136,15 +148,23 @@ router.post("/companion/subscribe/portal", async (req, res): Promise<void> => {
     return;
   }
 
-  const subscriber = await getSubscriberByEmail(parsed.data.email);
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Sign in required" });
+    return;
+  }
+
+  const subscriber = await getSubscriberForUser(req.user);
   if (!subscriber?.stripeCustomerId) {
-    res.status(404).json({ error: "No billing account found for that email" });
+    res.status(404).json({ error: "No billing account found for this user" });
     return;
   }
 
   try {
     const origin = companionOrigin(req);
-    const session = await createCompanionPortalSession(subscriber.stripeCustomerId, `${origin}/companion`);
+    const session = await createCompanionPortalSession(
+      subscriber.stripeCustomerId,
+      `${origin}${GLIMR_BASE_PATH}/account`,
+    );
     res.json(CreateCompanionPortalResponse.parse({ portalUrl: session.url }));
   } catch (err) {
     req.log.error({ err }, "companion portal error");

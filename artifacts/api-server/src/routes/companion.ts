@@ -3,7 +3,7 @@ import { db, companionSessionsTable, companionFactsTable, companionOutfitsTable 
 import { eq } from "drizzle-orm";
 import { generateVoiceover } from "./elevenlabs";
 import { ObjectStorageService } from "../lib/objectStorage";
-import { getSubscriberByEmail, computeEntitlements, canUseVoiceNow, incrementVoiceUsage } from "../lib/companionEntitlements";
+import { getSubscriberByEmail, getSubscriberForUser, computeEntitlements, canUseVoiceNow, incrementVoiceUsage } from "../lib/companionEntitlements";
 import {
   GetPersonasResponse,
   CreateCompanionPersonaBody,
@@ -159,7 +159,11 @@ router.post("/companion/persona/create", async (req, res): Promise<void> => {
   }
   const { photoBase64, mimeType = "image/jpeg", email } = parsed.data;
 
-  const subscriber = email ? await getSubscriberByEmail(email) : undefined;
+  const subscriber = req.isAuthenticated()
+    ? await getSubscriberForUser(req.user)
+    : email
+      ? await getSubscriberByEmail(email)
+      : undefined;
   const entitlements = computeEntitlements(subscriber);
   if (!entitlements.canCustomPersona) {
     res.status(403).json({ error: "Creating a custom companion requires an active Spark or Flame subscription." });
@@ -727,7 +731,11 @@ router.post("/companion/video", async (req, res): Promise<void> => {
   const personaId = parsed.data.personaId ?? "mia";
   const heygenKey = process.env["HEYGEN_API_KEY"];
 
-  const videoSubscriber = parsed.data.email ? await getSubscriberByEmail(parsed.data.email) : undefined;
+  const videoSubscriber = req.isAuthenticated()
+    ? await getSubscriberForUser(req.user)
+    : parsed.data.email
+      ? await getSubscriberByEmail(parsed.data.email)
+      : undefined;
   const videoEntitlements = computeEntitlements(videoSubscriber);
   if (!videoEntitlements.canVideoCall) {
     res.status(403).json({ error: "Video calls require an active Flame subscription." });
