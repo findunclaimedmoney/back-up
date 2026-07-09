@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { X, Settings, Trash2, Loader2 } from "lucide-react";
 import {
@@ -16,6 +16,23 @@ import {
 export default function SettingsModal({ open, onClose }) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [sub, setSub] = useState(null);
+  const [loadingAccount, setLoadingAccount] = useState(true);
+
+  useEffect(() => {
+    if (!open) return;
+    setLoadingAccount(true);
+    Promise.all([
+      base44.auth.me(),
+      base44.functions.invoke("getSubscription", {})
+    ]).then(([userRes, subRes]) => {
+      setProfile(userRes);
+      setSub(subRes?.data || null);
+    }).catch((err) => {
+      console.error(err);
+    }).finally(() => setLoadingAccount(false));
+  }, [open]);
 
   const handleDeleteAccount = async () => {
     setDeleting(true);
@@ -52,6 +69,15 @@ export default function SettingsModal({ open, onClose }) {
         </div>
 
         <div className="space-y-3">
+        <div className="rounded-2xl border border-border bg-background/40 p-4 space-y-2 text-sm">
+        <h3 className="font-heading text-base font-semibold mb-1">Account</h3>
+        <div className="flex justify-between"><span className="text-muted-foreground">Name</span><span className="font-medium">{profile?.full_name || "-"}</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">Email</span><span className="font-medium">{profile?.email || "-"}</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">Plan</span><span className="font-medium capitalize">{sub?.tier || "free"}</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">Credits</span><span className="font-medium">{sub?.credit_balance ?? 0}</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">Messages limit</span><span className="font-medium">{sub?.messages_limit > 0 ? sub.messages_limit : "Unlimited"}</span></div>
+        <div className="flex justify-between"><span className="text-muted-foreground">Video minutes</span><span className="font-medium">{sub?.video_minutes_limit > 0 ? sub.video_minutes_limit : "None"}</span></div>
+        </div>
           <div className="rounded-2xl border border-border bg-background p-5">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
