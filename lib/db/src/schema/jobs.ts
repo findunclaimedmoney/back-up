@@ -41,6 +41,8 @@ export const jobsTable = pgTable("jobs", {
   roomRescueCount: integer("room_rescue_count").default(0),
   // null = awaiting decision, "approved" = use rescued, "rejected" = use originals
   roomRescueApproved: text("room_rescue_approved"),
+  // Credit cost — how many credits were deducted for this job
+  creditCost: integer("credit_cost").default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

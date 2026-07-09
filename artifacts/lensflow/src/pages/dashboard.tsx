@@ -5,7 +5,7 @@ import {
   ChevronDown, TrendingUp, TrendingDown, Minus, RefreshCw, MapPin,
   MessageSquare, BarChart2, Play, Sparkles, Link2, ImageIcon, Video,
   Mic, ArrowRight, Clock, Globe, CheckCircle2, DollarSign, Zap,
-  ChevronRight, Wallet,
+  ChevronRight, Wallet, History,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@workspace/replit-auth-web";
@@ -58,7 +58,7 @@ function getGreeting() {
   return "Good evening";
 }
 
-// ── Credit balance hook (manual fetch until codegen) ───────────────────────────────────────
+// ── Credit hooks (manual fetch until codegen) ────────────────────────────────────────────
 function useCreditBalance() {
   const [balance, setBalance] = React.useState<number | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -70,6 +70,27 @@ function useCreditBalance() {
       .finally(() => setLoading(false));
   }, []);
   return { balance, loading };
+}
+
+interface CreditTx {
+  id: string;
+  type: string;
+  amount: number;
+  description: string | null;
+  createdAt: string;
+}
+
+function useCreditTransactions() {
+  const [txs, setTxs] = React.useState<CreditTx[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  useEffect(() => {
+    fetch("/api/credits/transactions", { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d?.transactions) setTxs(d.transactions); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+  return { txs, loading };
 }
 
 // ── Trend icon helper ────────────────────────────────────────────────────────────────────────────
@@ -327,6 +348,9 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Credit History */}
+      <CreditHistoryPanel />
+
       {/* Market Intelligence */}
       <MarketBriefCard />
 
@@ -409,6 +433,71 @@ const SAMPLE_VIDEOS = [
   { src: "/videos/sample-v4.mp4", label: "Mia · Bondi, NSW", featured: false },
   { src: "/videos/sample-v5.mp4", label: "Sophie · Toorak, VIC", featured: false },
 ];
+
+function CreditHistoryPanel() {
+  const { txs, loading } = useCreditTransactions();
+  // color constants already in scope as `C`
+  const spendTotal = txs.filter((t) => t.type === "spend").reduce((s, t) => s + t.amount, 0);
+  const purchaseTotal = txs.filter((t) => t.type === "purchase").reduce((s, t) => s + t.amount, 0);
+
+  return (
+    <div className="rounded-xl border overflow-hidden" style={{ background: C.panel, borderColor: "rgba(255,255,255,0.04)" }}>
+      <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+        <div className="flex items-center gap-2">
+          <History className="w-4 h-4" style={{ color: C.muted }} />
+          <h2 className="text-sm font-bold" style={{ color: C.ink }}>Credit History</h2>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-mono" style={{ color: C.muted }}>
+            <span style={{ color: "#60a5fa" }}>+{purchaseTotal}c</span>
+            <span className="mx-1">purchased</span>
+            ·
+            <span className="mx-1" style={{ color: "#f87171" }}>-{spendTotal}c</span>
+            spent
+          </span>
+        </div>
+      </div>
+      {loading ? (
+        <div className="p-6 text-center text-xs font-mono" style={{ color: C.muted }}>Loading transactions...</div>
+      ) : txs.length === 0 ? (
+        <div className="p-6 text-center">
+          <p className="text-sm" style={{ color: C.muted }}>No transactions yet.</p>
+          <p className="text-xs mt-1" style={{ color: C.muted }}>Credits spent on campaigns will appear here.</p>
+        </div>
+      ) : (
+        <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.03)" }}>
+          {txs.slice(0, 6).map((tx) => {
+            const isSpend = tx.type === "spend";
+            return (
+              <div key={tx.id} className="flex items-center gap-3 px-5 py-2.5 hover:bg-white/[0.02] transition-colors">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+                  style={{ background: isSpend ? "rgba(248,113,113,0.08)" : "rgba(96,165,250,0.08)", border: `1px solid ${isSpend ? "rgba(248,113,113,0.2)" : "rgba(96,165,250,0.2)"}` }}>
+                  {isSpend ? (
+                    <ArrowRight className="w-3 h-3" style={{ color: "#f87171" }} />
+                  ) : (
+                    <Wallet className="w-3 h-3" style={{ color: "#60a5fa" }} />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs truncate" style={{ color: C.ink }}>{tx.description || (isSpend ? "Campaign spend" : "Credit purchase")}</p>
+                  <p className="text-[10px] font-mono" style={{ color: C.muted }}>{formatDistanceToNow(new Date(tx.createdAt), { addSuffix: true })}</p>
+                </div>
+                <span className="text-xs font-mono font-bold" style={{ color: isSpend ? "#f87171" : "#60a5fa" }}>
+                  {isSpend ? "-" : "+"}{tx.amount}c
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {txs.length > 6 && (
+        <div className="px-5 py-2 text-center border-t" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+          <span className="text-[10px] font-mono" style={{ color: C.muted }}>+ {txs.length - 6} older transactions</span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function SampleVideos() {
   const [expanded, setExpanded] = useState(false);

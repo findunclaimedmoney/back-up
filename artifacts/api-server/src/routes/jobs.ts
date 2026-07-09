@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
-import { eq, desc, count, and } from "drizzle-orm";
-import { db, jobsTable, pipelineStepsTable, usersTable } from "@workspace/db";
+import { eq, desc, count, and, sql } from "drizzle-orm";
+import { db, jobsTable, pipelineStepsTable, usersTable, creditTransactionsTable } from "@workspace/db";
 import {
   CreateJobBody,
   GetJobParams,
@@ -740,6 +740,55 @@ router.post("/jobs", async (req, res): Promise<void> => {
     return;
   }
 
+  // Calculate credit cost based on features used
+  const CREDIT_COSTS: Record<string, number> = {
+    base: 10,
+    voice_photos: 5,
+    presenter_video: 15,
+    enhance_photos: 8,
+    pro_lens_upgrade: 10,
+    room_rescue: 12,
+  };
+  let creditCost = CREDIT_COSTS.base;
+  if (outputType === "voice_photos") creditCost += CREDIT_COSTS.voice_photos;
+  else creditCost += CREDIT_COSTS.presenter_video;
+  if (enhancePhotos) creditCost += CREDIT_COSTS.enhance_photos;
+  if (proLensUpgrade) creditCost += CREDIT_COSTS.pro_lens_upgrade;
+  if (roomRescue) creditCost += CREDIT_COSTS.room_rescue;
+
+  // Deduct credits
+  try {
+    const userRows = await db
+      .select({ creditBalance: usersTable.creditBalance })
+      .from(usersTable)
+      .where(eq(usersTable.id, req.user.id))
+      .limit(1);
+    const currentBalance = userRows[0]?.creditBalance ?? 0;
+    if (currentBalance < creditCost) {
+      res.status(402).json({ error: "Insufficient credits", balance: currentBalance, required: creditCost });
+      return;
+    }
+    await db.transaction(async (tx) => {
+      await tx
+        .update(usersTable)
+        .set({
+          creditBalance: sql`${usersTable.creditBalance} - ${creditCost}`,
+          creditLifetimeSpent: sql`${usersTable.creditLifetimeSpent} + ${creditCost}`,
+        })
+        .where(eq(usersTable.id, req.user.id));
+      await tx.insert(creditTransactionsTable).values({
+        userId: req.user.id,
+        type: "spend",
+        amount: -creditCost,
+        description: `Campaign: ${parsed.data.listingUrl ? new URL(parsed.data.listingUrl).hostname : "property"}`,
+      });
+    });
+  } catch (err) {
+    logger.error({ err }, "credit deduction failed");
+    res.status(500).json({ error: "Failed to deduct credits" });
+    return;
+  }
+
   const id = randomUUID();
   const [job] = await db
     .insert(jobsTable)
@@ -756,13 +805,11 @@ router.post("/jobs", async (req, res): Promise<void> => {
       outputType,
       lookId: (parsed.data as Record<string, unknown>).lookId as string | null ?? null,
       roomRescueMode: roomRescue ? roomRescueMode : null,
+      creditCost,
       status: "queued",
     })
     .returning();
 
-  // Only include the AI photo enhancement step when the user explicitly opted in.
-  // Skip it and re-sequence orders so the timeline is tight.
-  // Choose the right pipeline steps based on inputMode and outputType
   const basePipelineSteps =
     outputType === "voice_photos"
       ? inputMode === "photos"

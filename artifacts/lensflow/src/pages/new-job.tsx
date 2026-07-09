@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link2, ArrowRight, Mic, Loader2, Play, ChevronDown, CheckCircle2, ImagePlus, X, Upload, Camera, Music2, Film, Video, Square, User, Bot, Layers, Wand2 } from "lucide-react";
+import { Link2, ArrowRight, Mic, Loader2, Play, ChevronDown, CheckCircle2, ImagePlus, X, Upload, Camera, Music2, Film, Video, Square, User, Bot, Layers, Wand2, Coins } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useUpload } from "@workspace/object-storage-web";
@@ -452,8 +452,13 @@ export default function NewJob() {
           });
           setLocation(`/jobs/${job.id}`);
         },
-        onError: () => {
-          toast({ title: "Submission Failed", description: "Could not start the pipeline. Please try again.", variant: "destructive" });
+        onError: (err: any) => {
+          const msg = err?.response?.data?.error ?? err?.message ?? "";
+          if (msg.includes("Insufficient credits")) {
+            toast({ title: "Not enough credits", description: "Top up your balance to generate this campaign.", variant: "destructive" });
+          } else {
+            toast({ title: "Submission Failed", description: "Could not start the pipeline. Please try again.", variant: "destructive" });
+          }
         },
       }
     );
@@ -1140,7 +1145,12 @@ export default function NewJob() {
               )}
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between">
+              <CreditCostPreview
+                outputType={outputType}
+                enhancePhotos={enhancePhotos}
+                roomRescue={roomRescue}
+              />
               <Button
                 type="submit"
                 disabled={createJob.isPending || generateScriptMutation.isPending || uploadingCount > 0}
@@ -1324,6 +1334,31 @@ export default function NewJob() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function CreditCostPreview({ outputType, enhancePhotos, roomRescue }: { outputType: string; enhancePhotos: boolean; roomRescue: boolean }) {
+  const costs: Record<string, number> = { base: 10, voice_photos: 5, presenter_video: 15, enhance_photos: 8, room_rescue: 12 };
+  let total = costs.base;
+  const items = [{ label: "Base", cost: costs.base }];
+  if (outputType === "voice_photos") { total += costs.voice_photos; items.push({ label: "Voice+Photos", cost: costs.voice_photos }); }
+  else { total += costs.presenter_video; items.push({ label: "Presenter", cost: costs.presenter_video }); }
+  if (enhancePhotos) { total += costs.enhance_photos; items.push({ label: "Glow-up", cost: costs.enhance_photos }); }
+  if (roomRescue) { total += costs.room_rescue; items.push({ label: "Room Rescue", cost: costs.room_rescue }); }
+  return (
+    <div className="flex items-center gap-1.5">
+      <Coins className="w-3.5 h-3.5 text-primary/70" />
+      <span className="text-[11px] font-mono text-muted-foreground">
+        {items.map((it, i) => (
+          <span key={it.label}>
+            {i > 0 && <span className="text-border mx-0.5">+</span>}
+            <span className="text-foreground/60">{it.cost}c</span>
+          </span>
+        ))}
+        <span className="text-border mx-0.5">=</span>
+        <span className="text-primary font-bold">{total}c</span>
+      </span>
     </div>
   );
 }

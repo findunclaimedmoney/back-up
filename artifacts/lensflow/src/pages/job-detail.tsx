@@ -2,7 +2,7 @@ import { useParams, useLocation } from "wouter";
 import { useGetJob, useDeleteJob, useSimulateJob, useSendJobToCrm, useSetJobMatterportUrl, useApproveProLensUpgrade, useRejectProLensUpgrade, useApproveRoomRescue, useRejectRoomRescue, getGetJobQueryKey, getGetJobStatsQueryKey, getListJobsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback } from "react";
-import { ArrowLeft, Trash2, ExternalLink, CheckCircle2, Loader2, Circle, XCircle, Play, RotateCcw, Volume2, Mic, Copy, Check, Download, Plus, Share2, Video, Camera, Send, ChevronDown, ChevronUp, Sparkles, Box, MapPin, ThumbsUp, ThumbsDown, ZoomIn, Wand2 } from "lucide-react";
+import { ArrowLeft, Trash2, ExternalLink, CheckCircle2, Loader2, Circle, XCircle, Play, RotateCcw, Volume2, Mic, Copy, Check, Download, Plus, Share2, Video, Camera, Send, ChevronDown, ChevronUp, Sparkles, Box, MapPin, ThumbsUp, ThumbsDown, ZoomIn, Wand2, Coins } from "lucide-react";
 import { Link } from "wouter";
 import { formatDistanceToNow, format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -199,6 +199,11 @@ export default function JobDetail() {
                 </span>
               )}
               <JobStatusBadge status={job.status} />
+              {(job as any).creditCost > 0 && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono border border-amber-500/20 bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded">
+                  <Coins className="w-3 h-3" /> {(job as any).creditCost}c
+                </span>
+              )}
               <span className="text-xs text-muted-foreground" data-testid="text-created-at">
                 Started {formatDistanceToNow(new Date(job.createdAt), { addSuffix: true })}
               </span>
