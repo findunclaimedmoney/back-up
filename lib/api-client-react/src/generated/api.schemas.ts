@@ -559,6 +559,181 @@ export interface AvatarSettings {
   heygenVoiceId?: string;
 }
 
+export type CompanionPersonaId = typeof CompanionPersonaId[keyof typeof CompanionPersonaId];
+
+
+export const CompanionPersonaId = {
+  mia: 'mia',
+  alex: 'alex',
+} as const;
+
+export type CompanionPersonaGender = typeof CompanionPersonaGender[keyof typeof CompanionPersonaGender];
+
+
+export const CompanionPersonaGender = {
+  female: 'female',
+  male: 'male',
+} as const;
+
+export interface CompanionPersona {
+  id: CompanionPersonaId;
+  name: string;
+  gender: CompanionPersonaGender;
+  tagline: string;
+  description: string;
+}
+
+export interface CompanionPersonaCreateBody {
+  /** @minLength 1 */
+  photoBase64: string;
+  mimeType?: string;
+}
+
+export interface CompanionPersonaCreateResponse {
+  portraitBase64: string;
+  faceDescription: string;
+  suggestedName: string;
+}
+
+export type CompanionMessageRole = typeof CompanionMessageRole[keyof typeof CompanionMessageRole];
+
+
+export const CompanionMessageRole = {
+  user: 'user',
+  assistant: 'assistant',
+} as const;
+
+export interface CompanionMessage {
+  role: CompanionMessageRole;
+  content: string;
+}
+
+export type CompanionChatBodyPersona = typeof CompanionChatBodyPersona[keyof typeof CompanionChatBodyPersona];
+
+
+export const CompanionChatBodyPersona = {
+  mia: 'mia',
+  alex: 'alex',
+} as const;
+
+export interface CompanionChatBody {
+  /** @minLength 1 */
+  sessionId: string;
+  persona?: CompanionChatBodyPersona;
+  /** @minItems 1 */
+  messages: CompanionMessage[];
+  voice?: boolean;
+}
+
+export interface CompanionChatResponse {
+  responseText: string;
+  sessionId: string;
+  /** @nullable */
+  audioBase64: string | null;
+}
+
+export interface CompanionMemory {
+  sessionId: string;
+  summary: string;
+  messageCount: number;
+  /** @nullable */
+  updatedAt: string | null;
+}
+
+export type CompanionMemoryBodyPersona = typeof CompanionMemoryBodyPersona[keyof typeof CompanionMemoryBodyPersona];
+
+
+export const CompanionMemoryBodyPersona = {
+  mia: 'mia',
+  alex: 'alex',
+} as const;
+
+export interface CompanionMemoryBody {
+  /** @minLength 1 */
+  sessionId: string;
+  persona?: CompanionMemoryBodyPersona;
+  messages?: CompanionMessage[];
+}
+
+export type CompanionFactsFacts = {[key: string]: string};
+
+export interface CompanionFacts {
+  sessionId: string;
+  facts: CompanionFactsFacts;
+}
+
+export interface CompanionBirthdayCheck {
+  isBirthday: boolean;
+  /** @nullable */
+  name: string | null;
+  /** @nullable */
+  email: string | null;
+  /** @nullable */
+  birthday: string | null;
+  /** @nullable */
+  daysUntilBirthday: number | null;
+}
+
+export type CompanionBirthdayCardEmailBodyPersonaId = typeof CompanionBirthdayCardEmailBodyPersonaId[keyof typeof CompanionBirthdayCardEmailBodyPersonaId];
+
+
+export const CompanionBirthdayCardEmailBodyPersonaId = {
+  mia: 'mia',
+  alex: 'alex',
+} as const;
+
+export interface CompanionBirthdayCardEmailBody {
+  /** @minLength 1 */
+  sessionId: string;
+  personaId?: CompanionBirthdayCardEmailBodyPersonaId;
+}
+
+export interface CompanionBirthdayCardEmailResponse {
+  sent: boolean;
+  to: string;
+}
+
+export type CompanionOutfitGenerateBodyPersonaId = typeof CompanionOutfitGenerateBodyPersonaId[keyof typeof CompanionOutfitGenerateBodyPersonaId];
+
+
+export const CompanionOutfitGenerateBodyPersonaId = {
+  mia: 'mia',
+  alex: 'alex',
+} as const;
+
+export interface CompanionOutfitGenerateBody {
+  /** @minLength 1 */
+  sessionId: string;
+  personaId?: CompanionOutfitGenerateBodyPersonaId;
+  /** @minLength 1 */
+  outfitId: string;
+  /** @minLength 1 */
+  outfitDescription: string;
+  faceDescription?: string;
+}
+
+export interface CompanionOutfitGenerateResponse {
+  portraitBase64: string;
+  cached: boolean;
+}
+
+export type CompanionVideoBodyPersonaId = typeof CompanionVideoBodyPersonaId[keyof typeof CompanionVideoBodyPersonaId];
+
+
+export const CompanionVideoBodyPersonaId = {
+  mia: 'mia',
+  alex: 'alex',
+} as const;
+
+export interface CompanionVideoBody {
+  text?: string;
+  personaId?: CompanionVideoBodyPersonaId;
+}
+
+export interface CompanionVideoResponse {
+  videoUrl: string;
+}
+
 /**
  * Opaque session token — Bearer <sid>.
  */

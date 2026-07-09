@@ -594,3 +594,177 @@ export const UpdateAvatarSettingsResponse = zod.object({
 })
 
 
+/**
+ * @summary List available companion personas (Mia, Alex)
+ */
+export const GetPersonasResponseItem = zod.object({
+  "id": zod.enum(['mia', 'alex']),
+  "name": zod.string(),
+  "gender": zod.enum(['female', 'male']),
+  "tagline": zod.string(),
+  "description": zod.string()
+})
+export const GetPersonasResponse = zod.array(GetPersonasResponseItem)
+
+
+/**
+ * @summary Create a custom companion persona from an uploaded photo (vision description + DALL-E-3 portrait)
+ */
+
+
+
+export const CreateCompanionPersonaBody = zod.object({
+  "photoBase64": zod.string().min(1),
+  "mimeType": zod.string().optional()
+})
+
+export const CreateCompanionPersonaResponse = zod.object({
+  "portraitBase64": zod.string(),
+  "faceDescription": zod.string(),
+  "suggestedName": zod.string()
+})
+
+
+/**
+ * @summary Send a chat message to a companion persona, with memory/facts/birthday context
+ */
+
+
+
+
+export const CompanionChatBody = zod.object({
+  "sessionId": zod.string().min(1),
+  "persona": zod.enum(['mia', 'alex']).optional(),
+  "messages": zod.array(zod.object({
+  "role": zod.enum(['user', 'assistant']),
+  "content": zod.string()
+})).min(1),
+  "voice": zod.boolean().optional()
+})
+
+export const CompanionChatResponse = zod.object({
+  "responseText": zod.string(),
+  "sessionId": zod.string(),
+  "audioBase64": zod.string().nullable()
+})
+
+
+/**
+ * @summary Get the stored memory summary for a companion session
+ */
+export const GetCompanionMemoryParams = zod.object({
+  "sessionId": zod.coerce.string()
+})
+
+export const GetCompanionMemoryResponse = zod.object({
+  "sessionId": zod.string(),
+  "summary": zod.string(),
+  "messageCount": zod.number(),
+  "updatedAt": zod.coerce.date().nullable()
+})
+
+
+/**
+ * @summary Summarise a conversation and extract/persist facts (name, birthday, relationships, preferences)
+ */
+
+
+
+export const SaveCompanionMemoryBody = zod.object({
+  "sessionId": zod.string().min(1),
+  "persona": zod.enum(['mia', 'alex']).optional(),
+  "messages": zod.array(zod.object({
+  "role": zod.enum(['user', 'assistant']),
+  "content": zod.string()
+})).optional()
+})
+
+export const SaveCompanionMemoryResponse = zod.object({
+  "sessionId": zod.string(),
+  "summary": zod.string(),
+  "messageCount": zod.number(),
+  "updatedAt": zod.coerce.date().nullable()
+})
+
+
+/**
+ * @summary Get all stored facts for a companion session
+ */
+export const GetCompanionFactsParams = zod.object({
+  "sessionId": zod.coerce.string()
+})
+
+export const GetCompanionFactsResponse = zod.object({
+  "sessionId": zod.string(),
+  "facts": zod.record(zod.string(), zod.string())
+})
+
+
+/**
+ * @summary Check whether today is the user's birthday and how many days remain otherwise
+ */
+export const GetCompanionBirthdayCheckParams = zod.object({
+  "sessionId": zod.coerce.string()
+})
+
+export const GetCompanionBirthdayCheckResponse = zod.object({
+  "isBirthday": zod.boolean(),
+  "name": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "birthday": zod.string().nullable(),
+  "daysUntilBirthday": zod.number().nullable()
+})
+
+
+/**
+ * @summary Email a personalised birthday card from the companion (Resend)
+ */
+
+
+
+export const SendCompanionBirthdayCardEmailBody = zod.object({
+  "sessionId": zod.string().min(1),
+  "personaId": zod.enum(['mia', 'alex']).optional()
+})
+
+export const SendCompanionBirthdayCardEmailResponse = zod.object({
+  "sent": zod.boolean(),
+  "to": zod.string()
+})
+
+
+/**
+ * @summary Generate (or fetch cached) a wardrobe outfit portrait for a companion session
+ */
+
+
+
+
+
+export const GenerateCompanionOutfitBody = zod.object({
+  "sessionId": zod.string().min(1),
+  "personaId": zod.enum(['mia', 'alex']).optional(),
+  "outfitId": zod.string().min(1),
+  "outfitDescription": zod.string().min(1),
+  "faceDescription": zod.string().optional()
+})
+
+export const GenerateCompanionOutfitResponse = zod.object({
+  "portraitBase64": zod.string(),
+  "cached": zod.boolean()
+})
+
+
+/**
+ * @summary Generate a HeyGen avatar video of the companion speaking a line
+ */
+export const CreateCompanionVideoBody = zod.object({
+  "text": zod.string().optional(),
+  "personaId": zod.enum(['mia', 'alex']).optional()
+})
+
+export const CreateCompanionVideoResponse = zod.object({
+  "videoUrl": zod.string()
+})
+
+

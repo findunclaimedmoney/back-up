@@ -31,6 +31,21 @@ import type {
   AuthUserEnvelope,
   AvatarSettings,
   BeginBrowserLoginParams,
+  CompanionBirthdayCardEmailBody,
+  CompanionBirthdayCardEmailResponse,
+  CompanionBirthdayCheck,
+  CompanionChatBody,
+  CompanionChatResponse,
+  CompanionFacts,
+  CompanionMemory,
+  CompanionMemoryBody,
+  CompanionOutfitGenerateBody,
+  CompanionOutfitGenerateResponse,
+  CompanionPersona,
+  CompanionPersonaCreateBody,
+  CompanionPersonaCreateResponse,
+  CompanionVideoBody,
+  CompanionVideoResponse,
   ElevenLabsError,
   ElevenLabsVoice,
   GenerateScriptInput,
@@ -2939,5 +2954,739 @@ export const useUpdateAvatarSettings = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getUpdateAvatarSettingsMutationOptions(options));
+    }
+
+export const getGetPersonasUrl = () => {
+
+
+
+
+  return `/api/companion/personas`
+}
+
+/**
+ * @summary List available companion personas (Mia, Alex)
+ */
+export const getPersonas = async ( options?: RequestInit): Promise<CompanionPersona[]> => {
+
+  return customFetch<CompanionPersona[]>(getGetPersonasUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPersonasQueryKey = () => {
+    return [
+    `/api/companion/personas`
+    ] as const;
+    }
+
+
+export const getGetPersonasQueryOptions = <TData = Awaited<ReturnType<typeof getPersonas>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPersonas>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPersonasQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPersonas>>> = ({ signal }) => getPersonas({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPersonas>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPersonasQueryResult = NonNullable<Awaited<ReturnType<typeof getPersonas>>>
+export type GetPersonasQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List available companion personas (Mia, Alex)
+ */
+
+export function useGetPersonas<TData = Awaited<ReturnType<typeof getPersonas>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPersonas>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPersonasQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateCompanionPersonaUrl = () => {
+
+
+
+
+  return `/api/companion/persona/create`
+}
+
+/**
+ * @summary Create a custom companion persona from an uploaded photo (vision description + DALL-E-3 portrait)
+ */
+export const createCompanionPersona = async (companionPersonaCreateBody: CompanionPersonaCreateBody, options?: RequestInit): Promise<CompanionPersonaCreateResponse> => {
+
+  return customFetch<CompanionPersonaCreateResponse>(getCreateCompanionPersonaUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      companionPersonaCreateBody,)
+  }
+);}
+
+
+
+
+export const getCreateCompanionPersonaMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanionPersona>>, TError,{data: BodyType<CompanionPersonaCreateBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCompanionPersona>>, TError,{data: BodyType<CompanionPersonaCreateBody>}, TContext> => {
+
+const mutationKey = ['createCompanionPersona'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCompanionPersona>>, {data: BodyType<CompanionPersonaCreateBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCompanionPersona(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCompanionPersonaMutationResult = NonNullable<Awaited<ReturnType<typeof createCompanionPersona>>>
+    export type CreateCompanionPersonaMutationBody = BodyType<CompanionPersonaCreateBody>
+    export type CreateCompanionPersonaMutationError = ErrorType<void>
+
+    /**
+ * @summary Create a custom companion persona from an uploaded photo (vision description + DALL-E-3 portrait)
+ */
+export const useCreateCompanionPersona = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanionPersona>>, TError,{data: BodyType<CompanionPersonaCreateBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCompanionPersona>>,
+        TError,
+        {data: BodyType<CompanionPersonaCreateBody>},
+        TContext
+      > => {
+      return useMutation(getCreateCompanionPersonaMutationOptions(options));
+    }
+
+export const getCompanionChatUrl = () => {
+
+
+
+
+  return `/api/companion/chat`
+}
+
+/**
+ * @summary Send a chat message to a companion persona, with memory/facts/birthday context
+ */
+export const companionChat = async (companionChatBody: CompanionChatBody, options?: RequestInit): Promise<CompanionChatResponse> => {
+
+  return customFetch<CompanionChatResponse>(getCompanionChatUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      companionChatBody,)
+  }
+);}
+
+
+
+
+export const getCompanionChatMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof companionChat>>, TError,{data: BodyType<CompanionChatBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof companionChat>>, TError,{data: BodyType<CompanionChatBody>}, TContext> => {
+
+const mutationKey = ['companionChat'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof companionChat>>, {data: BodyType<CompanionChatBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  companionChat(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompanionChatMutationResult = NonNullable<Awaited<ReturnType<typeof companionChat>>>
+    export type CompanionChatMutationBody = BodyType<CompanionChatBody>
+    export type CompanionChatMutationError = ErrorType<void>
+
+    /**
+ * @summary Send a chat message to a companion persona, with memory/facts/birthday context
+ */
+export const useCompanionChat = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof companionChat>>, TError,{data: BodyType<CompanionChatBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof companionChat>>,
+        TError,
+        {data: BodyType<CompanionChatBody>},
+        TContext
+      > => {
+      return useMutation(getCompanionChatMutationOptions(options));
+    }
+
+export const getGetCompanionMemoryUrl = (sessionId: string,) => {
+
+
+
+
+  return `/api/companion/memory/${sessionId}`
+}
+
+/**
+ * @summary Get the stored memory summary for a companion session
+ */
+export const getCompanionMemory = async (sessionId: string, options?: RequestInit): Promise<CompanionMemory> => {
+
+  return customFetch<CompanionMemory>(getGetCompanionMemoryUrl(sessionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCompanionMemoryQueryKey = (sessionId: string,) => {
+    return [
+    `/api/companion/memory/${sessionId}`
+    ] as const;
+    }
+
+
+export const getGetCompanionMemoryQueryOptions = <TData = Awaited<ReturnType<typeof getCompanionMemory>>, TError = ErrorType<unknown>>(sessionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCompanionMemory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCompanionMemoryQueryKey(sessionId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCompanionMemory>>> = ({ signal }) => getCompanionMemory(sessionId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCompanionMemory>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCompanionMemoryQueryResult = NonNullable<Awaited<ReturnType<typeof getCompanionMemory>>>
+export type GetCompanionMemoryQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the stored memory summary for a companion session
+ */
+
+export function useGetCompanionMemory<TData = Awaited<ReturnType<typeof getCompanionMemory>>, TError = ErrorType<unknown>>(
+ sessionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCompanionMemory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCompanionMemoryQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getSaveCompanionMemoryUrl = () => {
+
+
+
+
+  return `/api/companion/memory`
+}
+
+/**
+ * @summary Summarise a conversation and extract/persist facts (name, birthday, relationships, preferences)
+ */
+export const saveCompanionMemory = async (companionMemoryBody: CompanionMemoryBody, options?: RequestInit): Promise<CompanionMemory> => {
+
+  return customFetch<CompanionMemory>(getSaveCompanionMemoryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      companionMemoryBody,)
+  }
+);}
+
+
+
+
+export const getSaveCompanionMemoryMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveCompanionMemory>>, TError,{data: BodyType<CompanionMemoryBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveCompanionMemory>>, TError,{data: BodyType<CompanionMemoryBody>}, TContext> => {
+
+const mutationKey = ['saveCompanionMemory'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveCompanionMemory>>, {data: BodyType<CompanionMemoryBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  saveCompanionMemory(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveCompanionMemoryMutationResult = NonNullable<Awaited<ReturnType<typeof saveCompanionMemory>>>
+    export type SaveCompanionMemoryMutationBody = BodyType<CompanionMemoryBody>
+    export type SaveCompanionMemoryMutationError = ErrorType<void>
+
+    /**
+ * @summary Summarise a conversation and extract/persist facts (name, birthday, relationships, preferences)
+ */
+export const useSaveCompanionMemory = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveCompanionMemory>>, TError,{data: BodyType<CompanionMemoryBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof saveCompanionMemory>>,
+        TError,
+        {data: BodyType<CompanionMemoryBody>},
+        TContext
+      > => {
+      return useMutation(getSaveCompanionMemoryMutationOptions(options));
+    }
+
+export const getGetCompanionFactsUrl = (sessionId: string,) => {
+
+
+
+
+  return `/api/companion/facts/${sessionId}`
+}
+
+/**
+ * @summary Get all stored facts for a companion session
+ */
+export const getCompanionFacts = async (sessionId: string, options?: RequestInit): Promise<CompanionFacts> => {
+
+  return customFetch<CompanionFacts>(getGetCompanionFactsUrl(sessionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCompanionFactsQueryKey = (sessionId: string,) => {
+    return [
+    `/api/companion/facts/${sessionId}`
+    ] as const;
+    }
+
+
+export const getGetCompanionFactsQueryOptions = <TData = Awaited<ReturnType<typeof getCompanionFacts>>, TError = ErrorType<unknown>>(sessionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCompanionFacts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCompanionFactsQueryKey(sessionId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCompanionFacts>>> = ({ signal }) => getCompanionFacts(sessionId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCompanionFacts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCompanionFactsQueryResult = NonNullable<Awaited<ReturnType<typeof getCompanionFacts>>>
+export type GetCompanionFactsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get all stored facts for a companion session
+ */
+
+export function useGetCompanionFacts<TData = Awaited<ReturnType<typeof getCompanionFacts>>, TError = ErrorType<unknown>>(
+ sessionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCompanionFacts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCompanionFactsQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetCompanionBirthdayCheckUrl = (sessionId: string,) => {
+
+
+
+
+  return `/api/companion/birthday-check/${sessionId}`
+}
+
+/**
+ * @summary Check whether today is the user's birthday and how many days remain otherwise
+ */
+export const getCompanionBirthdayCheck = async (sessionId: string, options?: RequestInit): Promise<CompanionBirthdayCheck> => {
+
+  return customFetch<CompanionBirthdayCheck>(getGetCompanionBirthdayCheckUrl(sessionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCompanionBirthdayCheckQueryKey = (sessionId: string,) => {
+    return [
+    `/api/companion/birthday-check/${sessionId}`
+    ] as const;
+    }
+
+
+export const getGetCompanionBirthdayCheckQueryOptions = <TData = Awaited<ReturnType<typeof getCompanionBirthdayCheck>>, TError = ErrorType<unknown>>(sessionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCompanionBirthdayCheck>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCompanionBirthdayCheckQueryKey(sessionId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCompanionBirthdayCheck>>> = ({ signal }) => getCompanionBirthdayCheck(sessionId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(sessionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCompanionBirthdayCheck>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCompanionBirthdayCheckQueryResult = NonNullable<Awaited<ReturnType<typeof getCompanionBirthdayCheck>>>
+export type GetCompanionBirthdayCheckQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Check whether today is the user's birthday and how many days remain otherwise
+ */
+
+export function useGetCompanionBirthdayCheck<TData = Awaited<ReturnType<typeof getCompanionBirthdayCheck>>, TError = ErrorType<unknown>>(
+ sessionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCompanionBirthdayCheck>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCompanionBirthdayCheckQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getSendCompanionBirthdayCardEmailUrl = () => {
+
+
+
+
+  return `/api/companion/birthday-card-email`
+}
+
+/**
+ * @summary Email a personalised birthday card from the companion (Resend)
+ */
+export const sendCompanionBirthdayCardEmail = async (companionBirthdayCardEmailBody: CompanionBirthdayCardEmailBody, options?: RequestInit): Promise<CompanionBirthdayCardEmailResponse> => {
+
+  return customFetch<CompanionBirthdayCardEmailResponse>(getSendCompanionBirthdayCardEmailUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      companionBirthdayCardEmailBody,)
+  }
+);}
+
+
+
+
+export const getSendCompanionBirthdayCardEmailMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendCompanionBirthdayCardEmail>>, TError,{data: BodyType<CompanionBirthdayCardEmailBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendCompanionBirthdayCardEmail>>, TError,{data: BodyType<CompanionBirthdayCardEmailBody>}, TContext> => {
+
+const mutationKey = ['sendCompanionBirthdayCardEmail'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendCompanionBirthdayCardEmail>>, {data: BodyType<CompanionBirthdayCardEmailBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  sendCompanionBirthdayCardEmail(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendCompanionBirthdayCardEmailMutationResult = NonNullable<Awaited<ReturnType<typeof sendCompanionBirthdayCardEmail>>>
+    export type SendCompanionBirthdayCardEmailMutationBody = BodyType<CompanionBirthdayCardEmailBody>
+    export type SendCompanionBirthdayCardEmailMutationError = ErrorType<void>
+
+    /**
+ * @summary Email a personalised birthday card from the companion (Resend)
+ */
+export const useSendCompanionBirthdayCardEmail = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendCompanionBirthdayCardEmail>>, TError,{data: BodyType<CompanionBirthdayCardEmailBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof sendCompanionBirthdayCardEmail>>,
+        TError,
+        {data: BodyType<CompanionBirthdayCardEmailBody>},
+        TContext
+      > => {
+      return useMutation(getSendCompanionBirthdayCardEmailMutationOptions(options));
+    }
+
+export const getGenerateCompanionOutfitUrl = () => {
+
+
+
+
+  return `/api/companion/outfit/generate`
+}
+
+/**
+ * @summary Generate (or fetch cached) a wardrobe outfit portrait for a companion session
+ */
+export const generateCompanionOutfit = async (companionOutfitGenerateBody: CompanionOutfitGenerateBody, options?: RequestInit): Promise<CompanionOutfitGenerateResponse> => {
+
+  return customFetch<CompanionOutfitGenerateResponse>(getGenerateCompanionOutfitUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      companionOutfitGenerateBody,)
+  }
+);}
+
+
+
+
+export const getGenerateCompanionOutfitMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateCompanionOutfit>>, TError,{data: BodyType<CompanionOutfitGenerateBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateCompanionOutfit>>, TError,{data: BodyType<CompanionOutfitGenerateBody>}, TContext> => {
+
+const mutationKey = ['generateCompanionOutfit'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateCompanionOutfit>>, {data: BodyType<CompanionOutfitGenerateBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  generateCompanionOutfit(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateCompanionOutfitMutationResult = NonNullable<Awaited<ReturnType<typeof generateCompanionOutfit>>>
+    export type GenerateCompanionOutfitMutationBody = BodyType<CompanionOutfitGenerateBody>
+    export type GenerateCompanionOutfitMutationError = ErrorType<void>
+
+    /**
+ * @summary Generate (or fetch cached) a wardrobe outfit portrait for a companion session
+ */
+export const useGenerateCompanionOutfit = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateCompanionOutfit>>, TError,{data: BodyType<CompanionOutfitGenerateBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateCompanionOutfit>>,
+        TError,
+        {data: BodyType<CompanionOutfitGenerateBody>},
+        TContext
+      > => {
+      return useMutation(getGenerateCompanionOutfitMutationOptions(options));
+    }
+
+export const getCreateCompanionVideoUrl = () => {
+
+
+
+
+  return `/api/companion/video`
+}
+
+/**
+ * @summary Generate a HeyGen avatar video of the companion speaking a line
+ */
+export const createCompanionVideo = async (companionVideoBody: CompanionVideoBody, options?: RequestInit): Promise<CompanionVideoResponse> => {
+
+  return customFetch<CompanionVideoResponse>(getCreateCompanionVideoUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      companionVideoBody,)
+  }
+);}
+
+
+
+
+export const getCreateCompanionVideoMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanionVideo>>, TError,{data: BodyType<CompanionVideoBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCompanionVideo>>, TError,{data: BodyType<CompanionVideoBody>}, TContext> => {
+
+const mutationKey = ['createCompanionVideo'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCompanionVideo>>, {data: BodyType<CompanionVideoBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCompanionVideo(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCompanionVideoMutationResult = NonNullable<Awaited<ReturnType<typeof createCompanionVideo>>>
+    export type CreateCompanionVideoMutationBody = BodyType<CompanionVideoBody>
+    export type CreateCompanionVideoMutationError = ErrorType<void>
+
+    /**
+ * @summary Generate a HeyGen avatar video of the companion speaking a line
+ */
+export const useCreateCompanionVideo = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanionVideo>>, TError,{data: BodyType<CompanionVideoBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCompanionVideo>>,
+        TError,
+        {data: BodyType<CompanionVideoBody>},
+        TContext
+      > => {
+      return useMutation(getCreateCompanionVideoMutationOptions(options));
     }
 
