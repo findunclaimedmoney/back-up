@@ -30,7 +30,7 @@ export default function Pricing() {
         "AI presenter (no HeyGen / D-ID)",
         "ElevenLabs voiceover",
         "Voice + Photos slideshow",
-        "Morgan marketing campaign",
+        "Mia marketing campaign",
       ],
       cta: "Get Started",
       link: "/pipeline/billing?plan=starter",
@@ -53,7 +53,7 @@ export default function Pricing() {
         "4K rendering · REA & Domain export",
       ],
       notIncluded: [
-        "Morgan marketing campaign",
+        "Mia marketing campaign",
         "Digital twin avatar",
       ],
       cta: "Get Started",
@@ -65,12 +65,12 @@ export default function Pricing() {
       badge: null,
       price: isAnnual ? "399" : "449",
       videoLimit: "2 videos / month",
-      description: "Full pipeline plus Morgan runs your marketing.",
+      description: "Full pipeline plus Mia runs your marketing.",
       icon: Sparkles,
       features: [
         "2 listing videos per month",
         "Everything in Elite",
-        "Morgan marketing campaign",
+        "Mia marketing campaign",
         "Social captions & email copy",
         "Content calendar scheduling",
         "Dedicated account manager",
@@ -111,8 +111,8 @@ export default function Pricing() {
       a: "Starter is for agents who want to film themselves — you get the AI script, a scrolling teleprompter on your phone, and 1 finished video per month. Elite hands the whole thing to an AI presenter: the script writes itself, ElevenLabs narrates it, and HeyGen or D-ID renders the final video without you lifting a camera."
     },
     {
-      q: "What does the Morgan marketing campaign include?",
-      a: "On Concierge, Morgan (our Claude-powered AI) generates your social captions, property email copy, and an Instagram/Facebook content calendar from the same listing data used to build your video — so your whole marketing push goes out in one click."
+      q: "What does the Mia marketing campaign include?",
+      a: "On Concierge, Mia (our Claude-powered AI) generates your social captions, property email copy, and an Instagram/Facebook content calendar from the same listing data used to build your video — so your whole marketing push goes out in one click."
     },
     {
       q: "Are the videos compatible with REA and Domain?",
@@ -124,7 +124,7 @@ export default function Pricing() {
     },
     {
       q: "What happens if I want my own digital twin?",
-      a: "That's the Twin Avatar Solution ($599/mo). You submit a short selfie video, we train your personal AI clone, and it presents every listing exactly like you — voice, mannerisms, and all. It includes 3 videos per month plus Morgan as your PA."
+      a: "That's the Twin Avatar Solution ($599/mo). You submit a short selfie video, we train your personal AI clone, and it presents every listing exactly like you — voice, mannerisms, and all. It includes 3 videos per month plus Mia as your PA."
     }
   ];
 
@@ -443,7 +443,7 @@ export default function Pricing() {
                   ["0:60", "HeyGen renders your AI presenter on screen"],
                   ["0:75", "Photos composed into a cinematic 4K video"],
                   ["0:90", "Ready to share to REA, Domain, socials, email"],
-                  ["", "Morgan drafts your marketing copy automatically"],
+                  ["", "Mia drafts your marketing copy automatically"],
                 ].map(([time, task], i) => (
                   <div key={i} className="flex items-start gap-3 text-sm">
                     <span className="text-primary/60 font-mono text-xs mt-0.5 w-16 shrink-0">{time}</span>
@@ -486,8 +486,8 @@ export default function Pricing() {
                 ["Video editing & colour grade", "$200 – $400", "✓ Included"],
                 ["Voiceover recording", "$150 – $300", "✓ Included"],
                 ["Listing script writing", "$100 – $200", "✓ Included"],
-                ["Social media caption writing", "$200 – $300/mo", "✓ Morgan writes it"],
-                ["Email marketing copy", "$150 – $250/mo", "✓ Morgan writes it"],
+                ["Social media caption writing", "$200 – $300/mo", "✓ Mia writes it"],
+                ["Email marketing copy", "$150 – $250/mo", "✓ Mia writes it"],
                 ["Your time (5+ hrs @ ~$150/hr)", "$750+", "✓ 90 seconds of your time"],
                 ["Waiting for deliverables", "3 – 7 business days", "✓ Ready instantly"],
                 ["REA & Domain formatting", "$50 – $100", "✓ Auto-formatted"],
@@ -565,7 +565,7 @@ export default function Pricing() {
                 </h3>
                 <p className="text-muted-foreground mb-4 leading-relaxed">
                   Create your own human-like digital twin that presents every listing
-                  exactly like you — in 90 seconds flat. Includes Morgan as your
+                  exactly like you — in 90 seconds flat. Includes Mia as your
                   Personal Marketing Advisor PA.
                 </p>
                 <div className="flex items-baseline gap-1 mb-6">
@@ -583,7 +583,7 @@ export default function Pricing() {
                 {[
                   "Your own digital twin avatar",
                   "Voice cloning — sounds like you",
-                  "Morgan PA for Marketing",
+                  "Mia PA for Marketing",
                   "90-second 4K listing videos",
                   "3 videos per month",
                   "REA & Domain-ready export",

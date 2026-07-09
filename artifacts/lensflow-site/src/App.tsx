@@ -12,7 +12,7 @@ import TwinAvatar from "@/pages/TwinAvatar";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import Examples from "@/pages/Examples";
 import Presenters from "@/pages/Presenters";
-import MorganChat from "@/components/MorganChat";
+import MiaChat from "@/components/MiaChat";
 
 const queryClient = new QueryClient();
 
@@ -41,7 +41,7 @@ function App() {
           <Router />
         </WouterRouter>
         <Toaster />
-        <MorganChat />
+        <MiaChat />
       </TooltipProvider>
     </QueryClientProvider>
   );

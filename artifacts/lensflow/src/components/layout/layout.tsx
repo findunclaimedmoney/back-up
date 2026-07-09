@@ -13,7 +13,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard, badge: null },
     { href: "/jobs", label: "My Videos", icon: Video, badge: runningCount > 0 ? runningCount : null },
-    { href: "/morgan", label: "Morgan", icon: Sparkles, badge: null },
+    { href: "/mia", label: "Mia", icon: Sparkles, badge: null },
     { href: "/billing", label: "Billing", icon: CreditCard, badge: null },
     { href: "/webhooks", label: "Webhooks", icon: Webhook, badge: null },
     { href: "/settings", label: "Settings", icon: Settings, badge: null },
@@ -121,7 +121,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {[
               { href: "/", label: "Dashboard", icon: LayoutDashboard },
               { href: "/jobs", label: "Videos", icon: Video },
-              { href: "/morgan", label: "Morgan", icon: Sparkles },
+              { href: "/mia", label: "Mia", icon: Sparkles },
               { href: "/billing", label: "Billing", icon: CreditCard },
               { href: "/settings", label: "Settings", icon: Settings },
             ].map((item) => {

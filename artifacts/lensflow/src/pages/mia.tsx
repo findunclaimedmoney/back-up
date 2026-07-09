@@ -52,7 +52,7 @@ const PLATFORM_META = [
   { key: "email" as const, label: "Email", icon: Mail, color: "text-amber-400", border: "border-amber-500/20", bg: "bg-amber-500/5" },
 ];
 
-export default function MorganMarketing() {
+export default function MiaMarketing() {
   const { data: jobs } = useListJobs();
   const completedJobs = (jobs ?? []).filter((j: Job) => j.status === "complete");
 
@@ -76,7 +76,7 @@ export default function MorganMarketing() {
     setLoading(true);
     setPack(null);
     try {
-      const res = await fetch("/api/morgan/marketing-pack", {
+      const res = await fetch("/api/mia/marketing-pack", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -104,7 +104,7 @@ export default function MorganMarketing() {
           <span className="text-xl text-violet-400">✦</span>
         </div>
         <div>
-          <h1 className="text-2xl font-bold">Morgan</h1>
+          <h1 className="text-2xl font-bold">Mia</h1>
           <p className="text-muted-foreground text-sm mt-0.5">
             Marketing Advisor PA — generates your full social + email content pack in one click
           </p>
@@ -193,7 +193,7 @@ export default function MorganMarketing() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Morgan is writing your pack…
+              Mia is writing your pack…
             </>
           ) : (
             <>

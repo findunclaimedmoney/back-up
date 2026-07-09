@@ -42,7 +42,7 @@ const STAGES = [
 
 type Stage = "idle" | "typing" | "sent" | "searching" | "results";
 
-export default function MorganPropertyDemo({ autoPlay = true }: { autoPlay?: boolean }) {
+export default function MiaPropertyDemo({ autoPlay = true }: { autoPlay?: boolean }) {
   const [stage, setStage] = useState<Stage>("idle");
   const [shownProps, setShownProps] = useState(0);
   const [inputText, setInputText] = useState("");
@@ -108,7 +108,7 @@ export default function MorganPropertyDemo({ autoPlay = true }: { autoPlay?: boo
             <Bot size={15} className="text-white" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-white">Morgan AI</p>
+            <p className="text-xs font-semibold text-white">Mia AI</p>
             <p className="text-[10px] text-violet-300">Property Intelligence · Live</p>
           </div>
           <div className="ml-auto flex items-center gap-1.5">

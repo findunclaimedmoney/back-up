@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import MorganPropertyDemo from "@/components/MorganPropertyDemo";
+import MiaPropertyDemo from "@/components/MiaPropertyDemo";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -28,9 +28,9 @@ const BEFORE = [
 ];
 
 const AFTER = [
-  "Client calls. You open Morgan.",
+  "Client calls. You open Mia.",
   "Type what they told you — one sentence.",
-  "Morgan searches Domain in real-time.",
+  "Mia searches Domain in real-time.",
   "6 matched listings in under 10 seconds.",
   "You're the first agent with the answer.",
 ];
@@ -41,12 +41,12 @@ const HANDLES = [
   { icon: AlertTriangle, label: "Bank seizure properties", desc: 'Mortgagee in possession — just say "distressed sales"' },
   { icon: Search, label: "Feature-specific searches", desc: "Pool, waterfront, granny flat, corner block, DA approved" },
   { icon: Users, label: "Investment briefs", desc: "Yield-focused, dual occupancy, development potential" },
-  { icon: Zap, label: "Urgent buyer clients", desc: "Pre-approval expiring — Morgan finds options fast" },
+  { icon: Zap, label: "Urgent buyer clients", desc: "Pre-approval expiring — Mia finds options fast" },
 ];
 
 const POST_CAPTION = `🏠 My client called at 9am wanting a 4-bed home in Mosman under $2M.
 
-Before they finished the sentence, Morgan (our AI assistant) had already found 6 properties matching their brief — complete with prices, land sizes, and direct links.
+Before they finished the sentence, Mia (our AI assistant) had already found 6 properties matching their brief — complete with prices, land sizes, and direct links.
 
 I called them back in under 30 seconds with a shortlist.
 
@@ -74,7 +74,7 @@ function SocialPostCard() {
             JM
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white">John Morgan · Principal Agent</p>
+            <p className="text-sm font-semibold text-white">John Mia · Principal Agent</p>
             <p className="text-xs text-white/40">Sydney Real Estate · just now</p>
           </div>
           <div className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full border border-blue-500/40 text-blue-400">
@@ -88,7 +88,7 @@ function SocialPostCard() {
           {POST_CAPTION}
         </div>
 
-        {/* Post image — Morgan demo preview */}
+        {/* Post image — Mia demo preview */}
         <div className="mx-4 mb-4 rounded-xl overflow-hidden border border-white/8 bg-gradient-to-br from-violet-950 to-indigo-950 px-3 py-4">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
@@ -169,12 +169,12 @@ export default function Advantage() {
                 <span className="text-muted-foreground line-through decoration-red-500">searching</span>
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
-                  Morgan already found 6.
+                  Mia already found 6.
                 </span>
               </motion.h1>
 
               <motion.p variants={fadeUp} className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
-                While your client is still on the phone describing what they want, Morgan searches Domain and realestate.com.au in real-time and hands you a shortlist. You call back in under 30 seconds. Your competitor hasn't even opened a browser.
+                While your client is still on the phone describing what they want, Mia searches Domain and realestate.com.au in real-time and hands you a shortlist. You call back in under 30 seconds. Your competitor hasn't even opened a browser.
               </motion.p>
 
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
@@ -207,7 +207,7 @@ export default function Advantage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
             >
-              <MorganPropertyDemo autoPlay={true} />
+              <MiaPropertyDemo autoPlay={true} />
             </motion.div>
           </div>
         </div>
@@ -259,7 +259,7 @@ export default function Advantage() {
             >
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-3 h-3 rounded-full bg-violet-400 animate-pulse" />
-                <span className="text-sm font-semibold text-violet-400">With Morgan</span>
+                <span className="text-sm font-semibold text-violet-400">With Mia</span>
               </div>
               <div className="space-y-4">
                 {AFTER.map((item, i) => (
@@ -277,7 +277,7 @@ export default function Advantage() {
         </div>
       </section>
 
-      {/* What Morgan handles */}
+      {/* What Mia handles */}
       <section className="py-24">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -290,7 +290,7 @@ export default function Advantage() {
               Every client brief. Every criteria. Handled.
             </motion.h2>
             <motion.p variants={fadeUp} className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Just describe what your client said on the phone. Morgan translates it into a live property search.
+              Just describe what your client said on the phone. Mia translates it into a live property search.
             </motion.p>
           </motion.div>
 
@@ -332,10 +332,10 @@ export default function Advantage() {
                 </span>
               </motion.h2>
               <motion.p variants={fadeUp} className="text-muted-foreground text-lg leading-relaxed mb-6">
-                Agents using Morgan are posting about their 30-second turnaround times on LinkedIn and Instagram — and their phones don't stop ringing.
+                Agents using Mia are posting about their 30-second turnaround times on LinkedIn and Instagram — and their phones don't stop ringing.
               </motion.p>
               <motion.p variants={fadeUp} className="text-muted-foreground leading-relaxed mb-8">
-                The post writes itself: client called, Morgan found 6 matching properties before they finished the sentence, you called back in 30 seconds. That story, told once, positions you as the most tech-forward agent in your market.
+                The post writes itself: client called, Mia found 6 matching properties before they finished the sentence, you called back in 30 seconds. That story, told once, positions you as the most tech-forward agent in your market.
               </motion.p>
               <motion.div variants={fadeUp} className="flex items-center gap-3 p-4 rounded-xl border border-violet-500/20 bg-violet-500/8">
                 <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center shrink-0">
@@ -365,7 +365,7 @@ export default function Advantage() {
             {[
               { value: "<10s", label: "To return a full property shortlist" },
               { value: "2 platforms", label: "Domain + REA searched simultaneously" },
-              { value: "24/7", label: "Morgan never sleeps, never stops searching" },
+              { value: "24/7", label: "Mia never sleeps, never stops searching" },
               { value: "0 clicks", label: "No manual filtering. Just describe it." },
             ].map(({ value, label }) => (
               <motion.div

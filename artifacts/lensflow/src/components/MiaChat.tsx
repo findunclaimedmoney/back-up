@@ -13,7 +13,7 @@ async function createConversation(): Promise<number> {
   const res = await fetch(`${BASE}/api/anthropic/conversations`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: "Morgan AI Chat" }),
+    body: JSON.stringify({ title: "Mia AI Chat" }),
   });
   if (!res.ok) throw new Error("Failed to start conversation");
   const data = (await res.json()) as { id: number };
@@ -30,7 +30,7 @@ function stripForTTS(text: string): string {
     .trim();
 }
 
-export default function MorganChat() {
+export default function MiaChat() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -66,7 +66,7 @@ export default function MorganChat() {
           setMessages([{
             id: "welcome",
             role: "assistant",
-            content: "G'day! I'm Morgan, founder of LensFlow AI 👋\n\nI'm here to help you get the most out of the pipeline. Ask me anything about your listings, scripts, or how the system works.",
+            content: "G'day! I'm Mia, founder of LensFlow AI 👋\n\nI'm here to help you get the most out of the pipeline. Ask me anything about your listings, scripts, or how the system works.",
           }]);
         })
         .catch(() => setInitError(true));
@@ -305,10 +305,10 @@ export default function MorganChat() {
         onClick={() => { setOpen(true); setUnread(false); }}
         className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-full shadow-2xl shadow-violet-900/50 transition-all duration-300 hover:scale-105 active:scale-95"
         style={{ display: open ? "none" : "flex", padding: "14px 20px" }}
-        aria-label="Chat with Morgan"
+        aria-label="Chat with Mia"
       >
         <MessageCircle size={20} className="shrink-0" />
-        <span className="text-sm font-semibold whitespace-nowrap">Ask Morgan</span>
+        <span className="text-sm font-semibold whitespace-nowrap">Ask Mia</span>
         {unread && <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />}
       </button>
 
@@ -319,7 +319,7 @@ export default function MorganChat() {
               <Bot size={18} className="text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white">Morgan</p>
+              <p className="text-sm font-semibold text-white">Mia</p>
               <p className="text-[11px] text-violet-300">LensFlow AI · Pipeline Assistant</p>
             </div>
             <button
@@ -332,7 +332,7 @@ export default function MorganChat() {
             <button
               onClick={() => { setAutoSpeak((s) => { if (s) stopAudio(); return !s; }); }}
               className="text-white/50 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
-              title={autoSpeak ? "Mute Morgan's voice" : "Unmute Morgan's voice"}
+              title={autoSpeak ? "Mute Mia's voice" : "Unmute Mia's voice"}
             >
               {autoSpeak ? <Volume2 size={16} /> : <VolumeX size={16} />}
             </button>
@@ -404,7 +404,7 @@ export default function MorganChat() {
           <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10">
             {initError ? (
               <div className="text-center text-sm text-red-400 mt-8">
-                <p>Couldn't connect to Morgan right now.</p>
+                <p>Couldn't connect to Mia right now.</p>
                 <button className="mt-2 text-violet-400 underline text-xs" onClick={() => { setInitError(false); setConversationId(null); }}>Try again</button>
               </div>
             ) : messages.length === 0 ? (
@@ -433,12 +433,12 @@ export default function MorganChat() {
                       <button
                         onClick={() => playingId === msg.id ? stopAudio() : void speakText(msg.content, msg.id)}
                         className="self-start ml-0.5 flex items-center gap-1 text-[10px] text-white/30 hover:text-violet-400 transition-colors"
-                        title={playingId === msg.id ? "Stop" : "Play Morgan's voice"}
+                        title={playingId === msg.id ? "Stop" : "Play Mia's voice"}
                       >
                         {playingId === msg.id ? (
                           <><span className="flex gap-0.5 items-end h-3"><span className="w-0.5 bg-violet-400 animate-[equalize_0.6s_ease-in-out_infinite]" style={{ height: "60%", animationDelay: "0ms" }} /><span className="w-0.5 bg-violet-400 animate-[equalize_0.6s_ease-in-out_infinite]" style={{ height: "100%", animationDelay: "0.15s" }} /><span className="w-0.5 bg-violet-400 animate-[equalize_0.6s_ease-in-out_infinite]" style={{ height: "40%", animationDelay: "0.3s" }} /></span> Playing…</>
                         ) : (
-                          <><Volume2 size={11} /> Hear Morgan</>
+                          <><Volume2 size={11} /> Hear Mia</>
                         )}
                       </button>
                     )}
@@ -470,7 +470,7 @@ export default function MorganChat() {
                   onClick={toggleMic}
                   disabled={transcribing}
                   className={`shrink-0 w-7 h-7 flex items-center justify-center rounded-lg transition-colors disabled:opacity-50 ${listening ? "bg-red-600 hover:bg-red-500" : "hover:bg-white/10 text-white/40 hover:text-violet-400"}`}
-                  title={listening ? "Stop listening" : "Speak to Morgan"}
+                  title={listening ? "Stop listening" : "Speak to Mia"}
                 >
                   {transcribing ? <Loader2 size={13} className="text-violet-400 animate-spin" /> : listening ? <MicOff size={13} className="text-white animate-pulse" /> : <Mic size={13} />}
                 </button>
@@ -481,7 +481,7 @@ export default function MorganChat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={transcribing ? "Transcribing…" : listening ? "Listening…" : "Ask Morgan anything…"}
+                placeholder={transcribing ? "Transcribing…" : listening ? "Listening…" : "Ask Mia anything…"}
                 disabled={streaming || !conversationId || initError || listening || transcribing}
                 className="flex-1 bg-transparent text-sm text-white placeholder-white/30 outline-none min-w-0 disabled:opacity-50"
               />

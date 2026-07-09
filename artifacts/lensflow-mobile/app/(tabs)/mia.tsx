@@ -12,7 +12,7 @@ import { Feather } from "@expo/vector-icons";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { createMorganConversation, streamMorganMessage } from "@/lib/api";
+import { createMiaConversation, streamMiaMessage } from "@/lib/api";
 import { useColors } from "@/hooks/useColors";
 
 interface Message {
@@ -22,7 +22,7 @@ interface Message {
 }
 
 const WELCOME =
-  "G'day! I'm Morgan from LensFlow AI 👋\n\nI'm your market intelligence partner, property finder, and pipeline expert — all in one. What do you need?";
+  "G'day! I'm Mia from LensFlow AI 👋\n\nI'm your market intelligence partner, property finder, and pipeline expert — all in one. What do you need?";
 
 const SUGGESTIONS = [
   "🏠 Find a property for my client",
@@ -31,7 +31,7 @@ const SUGGESTIONS = [
   "Which presenter should I use?",
 ];
 
-export default function MorganScreen() {
+export default function MiaScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
 
@@ -46,7 +46,7 @@ export default function MorganScreen() {
 
   const initConversation = useCallback(() => {
     setInitError(false);
-    createMorganConversation()
+    createMiaConversation()
       .then((id) => {
         setConversationId(id);
         setMessages([{ id: "welcome", role: "assistant", content: WELCOME }]);
@@ -78,7 +78,7 @@ export default function MorganScreen() {
       abortRef.current = controller;
 
       try {
-        await streamMorganMessage(
+        await streamMiaMessage(
           conversationId,
           text,
           (chunk) => {
@@ -121,7 +121,7 @@ export default function MorganScreen() {
           <Feather name="message-circle" size={18} color={colors.primary} />
         </View>
         <View>
-          <Text style={[styles.headerName, { color: colors.foreground }]}>Morgan</Text>
+          <Text style={[styles.headerName, { color: colors.foreground }]}>Mia</Text>
           <Text style={[styles.headerSub, { color: colors.mutedForeground }]}>
             LensFlow AI · Always here to help
           </Text>
@@ -136,7 +136,7 @@ export default function MorganScreen() {
         {initError ? (
           <View style={styles.center}>
             <Text style={{ color: colors.mutedForeground, marginBottom: 10 }}>
-              Couldn’t connect to Morgan.
+              Couldn’t connect to Mia.
             </Text>
             <Pressable onPress={initConversation}>
               <Text style={{ color: colors.primary, fontFamily: "Inter_600SemiBold" }}>
@@ -195,7 +195,7 @@ export default function MorganScreen() {
             <TextInput
               value={input}
               onChangeText={setInput}
-              placeholder="Ask Morgan anything…"
+              placeholder="Ask Mia anything…"
               placeholderTextColor={colors.mutedForeground}
               style={[styles.input, { color: colors.foreground }]}
               multiline

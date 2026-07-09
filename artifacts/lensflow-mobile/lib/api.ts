@@ -17,18 +17,18 @@ async function authHeaders(extra?: Record<string, string>): Promise<Record<strin
   };
 }
 
-export async function createMorganConversation(): Promise<number> {
+export async function createMiaConversation(): Promise<number> {
   const res = await fetch(`${getApiBaseUrl()}/api/anthropic/conversations`, {
     method: "POST",
     headers: await authHeaders({ "Content-Type": "application/json" }),
-    body: JSON.stringify({ title: "Morgan Mobile Chat" }),
+    body: JSON.stringify({ title: "Mia Mobile Chat" }),
   });
   if (!res.ok) throw new Error("Failed to start conversation");
   const data = (await res.json()) as { id: number };
   return data.id;
 }
 
-export async function streamMorganMessage(
+export async function streamMiaMessage(
   conversationId: number,
   content: string,
   onChunk: (text: string) => void,

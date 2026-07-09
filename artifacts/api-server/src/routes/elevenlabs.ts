@@ -4,7 +4,7 @@ import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
-const MORGAN_VOICE_ID = "g5fH9S068t9I3i8Y9u4"; // Morgan — user-provided ElevenLabs voice
+const MORGAN_VOICE_ID = "g5fH9S068t9I3i8Y9u4"; // Mia — user-provided ElevenLabs voice
 
 function getClient(): ElevenLabsClient {
   return new ElevenLabsClient({ apiKey: process.env.ELEVENLABS_API_KEY });
@@ -32,13 +32,13 @@ router.post(
       });
       res.json({ text: (result as { text?: string }).text ?? "" });
     } catch (err) {
-      logger.error({ err }, "Morgan STT failed");
+      logger.error({ err }, "Mia STT failed");
       res.status(500).json({ error: "Speech recognition unavailable" });
     }
   },
 );
 
-// POST /api/elevenlabs/tts — Morgan voice synthesis
+// POST /api/elevenlabs/tts — Mia voice synthesis
 router.post("/elevenlabs/tts", async (req, res) => {
   const { text } = req.body as { text?: string };
   if (!text || typeof text !== "string") {
@@ -51,7 +51,7 @@ router.post("/elevenlabs/tts", async (req, res) => {
     res.setHeader("Content-Length", audio.length.toString());
     res.send(audio);
   } catch (err) {
-    logger.error({ err }, "Morgan TTS failed");
+    logger.error({ err }, "Mia TTS failed");
     res.status(500).json({ error: "TTS unavailable" });
   }
 });

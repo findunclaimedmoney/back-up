@@ -43,8 +43,8 @@ const FEATURES = [
   },
   {
     icon: Shield,
-    title: "Morgan — Your Personal Marketing Advisor PA",
-    desc: "Morgan handles your property searches, drafts social captions, answers client briefs, and schedules your content calendar. A full-time PA without the salary.",
+    title: "Mia — Your Personal Marketing Advisor PA",
+    desc: "Mia handles your property searches, drafts social captions, answers client briefs, and schedules your content calendar. A full-time PA without the salary.",
   },
   {
     icon: Video,
@@ -321,11 +321,11 @@ export default function TwinAvatar() {
                 </span>
               </motion.div>
               <motion.h2 variants={fadeUp} className="font-serif text-4xl lg:text-5xl font-bold mb-6">
-                Morgan — Your Personal{" "}
+                Mia — Your Personal{" "}
                 <span className="text-violet-400">Marketing Advisor PA</span>
               </motion.h2>
               <motion.p variants={fadeUp} className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                Twin Avatar members get Morgan as a full-time Personal Assistant for marketing strategy.
+                Twin Avatar members get Mia as a full-time Personal Assistant for marketing strategy.
                 She doesn't just answer questions — she <em>runs</em> your marketing operation.
               </motion.p>
               <motion.div variants={stagger} className="space-y-4">
@@ -345,7 +345,7 @@ export default function TwinAvatar() {
               </motion.div>
             </motion.div>
 
-            {/* Morgan card */}
+            {/* Mia card */}
             <motion.div
               variants={fadeUp}
               initial="hidden"
@@ -360,7 +360,7 @@ export default function TwinAvatar() {
                     <span className="text-2xl">✦</span>
                   </div>
                   <div>
-                    <div className="font-bold text-lg">Morgan</div>
+                    <div className="font-bold text-lg">Mia</div>
                     <div className="text-sm text-violet-400">Marketing Advisor PA</div>
                   </div>
                   <div className="ml-auto flex items-center gap-1.5">
@@ -575,7 +575,7 @@ export default function TwinAvatar() {
               {[
                 "Custom human-like digital twin avatar",
                 "Voice cloning — sounds exactly like you",
-                "Morgan PA for Marketing Advisor",
+                "Mia PA for Marketing Advisor",
                 "90-second 4K listing videos",
                 "3 videos / month included",
                 "REA & Domain-ready export",

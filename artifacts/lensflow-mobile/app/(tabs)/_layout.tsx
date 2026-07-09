@@ -68,7 +68,7 @@ export default function TabLayout() {
     >
       {tab("index", "Home", "house", "home")}
       {tab("create", "Create", "plus.circle", "plus-circle")}
-      {tab("morgan", "Morgan", "message", "message-circle")}
+      {tab("mia", "Mia", "message", "message-circle")}
       {tab("profile", "Profile", "person", "user")}
     </Tabs>
   );

@@ -14,9 +14,9 @@ import Webhooks from "@/pages/webhooks";
 import Settings from "@/pages/settings";
 import JobsList from "@/pages/jobs";
 import Recorder from "@/pages/recorder";
-import MorganMarketing from "@/pages/morgan";
+import MiaMarketing from "@/pages/mia";
 import Billing from "@/pages/billing";
-import MorganChat from "@/components/MorganChat";
+import MiaChat from "@/components/MiaChat";
 import { PendingJobHandler } from "@/components/PendingJobHandler";
 import { useServiceWorker } from "@/hooks/use-service-worker";
 import { Loader2 } from "lucide-react";
@@ -154,7 +154,7 @@ function Router() {
               <Route path="/jobs/new" component={NewJob} />
               <Route path="/jobs/:id" component={JobDetail} />
               <Route path="/jobs" component={JobsList} />
-              <Route path="/morgan" component={MorganMarketing} />
+              <Route path="/mia" component={MiaMarketing} />
               <Route path="/billing" component={Billing} />
               <Route path="/webhooks" component={Webhooks} />
               <Route path="/settings" component={Settings} />
@@ -163,7 +163,7 @@ function Router() {
           </Layout>
         </Route>
       </Switch>
-      <MorganChat />
+      <MiaChat />
     </>
   );
 }

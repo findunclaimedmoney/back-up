@@ -7,7 +7,7 @@ import { logger } from "../lib/logger";
 const router: IRouter = Router();
 const connectors = new ReplitConnectors();
 
-// POST /api/support/tickets — capture a support message / ticket from Morgan
+// POST /api/support/tickets — capture a support message / ticket from Mia
 router.post("/support/tickets", async (req, res) => {
   const parsed = CreateSupportTicketBody.safeParse(req.body);
   if (!parsed.success) {
@@ -83,7 +83,7 @@ async function syncTicketToHubSpot(t: TicketSync): Promise<void> {
             lastname: rest.join(" "),
             hs_lead_status: "NEW",
             lifecyclestage: "lead",
-            lead_source: "Morgan AI Support",
+            lead_source: "Mia AI Support",
           },
         }),
       });
@@ -115,7 +115,7 @@ async function syncTicketToHubSpot(t: TicketSync): Promise<void> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(ticketBody),
     });
-    logger.info({ email: t.email }, "HubSpot ticket created from Morgan support");
+    logger.info({ email: t.email }, "HubSpot ticket created from Mia support");
   } catch (err) {
     logger.warn({ err, email: t.email }, "HubSpot ticket sync failed (non-critical)");
   }
