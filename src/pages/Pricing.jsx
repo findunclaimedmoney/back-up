@@ -112,8 +112,7 @@ export default function Pricing() {
 
         const handleRefresh = async () => {
               await loadSubscription();
-                };
-        }
+        };
   const confirmSession = async (sessionId) => {
     try {
       const res = await base44.functions.invoke("confirmSubscription", { session_id: sessionId });
