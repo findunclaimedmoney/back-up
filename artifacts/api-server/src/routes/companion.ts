@@ -3,6 +3,7 @@ import { db, companionSessionsTable, companionFactsTable, companionOutfitsTable 
 import { eq } from "drizzle-orm";
 import { generateVoiceover } from "./elevenlabs";
 import { ObjectStorageService } from "../lib/objectStorage";
+import { getSubscriberByEmail, computeEntitlements, canUseVoiceNow, incrementVoiceUsage } from "../lib/companionEntitlements";
 import {
   GetPersonasResponse,
   CreateCompanionPersonaBody,
@@ -156,7 +157,14 @@ router.post("/companion/persona/create", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const { photoBase64, mimeType = "image/jpeg" } = parsed.data;
+  const { photoBase64, mimeType = "image/jpeg", email } = parsed.data;
+
+  const subscriber = email ? await getSubscriberByEmail(email) : undefined;
+  const entitlements = computeEntitlements(subscriber);
+  if (!entitlements.canCustomPersona) {
+    res.status(403).json({ error: "Creating a custom companion requires an active Spark or Flame subscription." });
+    return;
+  }
 
   const openaiKey = process.env["OPENAI_API_KEY"];
   if (!openaiKey) {
@@ -227,7 +235,7 @@ router.post("/companion/chat", async (req, res): Promise<void> => {
   }
   const { sessionId, messages, voice } = parsed.data;
   const persona = findPersona(parsed.data.persona ?? "mia");
-  const wantVoice = voice === true;
+  const voiceRequested = voice === true;
 
   const openaiKey = process.env["OPENAI_API_KEY"];
   if (!openaiKey) {
@@ -241,9 +249,20 @@ router.post("/companion/chat", async (req, res): Promise<void> => {
       db.select().from(companionFactsTable).where(eq(companionFactsTable.sessionId, sessionId)),
     ]);
 
-    const memorySummary = existingSession[0]?.summary ?? null;
+    const rawFactMap = Object.fromEntries(facts.map((f) => [f.factKey, f.factValue]));
+    const subscriberEmail = rawFactMap["email"] ?? null;
+    const subscriber = subscriberEmail ? await getSubscriberByEmail(subscriberEmail) : undefined;
+    const entitlements = computeEntitlements(subscriber);
+    const wantVoice = voiceRequested && canUseVoiceNow(entitlements);
+
     const lastChatAt = existingSession[0]?.updatedAt ?? null;
-    const factMap = Object.fromEntries(facts.map((f) => [f.factKey, f.factValue]));
+    const daysSinceLastChat = lastChatAt ? Math.floor((Date.now() - lastChatAt.getTime()) / 86_400_000) : null;
+    // Free tier is session-memory-only; paid tiers unlock cross-session recall up to
+    // entitlements.memoryDays. Gate the whole memory context (facts + summary) on this,
+    // not just the summary, so a downgraded/free user's chat doesn't leak past context.
+    const memoryAllowed = daysSinceLastChat === null || daysSinceLastChat <= entitlements.memoryDays;
+    const factMap = memoryAllowed ? rawFactMap : {};
+    const memorySummary = memoryAllowed ? (existingSession[0]?.summary ?? null) : null;
 
     const today = todayMMDD();
     const isBirthday = factMap["birthday"] === today;
@@ -363,6 +382,10 @@ router.post("/companion/chat", async (req, res): Promise<void> => {
           req.log.warn({ ttsErr }, "TTS failed, continuing without audio");
         }
       }
+    }
+
+    if (audioBase64 && subscriber) {
+      await incrementVoiceUsage(subscriber.id);
     }
 
     await db
@@ -703,6 +726,13 @@ router.post("/companion/video", async (req, res): Promise<void> => {
   const text = parsed.data.text ?? "Hi, it's so good to see you.";
   const personaId = parsed.data.personaId ?? "mia";
   const heygenKey = process.env["HEYGEN_API_KEY"];
+
+  const videoSubscriber = parsed.data.email ? await getSubscriberByEmail(parsed.data.email) : undefined;
+  const videoEntitlements = computeEntitlements(videoSubscriber);
+  if (!videoEntitlements.canVideoCall) {
+    res.status(403).json({ error: "Video calls require an active Flame subscription." });
+    return;
+  }
 
   if (!heygenKey) {
     res.status(503).json({ error: "HeyGen not configured" });

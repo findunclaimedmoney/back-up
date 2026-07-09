@@ -44,6 +44,14 @@ import type {
   CompanionPersona,
   CompanionPersonaCreateBody,
   CompanionPersonaCreateResponse,
+  CompanionSubscribeCheckoutBody,
+  CompanionSubscribeCheckoutResponse,
+  CompanionSubscribePortalBody,
+  CompanionSubscribePortalResponse,
+  CompanionSubscribeStatusBody,
+  CompanionSubscribeStatusResponse,
+  CompanionSubscribeVerifyBody,
+  CompanionSubscribeVerifyResponse,
   CompanionVideoBody,
   CompanionVideoResponse,
   ElevenLabsError,
@@ -3688,5 +3696,289 @@ export const useCreateCompanionVideo = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getCreateCompanionVideoMutationOptions(options));
+    }
+
+export const getCreateCompanionCheckoutUrl = () => {
+
+
+
+
+  return `/api/companion/subscribe/checkout`
+}
+
+/**
+ * @summary Create a Stripe Checkout session for a Glimr subscription tier (Spark/Flame)
+ */
+export const createCompanionCheckout = async (companionSubscribeCheckoutBody: CompanionSubscribeCheckoutBody, options?: RequestInit): Promise<CompanionSubscribeCheckoutResponse> => {
+
+  return customFetch<CompanionSubscribeCheckoutResponse>(getCreateCompanionCheckoutUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      companionSubscribeCheckoutBody,)
+  }
+);}
+
+
+
+
+export const getCreateCompanionCheckoutMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanionCheckout>>, TError,{data: BodyType<CompanionSubscribeCheckoutBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCompanionCheckout>>, TError,{data: BodyType<CompanionSubscribeCheckoutBody>}, TContext> => {
+
+const mutationKey = ['createCompanionCheckout'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCompanionCheckout>>, {data: BodyType<CompanionSubscribeCheckoutBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCompanionCheckout(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCompanionCheckoutMutationResult = NonNullable<Awaited<ReturnType<typeof createCompanionCheckout>>>
+    export type CreateCompanionCheckoutMutationBody = BodyType<CompanionSubscribeCheckoutBody>
+    export type CreateCompanionCheckoutMutationError = ErrorType<void>
+
+    /**
+ * @summary Create a Stripe Checkout session for a Glimr subscription tier (Spark/Flame)
+ */
+export const useCreateCompanionCheckout = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanionCheckout>>, TError,{data: BodyType<CompanionSubscribeCheckoutBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCompanionCheckout>>,
+        TError,
+        {data: BodyType<CompanionSubscribeCheckoutBody>},
+        TContext
+      > => {
+      return useMutation(getCreateCompanionCheckoutMutationOptions(options));
+    }
+
+export const getVerifyCompanionCheckoutUrl = () => {
+
+
+
+
+  return `/api/companion/subscribe/verify`
+}
+
+/**
+ * @summary Verify a completed Stripe Checkout session and activate the subscriber
+ */
+export const verifyCompanionCheckout = async (companionSubscribeVerifyBody: CompanionSubscribeVerifyBody, options?: RequestInit): Promise<CompanionSubscribeVerifyResponse> => {
+
+  return customFetch<CompanionSubscribeVerifyResponse>(getVerifyCompanionCheckoutUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      companionSubscribeVerifyBody,)
+  }
+);}
+
+
+
+
+export const getVerifyCompanionCheckoutMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyCompanionCheckout>>, TError,{data: BodyType<CompanionSubscribeVerifyBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof verifyCompanionCheckout>>, TError,{data: BodyType<CompanionSubscribeVerifyBody>}, TContext> => {
+
+const mutationKey = ['verifyCompanionCheckout'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof verifyCompanionCheckout>>, {data: BodyType<CompanionSubscribeVerifyBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  verifyCompanionCheckout(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type VerifyCompanionCheckoutMutationResult = NonNullable<Awaited<ReturnType<typeof verifyCompanionCheckout>>>
+    export type VerifyCompanionCheckoutMutationBody = BodyType<CompanionSubscribeVerifyBody>
+    export type VerifyCompanionCheckoutMutationError = ErrorType<void>
+
+    /**
+ * @summary Verify a completed Stripe Checkout session and activate the subscriber
+ */
+export const useVerifyCompanionCheckout = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyCompanionCheckout>>, TError,{data: BodyType<CompanionSubscribeVerifyBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof verifyCompanionCheckout>>,
+        TError,
+        {data: BodyType<CompanionSubscribeVerifyBody>},
+        TContext
+      > => {
+      return useMutation(getVerifyCompanionCheckoutMutationOptions(options));
+    }
+
+export const getGetCompanionSubscribeStatusUrl = () => {
+
+
+
+
+  return `/api/companion/subscribe/status`
+}
+
+/**
+ * @summary Get the current subscription tier and voice-message usage for an email
+ */
+export const getCompanionSubscribeStatus = async (companionSubscribeStatusBody: CompanionSubscribeStatusBody, options?: RequestInit): Promise<CompanionSubscribeStatusResponse> => {
+
+  return customFetch<CompanionSubscribeStatusResponse>(getGetCompanionSubscribeStatusUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      companionSubscribeStatusBody,)
+  }
+);}
+
+
+
+
+export const getGetCompanionSubscribeStatusMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getCompanionSubscribeStatus>>, TError,{data: BodyType<CompanionSubscribeStatusBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof getCompanionSubscribeStatus>>, TError,{data: BodyType<CompanionSubscribeStatusBody>}, TContext> => {
+
+const mutationKey = ['getCompanionSubscribeStatus'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getCompanionSubscribeStatus>>, {data: BodyType<CompanionSubscribeStatusBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  getCompanionSubscribeStatus(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetCompanionSubscribeStatusMutationResult = NonNullable<Awaited<ReturnType<typeof getCompanionSubscribeStatus>>>
+    export type GetCompanionSubscribeStatusMutationBody = BodyType<CompanionSubscribeStatusBody>
+    export type GetCompanionSubscribeStatusMutationError = ErrorType<void>
+
+    /**
+ * @summary Get the current subscription tier and voice-message usage for an email
+ */
+export const useGetCompanionSubscribeStatus = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getCompanionSubscribeStatus>>, TError,{data: BodyType<CompanionSubscribeStatusBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof getCompanionSubscribeStatus>>,
+        TError,
+        {data: BodyType<CompanionSubscribeStatusBody>},
+        TContext
+      > => {
+      return useMutation(getGetCompanionSubscribeStatusMutationOptions(options));
+    }
+
+export const getCreateCompanionPortalUrl = () => {
+
+
+
+
+  return `/api/companion/subscribe/portal`
+}
+
+/**
+ * @summary Create a Stripe billing portal session for a subscriber to manage/cancel their plan
+ */
+export const createCompanionPortal = async (companionSubscribePortalBody: CompanionSubscribePortalBody, options?: RequestInit): Promise<CompanionSubscribePortalResponse> => {
+
+  return customFetch<CompanionSubscribePortalResponse>(getCreateCompanionPortalUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      companionSubscribePortalBody,)
+  }
+);}
+
+
+
+
+export const getCreateCompanionPortalMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanionPortal>>, TError,{data: BodyType<CompanionSubscribePortalBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCompanionPortal>>, TError,{data: BodyType<CompanionSubscribePortalBody>}, TContext> => {
+
+const mutationKey = ['createCompanionPortal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCompanionPortal>>, {data: BodyType<CompanionSubscribePortalBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCompanionPortal(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCompanionPortalMutationResult = NonNullable<Awaited<ReturnType<typeof createCompanionPortal>>>
+    export type CreateCompanionPortalMutationBody = BodyType<CompanionSubscribePortalBody>
+    export type CreateCompanionPortalMutationError = ErrorType<void>
+
+    /**
+ * @summary Create a Stripe billing portal session for a subscriber to manage/cancel their plan
+ */
+export const useCreateCompanionPortal = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanionPortal>>, TError,{data: BodyType<CompanionSubscribePortalBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCompanionPortal>>,
+        TError,
+        {data: BodyType<CompanionSubscribePortalBody>},
+        TContext
+      > => {
+      return useMutation(getCreateCompanionPortalMutationOptions(options));
     }
 

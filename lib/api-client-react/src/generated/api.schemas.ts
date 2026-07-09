@@ -587,6 +587,12 @@ export interface CompanionPersonaCreateBody {
   /** @minLength 1 */
   photoBase64: string;
   mimeType?: string;
+  /**
+     * Subscriber email used to check custom-persona entitlement (Spark/Flame only). Omit only for anonymous free-tier calls, which are always denied.
+     * @minLength 3
+     * @maxLength 254
+     */
+  email?: string;
 }
 
 export interface CompanionPersonaCreateResponse {
@@ -728,6 +734,91 @@ export const CompanionVideoBodyPersonaId = {
 export interface CompanionVideoBody {
   text?: string;
   personaId?: CompanionVideoBodyPersonaId;
+  /**
+     * Subscriber email used to check video-call entitlement (Flame only). Omit only for anonymous calls, which are always denied.
+     * @minLength 3
+     * @maxLength 254
+     */
+  email?: string;
+}
+
+export type CompanionSubscribeCheckoutBodyTier = typeof CompanionSubscribeCheckoutBodyTier[keyof typeof CompanionSubscribeCheckoutBodyTier];
+
+
+export const CompanionSubscribeCheckoutBodyTier = {
+  spark: 'spark',
+  flame: 'flame',
+} as const;
+
+export interface CompanionSubscribeCheckoutBody {
+  tier: CompanionSubscribeCheckoutBodyTier;
+  /**
+     * Optional known email — prefills and locks the Stripe customer instead of asking Checkout for one.
+     * @minLength 3
+     * @maxLength 254
+     */
+  email?: string;
+}
+
+export interface CompanionSubscribeCheckoutResponse {
+  checkoutUrl: string;
+}
+
+export interface CompanionSubscribeVerifyBody {
+  /** @minLength 1 */
+  sessionId: string;
+}
+
+export type CompanionSubscribeVerifyResponseTier = typeof CompanionSubscribeVerifyResponseTier[keyof typeof CompanionSubscribeVerifyResponseTier];
+
+
+export const CompanionSubscribeVerifyResponseTier = {
+  free: 'free',
+  spark: 'spark',
+  flame: 'flame',
+} as const;
+
+export interface CompanionSubscribeVerifyResponse {
+  email: string;
+  tier: CompanionSubscribeVerifyResponseTier;
+}
+
+export interface CompanionSubscribeStatusBody {
+  /**
+     * @minLength 3
+     * @maxLength 254
+     */
+  email: string;
+}
+
+export type CompanionSubscribeStatusResponseTier = typeof CompanionSubscribeStatusResponseTier[keyof typeof CompanionSubscribeStatusResponseTier];
+
+
+export const CompanionSubscribeStatusResponseTier = {
+  free: 'free',
+  spark: 'spark',
+  flame: 'flame',
+} as const;
+
+export interface CompanionSubscribeStatusResponse {
+  tier: CompanionSubscribeStatusResponseTier;
+  active: boolean;
+  /** @nullable */
+  voiceLimit: number | null;
+  /** @nullable */
+  voiceRemaining: number | null;
+}
+
+export interface CompanionSubscribePortalBody {
+  /**
+     * @minLength 3
+     * @maxLength 254
+     */
+  email: string;
+}
+
+export interface CompanionSubscribePortalResponse {
+  portalUrl: string;
 }
 
 export interface CompanionVideoResponse {

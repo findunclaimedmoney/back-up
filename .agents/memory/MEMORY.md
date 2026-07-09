@@ -22,3 +22,5 @@
 - [Morgan marketing tab](morgan-marketing-tab.md) — POST /api/morgan/marketing-pack generates Instagram/Facebook/LinkedIn/email pack; page at /morgan in pipeline app; uses useListJobs (not useGetJobs) which returns Job[] directly.
 - [Stripe account identity](stripe-account.md) — Stripe conn is owned by admin@lensflow.com.au (business); user's personal Replit login is jmorganink@gmail.com — do not conflate.
 - [D-ID pipeline integration](did-pipeline.md) — D-ID is primary presenter provider; pre-signed S3 URLs must be mirrored to object storage before passing to Shotstack.
+- [Shared Stripe webhook, multi-product](shared-stripe-webhook-multi-product.md) — per-product webhook create-paths must be gated on subscription metadata, not "no match elsewhere = mine"; expand nested objects before reading metadata.
+- [Stripe webhook endpoint not registered](stripe-webhook-endpoint-not-configured.md) — no webhookEndpoints exist on this Stripe account; webhook-dependent sync isn't actually live until one is set up.

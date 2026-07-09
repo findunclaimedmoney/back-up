@@ -611,11 +611,15 @@ export const GetPersonasResponse = zod.array(GetPersonasResponseItem)
  * @summary Create a custom companion persona from an uploaded photo (vision description + DALL-E-3 portrait)
  */
 
+export const createCompanionPersonaBodyEmailMin = 3;
+export const createCompanionPersonaBodyEmailMax = 254;
+
 
 
 export const CreateCompanionPersonaBody = zod.object({
   "photoBase64": zod.string().min(1),
-  "mimeType": zod.string().optional()
+  "mimeType": zod.string().optional(),
+  "email": zod.string().email().min(createCompanionPersonaBodyEmailMin).max(createCompanionPersonaBodyEmailMax).optional().describe('Subscriber email used to check custom-persona entitlement (Spark\/Flame only). Omit only for anonymous free-tier calls, which are always denied.')
 })
 
 export const CreateCompanionPersonaResponse = zod.object({
@@ -758,13 +762,90 @@ export const GenerateCompanionOutfitResponse = zod.object({
 /**
  * @summary Generate a HeyGen avatar video of the companion speaking a line
  */
+export const createCompanionVideoBodyEmailMin = 3;
+export const createCompanionVideoBodyEmailMax = 254;
+
+
+
 export const CreateCompanionVideoBody = zod.object({
   "text": zod.string().optional(),
-  "personaId": zod.enum(['mia', 'alex']).optional()
+  "personaId": zod.enum(['mia', 'alex']).optional(),
+  "email": zod.string().email().min(createCompanionVideoBodyEmailMin).max(createCompanionVideoBodyEmailMax).optional().describe('Subscriber email used to check video-call entitlement (Flame only). Omit only for anonymous calls, which are always denied.')
 })
 
 export const CreateCompanionVideoResponse = zod.object({
   "videoUrl": zod.string()
+})
+
+
+/**
+ * @summary Create a Stripe Checkout session for a Glimr subscription tier (Spark/Flame)
+ */
+export const createCompanionCheckoutBodyEmailMin = 3;
+export const createCompanionCheckoutBodyEmailMax = 254;
+
+
+
+export const CreateCompanionCheckoutBody = zod.object({
+  "tier": zod.enum(['spark', 'flame']),
+  "email": zod.string().email().min(createCompanionCheckoutBodyEmailMin).max(createCompanionCheckoutBodyEmailMax).optional().describe('Optional known email — prefills and locks the Stripe customer instead of asking Checkout for one.')
+})
+
+export const CreateCompanionCheckoutResponse = zod.object({
+  "checkoutUrl": zod.string()
+})
+
+
+/**
+ * @summary Verify a completed Stripe Checkout session and activate the subscriber
+ */
+
+
+
+export const VerifyCompanionCheckoutBody = zod.object({
+  "sessionId": zod.string().min(1)
+})
+
+export const VerifyCompanionCheckoutResponse = zod.object({
+  "email": zod.string(),
+  "tier": zod.enum(['free', 'spark', 'flame'])
+})
+
+
+/**
+ * @summary Get the current subscription tier and voice-message usage for an email
+ */
+export const getCompanionSubscribeStatusBodyEmailMin = 3;
+export const getCompanionSubscribeStatusBodyEmailMax = 254;
+
+
+
+export const GetCompanionSubscribeStatusBody = zod.object({
+  "email": zod.string().email().min(getCompanionSubscribeStatusBodyEmailMin).max(getCompanionSubscribeStatusBodyEmailMax)
+})
+
+export const GetCompanionSubscribeStatusResponse = zod.object({
+  "tier": zod.enum(['free', 'spark', 'flame']),
+  "active": zod.boolean(),
+  "voiceLimit": zod.number().nullable(),
+  "voiceRemaining": zod.number().nullable()
+})
+
+
+/**
+ * @summary Create a Stripe billing portal session for a subscriber to manage/cancel their plan
+ */
+export const createCompanionPortalBodyEmailMin = 3;
+export const createCompanionPortalBodyEmailMax = 254;
+
+
+
+export const CreateCompanionPortalBody = zod.object({
+  "email": zod.string().email().min(createCompanionPortalBodyEmailMin).max(createCompanionPortalBodyEmailMax)
+})
+
+export const CreateCompanionPortalResponse = zod.object({
+  "portalUrl": zod.string()
 })
 
 
