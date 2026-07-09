@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { useSubscription } from "@/hooks/use-subscription";
+import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 
 interface Props {
   onBack: () => void;
@@ -92,8 +93,10 @@ export function Pricing({ onBack }: Props) {
 
   return (
     <div className="min-h-[100dvh] flex flex-col items-center p-6 w-full">
+      <SiteHeader />
+
       <div className="w-full max-w-4xl">
-        <div className="mb-8 flex items-center justify-between gap-4">
+        <div className="mb-8 mt-8 flex items-center justify-between gap-4">
           <button
             onClick={onBack}
             className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors text-sm"
@@ -200,6 +203,8 @@ export function Pricing({ onBack }: Props) {
           </div>
         )}
       </div>
+
+      <SiteFooter />
     </div>
   );
 }

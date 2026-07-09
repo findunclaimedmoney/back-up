@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Crown, Lock, Plus, Sparkles } from "lucide-react";
 import { CreatePersona } from "@/components/CreatePersona";
 import type { useSubscription } from "@/hooks/use-subscription";
-import { siteHref } from "@/components/SiteChrome";
+import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 
 const base = import.meta.env.BASE_URL;
 const PORTRAITS: Record<string, string> = {
@@ -81,19 +81,7 @@ export function PersonaSelect({ onSelect, subscription, onUpgrade }: Props) {
 
   return (
     <div className="min-h-[100dvh] flex flex-col items-center p-6">
-      <header className="flex w-full max-w-5xl items-center justify-between gap-4">
-        <a href={siteHref("/")} className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-primary/20 bg-primary/10">
-            <Sparkles className="h-5 w-5 text-primary" />
-          </span>
-          <span className="text-xl font-semibold tracking-wide">GLIMR</span>
-        </a>
-        <nav className="flex items-center gap-2">
-          <a className="rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground" href={siteHref("/pricing")}>
-            Pricing
-          </a>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <main className="flex w-full flex-1 flex-col items-center justify-center space-y-12 py-10">
         <section className="text-center space-y-4 max-w-xl mx-auto">
@@ -221,6 +209,8 @@ export function PersonaSelect({ onSelect, subscription, onUpgrade }: Props) {
           )}
         </div>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }
