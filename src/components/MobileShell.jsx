@@ -46,9 +46,8 @@ export default function MobileShell() {
   const showBack = !rootView && !skipHeader;
 const showTabs = rootView && !keyboardOpen;
   const goBack = () => {
-        const idx = window.history.state?.idx;
-            if (typeof idx === "number" && idx > 0) { navigate(-1); } else { navigate("/"); }
-  };  
+        if (window.history.length > 1) { navigate(-1); } else { navigate("/"); }
+          };
   return (
     <>
       {showHeader && (
