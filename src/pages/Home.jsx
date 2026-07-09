@@ -48,30 +48,30 @@ export default function Home() {
           <span className="font-heading text-3xl font-semibold tracking-tight text-primary">GLIMR</span>
         </Link>
         <nav className="flex items-center gap-1">
-          <Link to="/features" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+          <Link to="/features" className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
             Features
           </Link>
-          <Link to="/pricing" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+          <Link to="/pricing" className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
             Pricing
           </Link>
-          <Link to="/manual" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+          <Link to="/manual" className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
             Manual
           </Link>
-          <Link to="/notes" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+          <Link to="/notes" className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
             <NotebookPen className="w-4 h-4" />
             Notes
           </Link>
-          <Link to="/games" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+          <Link to="/games" className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
             <Gamepad2 className="w-4 h-4" />
             Games
           </Link>
-          <Link to="/companions" className="flex items-center gap-1.5 px-4 py-2 text-sm text-foreground hover:text-primary transition-colors rounded-full hover:bg-muted">
+          <Link to="/companions" className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-foreground hover:text-primary transition-colors rounded-full hover:bg-muted">
             Companions
           </Link>
-          <Link to="/zac" className="flex items-center gap-1.5 px-4 py-2 text-sm text-foreground hover:text-primary transition-colors rounded-full hover:bg-muted">
+          <Link to="/zac" className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-foreground hover:text-primary transition-colors rounded-full hover:bg-muted">
             Zac
           </Link>
-          <Link to="/vip-lounge" className="flex items-center gap-1.5 px-4 py-2 text-sm text-primary hover:text-primary/80 transition-colors rounded-full bg-primary/10 border border-primary/20">
+          <Link to="/vip-lounge" className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-primary hover:text-primary/80 transition-colors rounded-full bg-primary/10 border border-primary/20">
             <Crown className="w-4 h-4" />
             VIP Lounge
           </Link>

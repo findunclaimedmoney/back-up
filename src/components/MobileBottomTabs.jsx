@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Gamepad2, NotebookPen, CreditCard } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -17,33 +17,28 @@ export default function MobileBottomTabs() {
   const location = useLocation();
   const navigate = useNavigate();
   const histories = useRef({});
-  const lastTab = useRef(null);
-
-  if (!isMobile) return null;
 
   // Determine which tab is currently active based on root path
   const currentRoot = ROOT_PATHS.has(location.pathname) ? location.pathname : null;
 
-  // Record the current location into the active tab's history
-  if (currentRoot && lastTab.current !== currentRoot) {
-    lastTab.current = currentRoot;
-  }
+  // Persist the current location into the active tab's history as it changes
+  useEffect(() => {
+    if (currentRoot) {
+      histories.current[currentRoot] = location.pathname;
+    }
+  }, [location.pathname, currentRoot]);
+
+  if (!isMobile) return null;
 
   const handleTabClick = (tab) => {
     const isActive = currentRoot === tab.to;
     if (isActive) {
-      // Re-selecting the active tab — reset to root
-      if (location.pathname !== tab.to) {
-        navigate(tab.to);
-      } else {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+      // Re-selecting the active tab — scroll to top
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      // Switching to a different tab — save current location and navigate
-      if (currentRoot) {
-        histories.current[currentRoot] = location.pathname;
-      }
-      navigate(tab.to);
+      // Switching to a different tab — restore its saved route or navigate to root
+      const saved = histories.current[tab.to];
+      navigate(saved || tab.to);
     }
   };
 

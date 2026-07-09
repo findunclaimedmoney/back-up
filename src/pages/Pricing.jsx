@@ -242,7 +242,7 @@ export default function Pricing() {
           </p>
           <Link
             to="/"
-            className="px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm"
+            className="inline-flex items-center min-h-[44px] px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm"
           >
             Start chatting
           </Link>
@@ -258,7 +258,7 @@ export default function Pricing() {
             </p>
             <button
               onClick={() => setCryptoOpen(true)}
-              className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+              className="mt-6 inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
             >
               <Bitcoin className="w-4 h-4" />
               Pay with crypto
@@ -267,7 +267,7 @@ export default function Pricing() {
               <button
                 onClick={handleManageBilling}
                 disabled={billingLoading}
-                className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors disabled:opacity-50"
+                className="mt-6 inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors disabled:opacity-50"
               >
                 <Settings className="w-4 h-4" />
                 {billingLoading ? "Loading…" : "Manage or cancel subscription"}
@@ -306,7 +306,7 @@ export default function Pricing() {
                 <button
                   onClick={() => handleUpgrade("pro")}
                   disabled={loading === "pro"}
-                  className="px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm whitespace-nowrap hover:opacity-90 transition-opacity disabled:opacity-50 flex-shrink-0"
+                  className="min-h-[44px] px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm whitespace-nowrap hover:opacity-90 transition-opacity disabled:opacity-50 flex-shrink-0"
                 >
                   {loading === "pro" ? "Loading…" : "Upgrade to Pro"}
                 </button>

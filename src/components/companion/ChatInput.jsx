@@ -75,7 +75,7 @@ export default function ChatInput({ onSend, disabled }) {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled}
-            className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all disabled:opacity-30"
+            className="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all disabled:opacity-30"
             aria-label="Send photo"
           >
             <Camera className="w-4 h-4" />
@@ -93,7 +93,7 @@ export default function ChatInput({ onSend, disabled }) {
           <button
             onClick={handleSend}
             disabled={disabled || (!text.trim() && !pendingPhoto)}
-            className="flex-shrink-0 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90 active:scale-95 transition-all"
+            className="flex-shrink-0 w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90 active:scale-95 transition-all"
             aria-label="Send message"
           >
             <Send className="w-4 h-4" />

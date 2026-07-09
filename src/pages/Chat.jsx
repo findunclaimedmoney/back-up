@@ -508,7 +508,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
                   <button
                     key={s}
                     onClick={() => handleSend(s)}
-                    className="text-left text-[14px] bg-card border border-border rounded-2xl px-4 py-3 hover:border-primary/40 hover:bg-muted transition-all"
+                    className="text-left text-[14px] min-h-[44px] bg-card border border-border rounded-2xl px-4 py-3 hover:border-primary/40 hover:bg-muted transition-all"
                   >
                     {s}
                   </button>
@@ -556,7 +556,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
             </p>
             <Link
               to="/pricing"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-2 min-h-[44px] px-6 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
             >
               View Plans
             </Link>
