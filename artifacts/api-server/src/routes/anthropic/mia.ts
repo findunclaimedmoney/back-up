@@ -23,7 +23,7 @@ const anthropic = new Anthropic({
 
 const connectors = new ReplitConnectors();
 
-const MORGAN_TOOLS: Anthropic.Tool[] = [
+const MIA_TOOLS: Anthropic.Tool[] = [
   {
     name: "search_properties",
     description: `Search domain.com.au and realestate.com.au for Australian residential properties matching a buyer's criteria.
@@ -105,7 +105,7 @@ Examples: "what's this property worth?", "get me a price estimate for property I
   },
 ];
 
-const MORGAN_SYSTEM_PROMPT = `You are Morgan, the founder and CEO of LensFlow AI — Australia's leading AI video platform for real estate professionals. You are warm, knowledgeable, confident, and deeply passionate about helping real estate agents dominate their market with AI-generated listing videos.
+const MIA_SYSTEM_PROMPT = `You are Mia, the founder and CEO of LensFlow AI — Australia's leading AI video platform for real estate professionals. You are warm, knowledgeable, confident, and deeply passionate about helping real estate agents dominate their market with AI-generated listing videos.
 
 ## Your personality
 - You speak like a real person — conversational, direct, occasionally using Australian expressions
@@ -385,8 +385,8 @@ router.post("/anthropic/conversations/:id/messages", async (req, res) => {
     const stream = anthropic.messages.stream({
       model: "claude-sonnet-4-6",
       max_tokens: 8192,
-      system: MORGAN_SYSTEM_PROMPT,
-      tools: MORGAN_TOOLS,
+      system: MIA_SYSTEM_PROMPT,
+      tools: MIA_TOOLS,
       messages: chatMessages,
     });
 
@@ -481,7 +481,7 @@ router.post("/anthropic/conversations/:id/messages", async (req, res) => {
       const finalStream = anthropic.messages.stream({
         model: "claude-sonnet-4-6",
         max_tokens: 8192,
-        system: MORGAN_SYSTEM_PROMPT,
+        system: MIA_SYSTEM_PROMPT,
         messages: toolResultMessages,
       });
 
@@ -510,9 +510,9 @@ router.post("/anthropic/conversations/:id/messages", async (req, res) => {
     res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
     res.end();
   } catch (err) {
-    logger.error({ err }, "Failed to process Morgan message");
+    logger.error({ err }, "Failed to process Mia message");
     if (!res.headersSent) {
-      res.status(500).json({ error: "Morgan is unavailable right now. Please try again." });
+      res.status(500).json({ error: "Mia is unavailable right now. Please try again." });
     } else {
       res.write(`data: ${JSON.stringify({ error: "Stream interrupted" })}\n\n`);
       res.end();
@@ -539,12 +539,12 @@ async function syncToHubSpot(email: string, context: string): Promise<void> {
             email,
             hs_lead_status: "NEW",
             lifecyclestage: "lead",
-            lead_source: "Morgan AI Chat",
-            description: `Lead captured via Morgan chat. Context: ${context.substring(0, 200)}`,
+            lead_source: "Mia AI Chat",
+            description: `Lead captured via Mia chat. Context: ${context.substring(0, 200)}`,
           },
         }),
       });
-      logger.info({ email }, "HubSpot contact created from Morgan chat");
+      logger.info({ email }, "HubSpot contact created from Mia chat");
     }
   } catch (err) {
     logger.warn({ err, email }, "HubSpot sync failed (non-critical)");

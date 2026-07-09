@@ -13,8 +13,8 @@ export interface MarketingPack {
   schedule: { platform: string; time: string; note: string }[];
 }
 
-// POST /morgan/marketing-pack
-router.post("/morgan/marketing-pack", async (req, res): Promise<void> => {
+// POST /mia/marketing-pack
+router.post("/mia/marketing-pack", async (req, res): Promise<void> => {
   if (!req.isAuthenticated()) {
     res.status(401).json({ error: "Unauthorized" });
     return;
@@ -47,7 +47,7 @@ router.post("/morgan/marketing-pack", async (req, res): Promise<void> => {
   if (agentName)      contextLines.push(`Agent name: ${agentName}`);
   if (agentPhone)     contextLines.push(`Agent phone: ${agentPhone}`);
 
-  const prompt = `You are Morgan, LensFlow AI's marketing advisor PA. Generate a complete, publication-ready social media and email marketing pack for this Australian real estate listing. Write as if you are the listing agent — confident, warm, and professional.
+  const prompt = `You are Mia, LensFlow AI's marketing advisor PA. Generate a complete, publication-ready social media and email marketing pack for this Australian real estate listing. Write as if you are the listing agent — confident, warm, and professional.
 
 PROPERTY DETAILS:
 ${contextLines.join("\n")}
@@ -91,16 +91,16 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no expla
 
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      logger.error({ raw }, "Morgan marketing pack — no JSON in response");
+      logger.error({ raw }, "Mia marketing pack — no JSON in response");
       res.status(500).json({ error: "Failed to generate marketing pack" });
       return;
     }
 
     const pack = JSON.parse(jsonMatch[0]) as MarketingPack;
-    logger.info({ listingUrl, suburb }, "Morgan marketing pack generated");
+    logger.info({ listingUrl, suburb }, "Mia marketing pack generated");
     res.json(pack);
   } catch (err) {
-    logger.error({ err }, "Morgan marketing pack generation failed");
+    logger.error({ err }, "Mia marketing pack generation failed");
     res.status(500).json({ error: "Failed to generate marketing pack" });
   }
 });

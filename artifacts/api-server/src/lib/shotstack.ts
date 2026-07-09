@@ -396,7 +396,7 @@ export async function composePresenterVideoPremiumLuxuryV1(
     headers: { "x-api-key": apiKey, "Content-Type": "application/json" },
     body: JSON.stringify({
       timeline: { background: "#0d1117", soundtrack, tracks },
-      output: { format: "mp4", resolution: testMode ? "sd" : "1080", fps: 30 },
+      output: { format: "mp4", resolution: testMode ? "sd" : "4k", fps: 30 },
     }),
   });
 
@@ -470,7 +470,7 @@ export async function composeSelfieVideo(
   const renderRes = await fetch(`${baseUrl}/render`, {
     method: "POST",
     headers: { "x-api-key": apiKey, "Content-Type": "application/json" },
-    body: JSON.stringify({ timeline: { background: "#0d1117", soundtrack, tracks }, output: { format: "mp4", resolution: "1080", fps: 30 } }),
+    body: JSON.stringify({ timeline: { background: "#0d1117", soundtrack, tracks }, output: { format: "mp4", resolution: "4k", fps: 30 } }),
   });
 
   if (!renderRes.ok) throw new Error(`Shotstack selfie render submit failed (${renderRes.status}): ${await renderRes.text()}`);
@@ -541,7 +541,7 @@ export async function composeVoicePhotosVideo(
   const renderRes = await fetch(`${baseUrl}/render`, {
     method: "POST",
     headers: { "x-api-key": apiKey, "Content-Type": "application/json" },
-    body: JSON.stringify({ timeline: { background: "#0d1117", soundtrack, tracks }, output: { format: "mp4", resolution: "1080", fps: 30 } }),
+    body: JSON.stringify({ timeline: { background: "#0d1117", soundtrack, tracks }, output: { format: "mp4", resolution: "4k", fps: 30 } }),
   });
 
   if (!renderRes.ok) throw new Error(`Shotstack voice-photos render submit failed (${renderRes.status}): ${await renderRes.text()}`);

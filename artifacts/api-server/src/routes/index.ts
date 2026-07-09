@@ -11,7 +11,7 @@ import storageRouter from "./storage";
 import marketRouter from "./market";
 import settingsRouter from "./settings";
 import heygenRouter from "./heygen";
-import morganMarketingRouter from "./morgan-marketing";
+import miaMarketingRouter from "./mia-marketing";
 import stripeRouter from "./stripe";
 import creditsRouter from "./credits";
 import devRouter from "./dev";
@@ -31,7 +31,7 @@ router.use(storageRouter);
 router.use(marketRouter);
 router.use(settingsRouter);
 router.use(heygenRouter);
-router.use(morganMarketingRouter);
+router.use(miaMarketingRouter);
 router.use(stripeRouter);
 router.use(creditsRouter);
 
