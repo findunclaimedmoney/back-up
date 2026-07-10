@@ -9,6 +9,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
+import { consumeReferralCode } from "@/lib/companionStructure";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -44,6 +45,20 @@ export default function Register() {
       const result = await base44.auth.verifyOtp({ email, otpCode });
       if (result?.access_token) {
         base44.auth.setToken(result.access_token);
+      }
+      // If they signed up via a companion's referral link, record the referral
+      const refCode = consumeReferralCode();
+      if (refCode) {
+        try {
+          await base44.entities.Referral.create({
+            referrer_code: refCode,
+            referred_email: email,
+            signed_up_date: new Date().toISOString(),
+            status: "pending",
+          });
+        } catch (err) {
+          console.error("Referral tracking failed:", err);
+        }
       }
       window.location.href = "/";
     } catch (err) {

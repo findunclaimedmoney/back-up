@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { COMPANIONS } from "@/lib/companions";
+import { captureReferralCode } from "@/lib/companionStructure";
 import { TIERS } from "@/lib/creditSystem";
 import {
   MessageCircle,
@@ -30,6 +31,10 @@ const FEATURES = [
 ];
 
 export default function Landing() {
+  useEffect(() => {
+    captureReferralCode();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -264,6 +269,9 @@ export default function Landing() {
             </a>
             <Link to="/legal" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
               Privacy & Terms
+            </Link>
+            <Link to="/companion-apply" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Become a Companion
             </Link>
           </div>
         </div>
