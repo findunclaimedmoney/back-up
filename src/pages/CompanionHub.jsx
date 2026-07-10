@@ -21,6 +21,7 @@ import OnlyFansCard from "@/components/companion/OnlyFansCard";
 import CompanionStatsBar from "@/components/companion/CompanionStatsBar";
 import SocialCaptions from "@/components/companion/SocialCaptions";
 import MarketingTemplates from "@/components/companion/MarketingTemplates";
+import TwinCloneCard from "@/components/companion/TwinCloneCard";
 
 const STATUS_STYLES = {
   pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
@@ -181,6 +182,9 @@ export default function CompanionHub() {
 
         {/* Post & video templates */}
         <MarketingTemplates referralLink={refLink} />
+
+        {/* Twin Clone */}
+        <TwinCloneCard companion={companion} />
 
         {/* Stats overview */}
         <CompanionStatsBar summary={summary} />
