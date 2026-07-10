@@ -47,6 +47,26 @@ export default function CreditUsageCard({ creditBalance = 0, monthlyCredits = 0,
           )}
         </div>
 
+        {/* What 1 credit gets you */}
+        <div className="mb-5 rounded-2xl bg-primary/5 border border-primary/15 p-4">
+          <p className="text-xs text-primary font-semibold uppercase tracking-wide mb-3">What 1 credit gets you</p>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="py-2">
+              <p className="font-heading text-2xl font-bold text-primary">{Math.floor(1 / CONSUMPTION_ITEMS[1].cost)}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">video min</p>
+            </div>
+            <div className="py-2 border-x border-border/50">
+              <p className="font-heading text-2xl font-bold text-primary">{Math.floor(1 / CONSUMPTION_ITEMS[0].cost)}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">messages</p>
+            </div>
+            <div className="py-2">
+              <p className="font-heading text-2xl font-bold text-primary">{Math.floor(1 / CONSUMPTION_ITEMS[2].cost)}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">voice replies</p>
+            </div>
+          </div>
+          <p className="text-[11px] text-muted-foreground text-center mt-2">1 credit = $5.00</p>
+        </div>
+
         {/* Consumption rates */}
         <p className="text-sm text-muted-foreground mb-3">Credit cost per action:</p>
         <div className="space-y-2.5">
