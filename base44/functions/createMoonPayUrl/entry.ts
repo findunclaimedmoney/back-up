@@ -37,7 +37,28 @@ Deno.serve(async (req) => {
       redirectURL: 'https://www.glimr.com.au/moonpay',
     });
 
-    return Response.json({ url: `https://buy.moonpay.com?${params.toString()}` });
+    // Sign the URL with the secret key to prevent tampering
+    const secretKey = Deno.env.get('MOONPAY_SECRET_KEY');
+    let finalUrl = `https://buy.moonpay.com?${params.toString()}`;
+
+    if (secretKey) {
+      const sortedParams = new URLSearchParams(
+        [...params.entries()].sort((a, b) => a[0].localeCompare(b[0]))
+      );
+      const stringToSign = `?${sortedParams.toString()}`;
+      const key = await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(secretKey),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(stringToSign));
+      const signature = btoa(String.fromCharCode(...new Uint8Array(sig)));
+      finalUrl += `&signature=${encodeURIComponent(signature)}`;
+    }
+
+    return Response.json({ url: finalUrl });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
