@@ -5,14 +5,15 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
 
     const body = await req.json();
-    const { order_id } = body;
+    const { order_id, user_id } = body;
 
-    // Look up the order to get the user
+    // Look up the order
     const order = await base44.asServiceRole.entities.CryptoOrder.get(order_id);
     if (!order) return Response.json({ error: 'Order not found' }, { status: 404 });
 
-    // Look up the user
-    const user = await base44.asServiceRole.entities.User.get(order.created_by_id);
+    // Look up the user — prefer explicit user_id, fall back to the order's created_by_id
+    const userId = user_id || order.created_by_id;
+    const user = await base44.asServiceRole.entities.User.get(userId);
     if (!user || !user.email) return Response.json({ error: 'User not found' }, { status: 404 });
 
     // Determine what they bought and what to upsell
