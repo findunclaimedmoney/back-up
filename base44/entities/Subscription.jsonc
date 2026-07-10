@@ -88,6 +88,11 @@
     "signup_ip": {
       "type": "string",
       "description": "IP address at signup to prevent duplicate free accounts"
+    },
+    "low_credit_notified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has already been emailed about their low credit balance this cycle (reset to false when balance recovers above threshold)"
     }
   },
   "required": [],
