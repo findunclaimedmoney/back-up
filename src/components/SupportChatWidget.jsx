@@ -132,15 +132,13 @@ export default function SupportChatWidget() {
     }
   }, [messages, thinking]);
 
-  const handleSend = async (e) => {
-    e?.preventDefault();
-    const text = input.trim();
+  const handleSendText = async (rawText) => {
+    const text = rawText.trim();
     if (!text || thinking) return;
 
     const userMsg = { role: "user", content: text };
     const updated = [...messages, userMsg];
     setMessages(updated);
-    setInput("");
     setThinking(true);
 
     try {
@@ -173,6 +171,12 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
     } finally {
       setThinking(false);
     }
+  };
+
+  const handleSend = (e) => {
+    e?.preventDefault();
+    handleSendText(input);
+    setInput("");
   };
 
   const quickQuestions = MIA_QUICK_QUESTIONS;
@@ -270,8 +274,8 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
                   <button
                     key={q}
                     onClick={() => {
-                      setInput(q);
-                      setTimeout(() => handleSend({ preventDefault: () => {} }), 0);
+                      setInput("");
+                      handleSendText(q);
                     }}
                     className="text-xs px-3 py-1.5 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
                   >
@@ -303,8 +307,8 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
           <form onSubmit={handleSend} className="flex items-center gap-2 px-3 py-3 bg-card border-t border-border">
             <VoiceRecorderButton
               onTranscribed={(text) => {
-                setInput(text);
-                setTimeout(() => handleSend({ preventDefault: () => {} }), 0);
+                setInput("");
+                handleSendText(text);
               }}
               disabled={thinking}
             />
