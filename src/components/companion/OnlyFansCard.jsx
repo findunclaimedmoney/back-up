@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Loader2, Check, Heart } from "lucide-react";
+import { ExternalLink, Loader2, Check, Sparkles } from "lucide-react";
 
 export default function OnlyFansCard({ companion, onSaved }) {
   const [url, setUrl] = useState(companion.onlyfans_url || "");
@@ -28,11 +28,11 @@ export default function OnlyFansCard({ companion, onSaved }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
       <div className="flex items-center gap-2 mb-3">
-        <Heart className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-medium">OnlyFans link</h3>
+        <Sparkles className="w-4 h-4 text-primary" />
+        <h3 className="text-sm font-medium">GLIMRME link</h3>
       </div>
       <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-        Add your OnlyFans profile URL so users can find you there too. Shown on your public companion card.
+        Add your external profile URL (OnlyFans, GLIMRME, etc.) so users can find you there too. Shown on your public companion card.
       </p>
       <div className="flex items-center gap-2">
         <Input
@@ -64,7 +64,7 @@ export default function OnlyFansCard({ companion, onSaved }) {
           className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline mt-3"
         >
           <ExternalLink className="w-3 h-3" />
-          View your OnlyFans profile
+          View your profile
         </a>
       )}
     </div>
