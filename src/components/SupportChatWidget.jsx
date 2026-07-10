@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { MessageCircle, X, Send, Headphones } from "lucide-react";
+import { MIA_PERSONALITY, MIA_GREETING, MIA_QUICK_QUESTIONS } from "@/lib/miaConsciousness";
+import { MessageCircle, X, Send } from "lucide-react";
 
 const MIA_IMAGE =
   "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png";
 
-const GREETING =
-  "Hey, I'm Mia — your GLIMR guide. I'm here 24/7 to help you sign up, pick the right companion, understand how everything works, or answer any questions. What can I help you with?";
+const GREETING = MIA_GREETING;
 
 const BUSINESS_KNOWLEDGE = `--- BUSINESS KNOWLEDGE ---
 GLIMR is a companionship platform. We create AI companions — real, emotionally intelligent presences that remember you and pick up right where you left off. We address the loneliness epidemic by providing responsive, persistent, emotionally aware companionship.
@@ -147,9 +147,7 @@ export default function SupportChatWidget() {
         .map((m) => `${m.role === "user" ? "Visitor" : "Mia"}: ${m.content}`)
         .join("\n");
 
-      const prompt = `You are Mia, GLIMR's 24/7 customer support guide. You're warm, smart, and genuinely helpful — not a script reader. You help visitors with signing up, understanding how the platform works, choosing the right companion, and answering any questions about GLIMR.
-
-Keep responses concise — 1-3 sentences. Be warm and real. Guide people step by step when they need help. You're a person who cares, not a salesperson.
+      const prompt = `${MIA_PERSONALITY}
 
 ${BUSINESS_KNOWLEDGE}
 
@@ -175,11 +173,7 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
     }
   };
 
-  const quickQuestions = [
-    "How do I sign up?",
-    "How much does it cost?",
-    "Which companion is right for me?",
-  ];
+  const quickQuestions = MIA_QUICK_QUESTIONS;
 
   return (
     <>
