@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Upload, X, Loader2, Sparkles, DollarSign } from "lucide-react";
+import { ArrowLeft, Upload, X, Loader2, Sparkles, DollarSign, CheckCircle } from "lucide-react";
 
 const PERSONALITY_TEMPLATES = [
   {
@@ -43,14 +43,31 @@ export default function CreateCompanion() {
   const [error, setError] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [existingCompanion, setExistingCompanion] = useState(null);
+  const [checkingExisting, setCheckingExisting] = useState(true);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get("session_id");
     if (sessionId) {
       handleConfirmPayment(sessionId);
+    } else {
+      checkExistingCompanion();
     }
   }, []);
+
+  const checkExistingCompanion = async () => {
+    try {
+      const existing = await base44.entities.CustomCompanion.filter({});
+      if (existing && existing.length > 0) {
+        setExistingCompanion(existing[0]);
+      }
+    } catch (e) {
+      // ignore — let them proceed
+    } finally {
+      setCheckingExisting(false);
+    }
+  };
 
   const handleConfirmPayment = async (sessionId) => {
     setConfirming(true);
@@ -137,6 +154,44 @@ export default function CreateCompanion() {
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-8 h-8 text-primary animate-spin" />
           <p className="text-sm text-muted-foreground">Confirming your payment…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (checkingExisting) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <p className="text-sm text-muted-foreground">Checking…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (existingCompanion) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
+        <div className="max-w-md text-center space-y-6">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+            <CheckCircle className="w-8 h-8 text-primary" />
+          </div>
+          <div>
+            <h1 className="font-heading text-2xl font-semibold mb-2">You already have a custom avatar</h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Each account can create one custom avatar. You've already brought {existingCompanion.name} to life —
+              head back to chat with them.
+            </p>
+          </div>
+          {existingCompanion.image_url && (
+            <img src={existingCompanion.image_url} alt={existingCompanion.name}
+              className="w-32 h-32 rounded-full object-cover mx-auto border-2 border-primary/30" />
+          )}
+          <button onClick={() => navigate(`/chat/custom-${existingCompanion.id}`)}
+            className="px-6 py-3.5 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity">
+            Chat with {existingCompanion.name}
+          </button>
         </div>
       </div>
     );
