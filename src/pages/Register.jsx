@@ -102,7 +102,8 @@ export default function Register() {
       }
       // Flag so AuthContext doesn't double-fire (it handles Google signups only)
       sessionStorage.setItem("glimr_signup_handled", "1");
-      window.location.href = "/";
+      // Send the new user straight to Mia so she can initiate contact
+      window.location.href = "/chat/mia";
     } catch (err) {
       setError(err.message || "Invalid verification code");
     } finally {
