@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { X, Copy, Check, Bitcoin, Coins, Loader2, AlertCircle, ArrowLeft, RefreshCw } from "lucide-react";
+import { X, Copy, Check, Bitcoin, Coins, Loader2, AlertCircle, ArrowLeft, RefreshCw, ExternalLink } from "lucide-react";
 
 const ASSETS = [
   { id: "USDC", label: "USDC", icon: Coins, note: "Stable — 1 USDC ≈ $1" },
@@ -34,6 +34,7 @@ export default function CryptoPaymentModal({ tiers, onClose, onPurchased }) {
   const [payStatus, setPayStatus] = useState(null);
   const [checking, setChecking] = useState(false);
   const [customAmount, setCustomAmount] = useState("");
+  const [moonpayLoading, setMoonpayLoading] = useState(false);
   const pollRef = useRef(null);
 
   useEffect(() => () => { if (pollRef.current) clearTimeout(pollRef.current); }, []);
@@ -113,7 +114,26 @@ export default function CryptoPaymentModal({ tiers, onClose, onPurchased }) {
     setPayStatus(null);
     setError(null);
     setCustomAmount("");
+    setMoonpayLoading(false);
     if (pollRef.current) clearTimeout(pollRef.current);
+  };
+
+  const handleBuyCrypto = async () => {
+    if (!payment?.order_id) return;
+    setMoonpayLoading(true);
+    setError(null);
+    try {
+      const res = await base44.functions.invoke("createMoonPayUrl", { order_id: payment.order_id });
+      if (res.data?.error) {
+        setError(res.data.error);
+      } else if (res.data?.url) {
+        window.open(res.data.url, "_blank", "noopener,noreferrer");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || "Failed to open MoonPay");
+    } finally {
+      setMoonpayLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -251,10 +271,19 @@ export default function CryptoPaymentModal({ tiers, onClose, onPurchased }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border mb-5">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-muted/20 border border-border mb-4">
               <span className="text-xs text-muted-foreground">Amount due</span>
               <span className="text-sm font-medium">{cryptoAmountStr} {payment.asset} ≈ ${payment.usd_amount}</span>
             </div>
+
+            <button
+              onClick={handleBuyCrypto}
+              disabled={moonpayLoading}
+              className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-primary/30 bg-primary/5 text-primary text-sm font-medium hover:bg-primary/10 transition-colors mb-5 disabled:opacity-50"
+            >
+              {moonpayLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
+              {moonpayLoading ? "Opening MoonPay…" : "Don't have crypto? Buy here"}
+            </button>
 
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
               {checking ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
