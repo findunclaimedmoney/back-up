@@ -1,8 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MessageCircle, Mic, Video, Heart, Gamepad2, NotebookPen, ArrowRight } from "lucide-react";
+import { MessageCircle, Mic, Video, Heart, Gamepad2, NotebookPen, Sparkles, ArrowRight } from "lucide-react";
 
 const FEATURES = [
+  {
+    icon: Sparkles,
+    title: "Celebrity Avatar",
+    cost: "Plus plan required",
+    desc: "Upload anyone's photo & bring them to life",
+    to: "/create",
+    cta: "Create avatar",
+  },
   {
     icon: MessageCircle,
     title: "Live text chat",

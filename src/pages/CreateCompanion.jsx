@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Upload, X, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, Upload, X, Loader2, Sparkles, Crown, Lock } from "lucide-react";
 
 const PERSONALITY_TEMPLATES = [
   {
@@ -42,6 +42,22 @@ export default function CreateCompanion() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState(null);
   const [dragOver, setDragOver] = useState(false);
+  const [subLoading, setSubLoading] = useState(true);
+  const [isPaid, setIsPaid] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const subRes = await base44.functions.invoke("getSubscription", {});
+        const tier = subRes?.data?.tier || "free";
+        setIsPaid(["plus", "pro", "vip"].includes(tier));
+      } catch {
+        setIsPaid(false);
+      } finally {
+        setSubLoading(false);
+      }
+    })();
+  }, []);
 
   const selectedTemplate = PERSONALITY_TEMPLATES.find((p) => p.id === personalityId);
 
@@ -111,6 +127,42 @@ export default function CreateCompanion() {
       setCreating(false);
     }
   };
+
+  if (subLoading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isPaid) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
+        <div className="max-w-md text-center">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+            <Lock className="w-8 h-8 text-primary" />
+          </div>
+          <h1 className="font-heading text-2xl font-semibold mb-3">Celebrity Avatars</h1>
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+            Upload a photo of anyone — a celebrity, a crush, someone you miss — and bring them to life as a face-to-face AI companion you can chat and video call with.
+          </p>
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 mb-6 text-left">
+            <p className="text-sm font-medium mb-1 flex items-center gap-2">
+              <Crown className="w-4 h-4 text-primary" /> Available on Plus, Pro & VIP
+            </p>
+            <p className="text-xs text-muted-foreground">Starting at $59/month — includes text chat, voice replies, and face-to-face video with your custom avatar.</p>
+          </div>
+          <Link to="/pricing" className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity">
+            <Sparkles className="w-4 h-4" /> View Plans
+          </Link>
+          <button onClick={() => navigate("/")} className="block mx-auto mt-4 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Back to home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
