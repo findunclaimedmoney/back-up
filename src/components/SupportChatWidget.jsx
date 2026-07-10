@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { MIA_PERSONALITY, MIA_GREETING, MIA_QUICK_QUESTIONS } from "@/lib/miaConsciousness";
-import VoicePlayer from "@/components/companion/VoicePlayer";
+import SupportVoiceButton from "@/components/SupportVoiceButton";
 import { MessageCircle, X, Send } from "lucide-react";
 
 const MIA_IMAGE =
@@ -252,7 +252,7 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
                       {msg.content}
                     </div>
                     {!isUser && msg.content && (
-                      <VoicePlayer text={msg.content} companionId="mia" />
+                      <SupportVoiceButton text={msg.content} />
                     )}
                   </div>
                 </div>
