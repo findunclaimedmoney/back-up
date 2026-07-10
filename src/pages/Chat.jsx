@@ -19,6 +19,12 @@ const SUGGESTIONS = [
   "I want to get something off my chest",
 ];
 
+let _tempCounter = 0;
+function generateTempId() {
+  _tempCounter += 1;
+  return `temp_${Date.now()}_${_tempCounter}`;
+}
+
 // After every reply, silently extract memorable facts in the background
 async function extractMemories(companionId, recentExchange, existingMemories) {
   const existingKeys = existingMemories.map((m) => m.key).join(", ");
@@ -211,9 +217,16 @@ ${history}
 It's been a while since you last talked. You're thinking about this person. Reach out — naturally, like a real person would when someone crosses their mind. Don't say "it's been a while" or "I was just thinking about you." Just... check in. One message. Short. Warm. The way you'd actually text someone you care about when they cross your mind.`;
           const result = await base44.integrations.Core.InvokeLLM({ prompt });
           const replyText = typeof result === 'string' ? result : result?.output || result?.response || JSON.stringify(result);
-          const proactiveMsg = { role: 'assistant', content: replyText.trim(), companion_id: companion.id };
-          await base44.entities.Message.create(proactiveMsg);
+          const proactiveTempId = generateTempId();
+          const proactiveMsg = { _tempId: proactiveTempId, role: 'assistant', content: replyText.trim(), companion_id: companion.id };
           setMessages(prev => [...prev, proactiveMsg]);
+          try {
+            const saved = await base44.entities.Message.create({ role: 'assistant', content: replyText.trim(), companion_id: companion.id });
+            setMessages(prev => prev.map(m => m._tempId === proactiveTempId ? { ...saved } : m));
+          } catch (err) {
+            console.error("Proactive message save failed:", err);
+            setMessages(prev => prev.filter(m => m._tempId !== proactiveTempId));
+          }
         } catch (err) {
           console.error(err);
         } finally {
@@ -280,7 +293,8 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
 
     // Show the user message instantly — local object URL for attached photos
     const localImageUrl = photoFile ? URL.createObjectURL(photoFile) : null;
-    const userMsg = { role: "user", content: text, companion_id: companion.id, image_url: localImageUrl };
+    const userTempId = generateTempId();
+    const userMsg = { _tempId: userTempId, role: "user", content: text, companion_id: companion.id, image_url: localImageUrl };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setThinking(true);
@@ -295,13 +309,20 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
 
       if (finalImageUrl && localImageUrl) {
         URL.revokeObjectURL(localImageUrl);
-        userMsg.image_url = finalImageUrl;
-        setMessages((prev) => prev.map((m) => (m === userMsg ? { ...m, image_url: finalImageUrl } : m)));
+        setMessages((prev) => prev.map((m) => (m._tempId === userTempId ? { ...m, image_url: finalImageUrl } : m)));
       }
       const fileUrls = finalImageUrl ? [finalImageUrl] : [];
 
-      // Persist the message in the background — doesn't block the LLM reply
-      base44.entities.Message.create(userMsg).catch((err) => console.error(err));
+      // Persist the message — optimistic update rolls back on rejection
+      const userPayload = { role: "user", content: text, companion_id: companion.id, image_url: finalImageUrl };
+      base44.entities.Message.create(userPayload)
+        .then((saved) => {
+          setMessages((prev) => prev.map((m) => (m._tempId === userTempId ? { ...saved, image_url: saved.image_url || finalImageUrl } : m)));
+        })
+        .catch((err) => {
+          console.error("Message save failed:", err);
+          setMessages((prev) => prev.filter((m) => m._tempId !== userTempId));
+        });
 
       // Increment message counter + device fingerprint check
       getDeviceFingerprint().then((fp) => {
@@ -346,14 +367,23 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
         if (retryText) replyText = retryText;
       }
 
+      const replyTempId = generateTempId();
       const reply = {
+        _tempId: replyTempId,
         role: "assistant",
         content: replyText.trim(),
         companion_id: companion.id,
       };
 
       setMessages((prev) => [...prev, reply]);
-      await base44.entities.Message.create(reply);
+      try {
+        const saved = await base44.entities.Message.create({ role: "assistant", content: replyText.trim(), companion_id: companion.id });
+        setMessages((prev) => prev.map((m) => (m._tempId === replyTempId ? { ...saved } : m)));
+      } catch (err) {
+        console.error("Reply save failed:", err);
+        setMessages((prev) => prev.filter((m) => m._tempId !== replyTempId));
+        throw err;
+      }
 
       // Maybe send a photo — selfie, together, or nothing
       const photoExchange = `Me: ${text || "[photo]"}${finalImageUrl ? " [photo]" : ""}\n${companion.name}: ${replyText.trim()}`;
@@ -361,14 +391,22 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
         if (photoDecision.action !== "none" && photoDecision.description) {
           const photoUrl = await generateCompanionPhoto(companion, photoDecision.description, photoDecision.action, finalImageUrl);
           if (photoUrl) {
+            const photoTempId = generateTempId();
             const photoMsg = {
+              _tempId: photoTempId,
               role: "assistant",
               content: photoDecision.caption || "",
               companion_id: companion.id,
               image_url: photoUrl,
             };
-            await base44.entities.Message.create(photoMsg);
             setMessages((prev) => [...prev, photoMsg]);
+            try {
+              const saved = await base44.entities.Message.create({ role: "assistant", content: photoDecision.caption || "", companion_id: companion.id, image_url: photoUrl });
+              setMessages((prev) => prev.map((m) => (m._tempId === photoTempId ? { ...saved } : m)));
+            } catch (err) {
+              console.error("Photo message save failed:", err);
+              setMessages((prev) => prev.filter((m) => m._tempId !== photoTempId));
+            }
           }
         }
       });
@@ -517,8 +555,8 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
             </div>
           ) : (
             <>
-              {messages.map((msg, idx) => (
-                <MessageBubble key={idx} message={msg} companionId={companion.id} />
+              {messages.map((msg) => (
+                <MessageBubble key={msg.id || msg._tempId} message={msg} companionId={companion.id} />
               ))}
               {thinking && (
                 <div className="flex justify-start gap-2.5">
