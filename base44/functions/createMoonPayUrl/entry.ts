@@ -24,8 +24,7 @@ Deno.serve(async (req) => {
     if (!moonpayCurrency) return Response.json({ error: 'Unsupported asset for MoonPay' }, { status: 400 });
 
     const publicKey = Deno.env.get('MOONPAY_PUBLIC_KEY');
-    const secretKey = Deno.env.get('MOONPAY_SECRET_KEY');
-    if (!publicKey || !secretKey) return Response.json({ error: 'MoonPay keys not configured' }, { status: 500 });
+    if (!publicKey) return Response.json({ error: 'MoonPay public key not configured' }, { status: 500 });
 
     // Build the widget URL with the deposit address as the wallet destination
     const params = new URLSearchParams({
@@ -37,19 +36,7 @@ Deno.serve(async (req) => {
       lockAmount: 'true',
     });
 
-    const urlWithParams = `https://buy.moonpay.com?${params.toString()}`;
-
-    // Sign the URL with HMAC-SHA512
-    const keyBytes = new TextEncoder().encode(secretKey);
-    const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-512' }, false, ['sign']);
-    const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(urlWithParams));
-    const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sig)));
-    // URL-safe base64
-    const sigUrlSafe = sigB64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-
-    const signedUrl = `${urlWithParams}&signature=${sigUrlSafe}`;
-
-    return Response.json({ url: signedUrl });
+    return Response.json({ url: `https://buy.moonpay.com?${params.toString()}` });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
