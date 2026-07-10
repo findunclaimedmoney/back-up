@@ -14,10 +14,11 @@ Deno.serve(async (req) => {
     let totalUsers;
 
     if (user_email) {
-      // Direct notification for a specific user
+      // Direct notification for a specific user — look up their actual profile
       const allUsers = await base44.asServiceRole.entities.User.list('-created_date', 100);
       totalUsers = allUsers.length;
-      newUsers = [{ email: user_email, full_name: user_name || 'Unknown' }];
+      const matchedUser = allUsers.find((u) => u.email === user_email);
+      newUsers = [{ email: user_email, full_name: matchedUser?.full_name || user_name || user_email.split('@')[0] }];
     } else {
       // Check for users created in the last 30 minutes
       const cutoff = new Date(Date.now() - 30 * 60 * 1000);

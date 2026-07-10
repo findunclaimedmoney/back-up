@@ -16,6 +16,11 @@ Deno.serve(async (req) => {
     }
     if (!user || !user.email) return Response.json({ error: 'User not found' }, { status: 404 });
 
+    // Derive a friendly first name if full_name isn't set (email-only signups)
+    if (!user.full_name) {
+      user.full_name = user.email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
     // Get their subscription and activity
     const subs = await base44.asServiceRole.entities.Subscription.filter({ created_by_id: user.id });
     const sub = subs[0];

@@ -60,13 +60,19 @@ export default function Register() {
           console.error("Referral tracking failed:", err);
         }
       }
-      // Notify admin of the new signup (fire-and-forget)
-      base44.functions.invoke("notifyAdminSignup", { user_email: email }).catch(() => {});
-      // Have Mia reach out to the new user with a welcome email (fire-and-forget)
-      base44.functions.invoke("sendUserFollowupEmail", {
-        user_email: email,
-        goal: "They just signed up moments ago. Welcome them to GLIMR warmly. Tell them they can start chatting with a companion for free right now — no credit card needed. Mention there are companions like Mia, Jess, Luna, Sophie, Natalie, and Zac. Keep it short, warm, and inviting — like a friend welcoming them to something special.",
-      }).catch(() => {});
+      // Notify admin + have Mia send a welcome email BEFORE redirecting
+      // (must await — otherwise window.location.href cancels the pending requests)
+      try {
+        await Promise.all([
+          base44.functions.invoke("notifyAdminSignup", { user_email: email }),
+          base44.functions.invoke("sendUserFollowupEmail", {
+            user_email: email,
+            goal: "They just signed up moments ago. Welcome them to GLIMR warmly by name. Tell them they can start chatting with a companion for free right now — no credit card needed. Mention there are companions like Mia, Jess, Luna, Sophie, Natalie, and Zac. Keep it short, warm, and inviting — like a friend welcoming them to something special.",
+          }),
+        ]);
+      } catch (e) {
+        console.error("Welcome/notification failed:", e);
+      }
       window.location.href = "/";
     } catch (err) {
       setError(err.message || "Invalid verification code");
