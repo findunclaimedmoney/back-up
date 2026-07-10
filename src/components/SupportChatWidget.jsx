@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { MIA_PERSONALITY, MIA_GREETING, MIA_QUICK_QUESTIONS } from "@/lib/miaConsciousness";
 import SupportVoiceButton from "@/components/SupportVoiceButton";
+import VoiceRecorderButton from "@/components/VoiceRecorderButton";
 import { MessageCircle, X, Send } from "lucide-react";
 
 const MIA_IMAGE =
@@ -252,7 +253,10 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
                       {msg.content}
                     </div>
                     {!isUser && msg.content && (
-                      <SupportVoiceButton text={msg.content} />
+                      <SupportVoiceButton
+                        text={msg.content}
+                        autoPlay={idx === messages.length - 1}
+                      />
                     )}
                   </div>
                 </div>
@@ -297,6 +301,13 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
 
           {/* Input */}
           <form onSubmit={handleSend} className="flex items-center gap-2 px-3 py-3 bg-card border-t border-border">
+            <VoiceRecorderButton
+              onTranscribed={(text) => {
+                setInput(text);
+                setTimeout(() => handleSend({ preventDefault: () => {} }), 0);
+              }}
+              disabled={thinking}
+            />
             <input
               type="text"
               value={input}
