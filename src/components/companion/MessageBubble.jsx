@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { RotateCw } from "lucide-react";
 import VoicePlayer from "@/components/companion/VoicePlayer";
 
-export default function MessageBubble({ message, companionId, onRetry }) {
+export default function MessageBubble({ message, companionId, voiceId, onRetry }) {
   const isUser = message.role === "user";
   const isSending = message.status === "sending";
   const isError = message.status === "error";
@@ -75,7 +75,7 @@ export default function MessageBubble({ message, companionId, onRetry }) {
             <p className="text-[15px] leading-relaxed text-foreground whitespace-pre-wrap break-words selectable-text">
               {message.content}
             </p>
-            <VoicePlayer text={message.content} companionId={companionId} />
+            <VoicePlayer text={message.content} companionId={companionId} voiceId={voiceId} />
           </div>
         )}
       </motion.div>

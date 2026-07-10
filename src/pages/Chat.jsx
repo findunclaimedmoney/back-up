@@ -144,6 +144,7 @@ const navigate = useNavigate();
           description: customCompanion.description || "",
           image: customCompanion.image_url,
           personality: customCompanion.personality,
+          voice_id: customCompanion.voice_id || null,
           avatar_id: customCompanion.avatar_id || null,
           avatar_status: customCompanion.avatar_status || null,
         }
@@ -605,7 +606,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
           ) : (
             <>
               {messages.map((msg) => (
-                <MessageBubble key={msg.id || msg._tempId} message={msg} companionId={companion.id} onRetry={handleRetry} />
+                <MessageBubble key={msg.id || msg._tempId} message={msg} companionId={companion.id} voiceId={companion.voice_id} onRetry={handleRetry} />
               ))}
               {thinking && (
                 <div className="flex justify-start gap-2.5">

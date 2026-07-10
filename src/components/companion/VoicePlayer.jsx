@@ -14,7 +14,7 @@ const VOICE_MAP = {
   natalie: "honey",
 };
 
-export default function VoicePlayer({ text, companionId }) {
+export default function VoicePlayer({ text, companionId, voiceId }) {
   const [audioUrl, setAudioUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -36,7 +36,13 @@ export default function VoicePlayer({ text, companionId }) {
     setLoading(true);
     try {
       let url;
-      if (ELEVENLABS_VOICES.includes(companionId)) {
+      if (voiceId) {
+        const res = await base44.functions.invoke("generateVoice", {
+          text: text.slice(0, 5000),
+          voice_id: voiceId,
+        });
+        url = res.data?.url;
+      } else if (ELEVENLABS_VOICES.includes(companionId)) {
         const res = await base44.functions.invoke("generateVoice", {
           text: text.slice(0, 5000),
           companion_id: companionId,

@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Upload, X, Loader2, Sparkles, DollarSign, CheckCircle } from "lucide-react";
+import { ArrowLeft, Upload, X, Loader2, Sparkles, DollarSign, CheckCircle, Volume2 } from "lucide-react";
+
+const VOICE_OPTIONS = [
+  { id: "21m00Tcm4TlvDq8ikWAM", name: "Rachel", desc: "Warm, caring female" },
+  { id: "pNjkzCVDaXfbUkKFXpQ7", name: "Drew", desc: "Deep, smooth male" },
+  { id: "EXAVITQu4vr4xnSDxU8L", name: "Bella", desc: "Soft, gentle female" },
+  { id: "ErXwobaYiN019PkySvjV", name: "Antoni", desc: "Warm, confident male" },
+  { id: "MF3mGyEYCl7XYWbV9V6O", name: "Elli", desc: "Emotional, expressive female" },
+  { id: "TxGEqnHWrfWFTfGW9XjX", name: "Josh", desc: "Deep, resonant male" },
+];
 
 const PERSONALITY_TEMPLATES = [
   {
@@ -39,6 +48,7 @@ export default function CreateCompanion() {
   const [tagline, setTagline] = useState("");
   const [personalityId, setPersonalityId] = useState(null);
   const [customPersonality, setCustomPersonality] = useState("");
+  const [voiceId, setVoiceId] = useState("21m00Tcm4TlvDq8ikWAM");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState(null);
   const [dragOver, setDragOver] = useState(false);
@@ -102,7 +112,7 @@ export default function CreateCompanion() {
   };
 
   const canProceedStep1 = imageFile && name.trim();
-  const canProceedStep2 = personalityId || customPersonality.trim();
+  const canProceedStep2 = (personalityId || customPersonality.trim()) && voiceId;
 
   const handleCreate = async () => {
     setCreating(true);
@@ -123,6 +133,8 @@ export default function CreateCompanion() {
         description: customPersonality.trim() || selectedTemplate?.description || "A companion you created.",
         image_url: imageUrl,
         personality,
+        voice_id: voiceId,
+        voice_name: VOICE_OPTIONS.find((v) => v.id === voiceId)?.name || "Default",
         status: "ready",
         source: "liveavatar",
         avatar_id: null,
@@ -302,6 +314,23 @@ export default function CreateCompanion() {
                 placeholder="Describe how they should behave, talk, and connect with you…"
                 rows={5}
                 className="w-full rounded-2xl bg-card border border-border px-5 py-3.5 text-sm outline-none focus:border-primary/40 resize-none" />
+            </div>
+
+            {/* Voice picker */}
+            <div>
+              <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                <Volume2 className="w-4 h-4 text-primary" /> Choose a voice
+              </label>
+              <p className="text-xs text-muted-foreground mb-3">Pick how they'll sound when speaking to you.</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {VOICE_OPTIONS.map((v) => (
+                  <button key={v.id} onClick={() => setVoiceId(v.id)}
+                    className={`text-left p-3 rounded-xl border transition-all ${voiceId === v.id ? "border-primary bg-primary/5" : "border-border bg-card hover:border-primary/40"}`}>
+                    <p className="text-sm font-medium">{v.name}</p>
+                    <p className="text-xs text-muted-foreground leading-tight">{v.desc}</p>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}

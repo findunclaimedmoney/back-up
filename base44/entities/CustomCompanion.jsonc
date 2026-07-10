@@ -22,6 +22,14 @@
       "type": "string",
       "description": "System prompt describing how the companion should behave"
     },
+    "voice_id": {
+      "type": "string",
+      "description": "ElevenLabs voice ID for voice replies"
+    },
+    "voice_name": {
+      "type": "string",
+      "description": "Display name of the selected voice"
+    },
     "status": {
       "type": "string",
       "enum": [
@@ -52,7 +60,7 @@
         "failed"
       ],
       "default": "processing",
-      "description": "Status of the custom LiveAvatar image avatar creation: pending_payment (awaiting $49 creation fee), processing (up to 24hrs), active (ready for video), failed"
+      "description": "Status of the custom LiveAvatar image avatar creation: pending_payment (awaiting creation fee), processing (up to 24hrs), active (ready for video), failed"
     }
   },
   "required": [
