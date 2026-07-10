@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Copy, Check, Video, Facebook, Instagram, Music2, ExternalLink, Download, Calendar, ChevronLeft } from "lucide-react";
+import { Copy, Check, Video, Facebook, Instagram, Music2, ExternalLink, Download, Calendar, ChevronLeft, Sparkles } from "lucide-react";
 
 const VIDEO_ASSETS = [
   {
@@ -237,6 +237,18 @@ export default function MarketingHub() {
             Ready-to-post content for Facebook, Instagram, and TikTok. Copy captions, download videos, and share your landing pages.
           </p>
         </div>
+
+        {/* AI Marketing Agent */}
+        <Link to="/marketing-agent" className="mb-12 flex items-center gap-4 rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 to-card p-6 hover:border-primary/50 transition-all group">
+          <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
+            <Sparkles className="w-6 h-6 text-primary" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-heading text-lg font-semibold mb-1">AI Marketing Director</h3>
+            <p className="text-sm text-muted-foreground">Chat with your AI agent — it can create posts, generate videos, publish to Instagram & Facebook, and check ad performance.</p>
+          </div>
+          <ChevronLeft className="w-5 h-5 text-muted-foreground rotate-180 group-hover:text-primary transition-colors" />
+        </Link>
 
         {/* Landing pages */}
         <section className="mb-12">
