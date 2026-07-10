@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { MIA_PERSONALITY, MIA_GREETING, MIA_QUICK_QUESTIONS } from "@/lib/miaConsciousness";
+import VoicePlayer from "@/components/companion/VoicePlayer";
 import { MessageCircle, X, Send } from "lucide-react";
 
 const MIA_IMAGE =
@@ -240,14 +241,19 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
                       className="w-7 h-7 rounded-full object-cover object-top mr-2 mt-0.5 flex-shrink-0"
                     />
                   )}
-                  <div
-                    className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                      isUser
-                        ? "bg-primary text-primary-foreground rounded-br-md"
-                        : "bg-muted text-foreground rounded-bl-md"
-                    }`}
-                  >
-                    {msg.content}
+                  <div className="max-w-[75%]">
+                    <div
+                      className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                        isUser
+                          ? "bg-primary text-primary-foreground rounded-br-md"
+                          : "bg-muted text-foreground rounded-bl-md"
+                      }`}
+                    >
+                      {msg.content}
+                    </div>
+                    {!isUser && msg.content && (
+                      <VoicePlayer text={msg.content} companionId="mia" />
+                    )}
                   </div>
                 </div>
               );
