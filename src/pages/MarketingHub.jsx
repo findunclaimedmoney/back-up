@@ -4,6 +4,21 @@ import { Copy, Check, Video, Facebook, Instagram, Music2, ExternalLink, Download
 
 const VIDEO_ASSETS = [
   {
+    label: "The Connection — Brand Film",
+    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/93b93aac9_The_Connection.mp4",
+    platform: "all",
+  },
+  {
+    label: "Always There — Emotional Spot",
+    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/89556ded0_Always_There.mp4",
+    platform: "all",
+  },
+  {
+    label: "More Than Words — Product Showcase",
+    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/08471d634_More_Than_Words.mp4",
+    platform: "all",
+  },
+  {
     label: "TikTok / IG Reels Promo (9:16)",
     url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/cd6a62421_TikTok_IG_Reels_Promo.mp4",
     platform: "tiktok",
