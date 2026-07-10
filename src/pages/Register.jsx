@@ -100,6 +100,20 @@ export default function Register() {
       } catch (e) {
         console.error("Welcome/notification failed:", e);
       }
+      // Check if they came from the Facebook $10 free offer landing page
+      const fbOfferTime = sessionStorage.getItem("glimr_fb_offer_time");
+      if (fbOfferTime) {
+        const elapsed = Date.now() - parseInt(fbOfferTime);
+        const fiveMinutes = 5 * 60 * 1000;
+        if (elapsed <= fiveMinutes) {
+          try {
+            await base44.functions.invoke("grantFacebookBonus", {});
+          } catch (e) {
+            console.error("FB bonus grant failed:", e);
+          }
+        }
+        sessionStorage.removeItem("glimr_fb_offer_time");
+      }
       // Flag so AuthContext doesn't double-fire (it handles Google signups only)
       sessionStorage.setItem("glimr_signup_handled", "1");
       // Tell Mia's chat to send a welcome message with the user's name
