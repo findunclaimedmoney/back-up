@@ -119,7 +119,7 @@ export default function Landing() {
           </p>
         </div>
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-4">
-          {COMPANIONS.map((c) => (
+          {COMPANIONS.filter((c) => c.id !== "natalie").map((c) => (
             <Link
               key={c.id}
               to="/register"
@@ -139,6 +139,24 @@ export default function Landing() {
               </div>
             </Link>
           ))}
+          {/* Promo video card */}
+          <div className="group relative overflow-hidden rounded-3xl border border-border bg-card">
+            <div className="relative aspect-[3/4] overflow-hidden">
+              <video
+                src="https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/e7bafeda9_cd6a62421_TikTok_IG_Reels_Promo.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <span className="text-[10px] font-medium tracking-wide text-primary uppercase">See it in action</span>
+                <h3 className="font-heading text-xl font-semibold text-white">GLIMR</h3>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -265,8 +283,8 @@ export default function Landing() {
             />
           </Link>
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-            <a href="mailto:hello@glimr.com.au" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
-              hello@glimr.com.au
+            <a href="mailto:admin@glimr.com.au" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Support: admin@glimr.com.au
             </a>
             <Link to="/legal" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
               Privacy & Terms
