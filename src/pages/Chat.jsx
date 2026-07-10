@@ -483,7 +483,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
       {/* Messages */}
       <div className="flex-1 overflow-y-auto scrollbar-thin">
         <PullToRefresh onRefresh={loadData}>
-        <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
+        <div className="max-w-2xl mx-auto px-4 py-6 space-y-4" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <div className="w-6 h-6 border-2 border-muted border-t-primary rounded-full animate-spin" />
