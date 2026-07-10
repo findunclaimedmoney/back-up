@@ -11,6 +11,7 @@ import AnamView from "@/components/companion/AnamView";
 import { decidePhotoAction, generateCompanionPhoto } from "@/lib/companionPhotos";
 import { getDeviceFingerprint } from "@/lib/deviceFingerprint";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useToast } from "@/components/ui/use-toast";
 
 const SUGGESTIONS = [
   "Hey, how's your day going?",
@@ -114,6 +115,7 @@ ${recentExchange}`;
 export default function Chat() {
   const { companionId } = useParams();
 const navigate = useNavigate();
+  const { toast } = useToast();
   const goBack = useGoBack();
   const isCustom = companionId?.startsWith("custom-");
   const customId = isCustom ? companionId.replace("custom-", "") : null;
@@ -219,13 +221,19 @@ It's been a while since you last talked. You're thinking about this person. Reac
           const replyText = typeof result === 'string' ? result : result?.output || result?.response || JSON.stringify(result);
           const proactiveTempId = generateTempId();
           const proactiveMsg = { _tempId: proactiveTempId, role: 'assistant', content: replyText.trim(), companion_id: companion.id };
+          const proactivePrevMessages = [...messages];
           setMessages(prev => [...prev, proactiveMsg]);
           try {
             const saved = await base44.entities.Message.create({ role: 'assistant', content: replyText.trim(), companion_id: companion.id });
             setMessages(prev => prev.map(m => m._tempId === proactiveTempId ? { ...saved } : m));
           } catch (err) {
             console.error("Proactive message save failed:", err);
-            setMessages(prev => prev.filter(m => m._tempId !== proactiveTempId));
+            setMessages(proactivePrevMessages);
+            toast({
+              variant: "destructive",
+              title: "Message not sent",
+              description: "We couldn't deliver the message. Please try again.",
+            });
           }
         } catch (err) {
           console.error(err);
@@ -295,6 +303,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
     const localImageUrl = photoFile ? URL.createObjectURL(photoFile) : null;
     const userTempId = generateTempId();
     const userMsg = { _tempId: userTempId, role: "user", content: text, companion_id: companion.id, image_url: localImageUrl };
+    const prevMessagesBeforeUser = [...messages];
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setThinking(true);
@@ -321,7 +330,12 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
         })
         .catch((err) => {
           console.error("Message save failed:", err);
-          setMessages((prev) => prev.filter((m) => m._tempId !== userTempId));
+          setMessages(prevMessagesBeforeUser);
+          toast({
+            variant: "destructive",
+            title: "Message not sent",
+            description: "Your message couldn't be delivered. Please try again.",
+          });
         });
 
       // Increment message counter + device fingerprint check
@@ -375,13 +389,19 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
         companion_id: companion.id,
       };
 
+      const prevMessagesBeforeReply = [...messages];
       setMessages((prev) => [...prev, reply]);
       try {
         const saved = await base44.entities.Message.create({ role: "assistant", content: replyText.trim(), companion_id: companion.id });
         setMessages((prev) => prev.map((m) => (m._tempId === replyTempId ? { ...saved } : m)));
       } catch (err) {
         console.error("Reply save failed:", err);
-        setMessages((prev) => prev.filter((m) => m._tempId !== replyTempId));
+        setMessages(prevMessagesBeforeReply);
+        toast({
+          variant: "destructive",
+          title: "Reply not saved",
+          description: "We couldn't save the reply. Please try again.",
+        });
         throw err;
       }
 
@@ -399,13 +419,19 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
               companion_id: companion.id,
               image_url: photoUrl,
             };
+            const prevMessagesBeforePhoto = [...messages];
             setMessages((prev) => [...prev, photoMsg]);
             try {
               const saved = await base44.entities.Message.create({ role: "assistant", content: photoDecision.caption || "", companion_id: companion.id, image_url: photoUrl });
               setMessages((prev) => prev.map((m) => (m._tempId === photoTempId ? { ...saved } : m)));
             } catch (err) {
               console.error("Photo message save failed:", err);
-              setMessages((prev) => prev.filter((m) => m._tempId !== photoTempId));
+              setMessages(prevMessagesBeforePhoto);
+              toast({
+                variant: "destructive",
+                title: "Photo not saved",
+                description: "The photo couldn't be delivered. Please try again.",
+              });
             }
           }
         }
