@@ -49,22 +49,29 @@ export default function CreditUsageCard({ creditBalance = 0, monthlyCredits = 0,
 
         {/* What 1 credit gets you */}
         <div className="mb-5 rounded-2xl bg-primary/5 border border-primary/15 p-4">
-          <p className="text-xs text-primary font-semibold uppercase tracking-wide mb-3">What 1 credit gets you</p>
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="py-2">
-              <p className="font-heading text-2xl font-bold text-primary">{Math.floor(1 / CONSUMPTION_ITEMS[1].cost)}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">video min</p>
-            </div>
-            <div className="py-2 border-x border-border/50">
-              <p className="font-heading text-2xl font-bold text-primary">{Math.floor(1 / CONSUMPTION_ITEMS[0].cost)}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">messages</p>
-            </div>
-            <div className="py-2">
-              <p className="font-heading text-2xl font-bold text-primary">{Math.floor(1 / CONSUMPTION_ITEMS[2].cost)}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">voice replies</p>
-            </div>
+          <p className="text-xs text-primary font-semibold uppercase tracking-wide mb-1">What 1 credit gets you</p>
+          <p className="text-[11px] text-muted-foreground mb-3">1 credit = ${creditsToUsd(1).toFixed(2)} — spend it on any mix below</p>
+          <div className="space-y-2">
+            {CONSUMPTION_ITEMS.map((item) => {
+              const Icon = ICONS[item.key] || Coins;
+              const perCredit = Math.floor(1 / item.cost);
+              const usdPerUnit = creditsToUsd(item.cost);
+              return (
+                <div key={item.key} className="flex items-center justify-between p-2.5 rounded-xl bg-background/40 border border-border/50">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                      <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-primary">{perCredit} {item.key === "video_minute" ? "min" : item.key === "voice_reply" ? "replies" : "msgs"}</p>
+                    <p className="text-[11px] text-muted-foreground">${usdPerUnit.toFixed(2)} / unit</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <p className="text-[11px] text-muted-foreground text-center mt-2">1 credit = $5.00</p>
         </div>
 
         {/* Consumption rates */}
