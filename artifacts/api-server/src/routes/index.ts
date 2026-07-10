@@ -14,8 +14,6 @@ import heygenRouter from "./heygen";
 import miaMarketingRouter from "./mia-marketing";
 import stripeRouter from "./stripe";
 import creditsRouter from "./credits";
-import companionRouter from "./companion";
-import companionSubscribeRouter from "./companionSubscribe";
 import devRouter from "./dev";
 
 const router: IRouter = Router();
@@ -36,7 +34,5 @@ router.use(heygenRouter);
 router.use(miaMarketingRouter);
 router.use(stripeRouter);
 router.use(creditsRouter);
-router.use(companionRouter);
-router.use(companionSubscribeRouter);
 
 export default router;

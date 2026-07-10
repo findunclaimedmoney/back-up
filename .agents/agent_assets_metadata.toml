@@ -24,18 +24,6 @@ uri = "file://attached_assets/generated_images/luxury_australian_real_estate_235
 type = "image"
 title = "generated_image"
 
-[[generated]]
-id = "6fkUsWqN0JnUBcNbDEWEs"
-uri = "file://artifacts/glimr/public/mia-portrait.png"
-type = "image"
-title = "Mia AI companion portrait"
-
-[[generated]]
-id = "8S5odPR-O2dKT6kZlBO32"
-uri = "file://artifacts/glimr/public/alex-portrait.png"
-type = "image"
-title = "Alex AI companion portrait"
-
 [[outputs]]
 id = "GJSJTvrQG8OqI7nTZIiR7"
 uri = "file://exports/sophie-hq.jpg"
