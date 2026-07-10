@@ -3,6 +3,10 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 // Map companion IDs to specific ElevenLabs voice IDs
 const ELEVENLABS_VOICE_MAP = {
   zac: 'pQfZu2BaypIFGTAcfvg5',
+  jess: 'cgSgspJ2msm6clMCkdW9',      // Jessica — Playful, Bright, Warm
+  mia: 'FGY2WhTYpPnrIDTdsKH5',       // Laura — Enthusiast, Quirky
+  luna: 'EXAVITQu4vr4xnSDxMaL',      // Sarah — Mature, Reassuring, Calm
+  sophie: 'hpp4J3VqNfWAUOO0d1Us',    // Bella — Professional, Bright, Warm
 };
 
 Deno.serve(async (req) => {

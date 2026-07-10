@@ -2,18 +2,6 @@ import { useState, useRef } from "react";
 import { Volume2, Loader2, Pause } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
-// Companions using custom ElevenLabs voices (via generateVoice backend function)
-const ELEVENLABS_VOICES = ["zac"];
-
-// Built-in preset voices for everyone else
-const VOICE_MAP = {
-  jess: "honey",
-  mia: "sunny",
-  luna: "river",
-  sophie: "spark",
-  natalie: "honey",
-};
-
 export default function VoicePlayer({ text, companionId, voiceId }) {
   const [audioUrl, setAudioUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -35,26 +23,13 @@ export default function VoicePlayer({ text, companionId, voiceId }) {
 
     setLoading(true);
     try {
-      let url;
-      if (voiceId) {
-        const res = await base44.functions.invoke("generateVoice", {
-          text: text.slice(0, 5000),
-          voice_id: voiceId,
-        });
-        url = res.data?.url;
-      } else if (ELEVENLABS_VOICES.includes(companionId)) {
-        const res = await base44.functions.invoke("generateVoice", {
-          text: text.slice(0, 5000),
-          companion_id: companionId,
-        });
-        url = res.data?.url;
-      } else {
-        const result = await base44.integrations.Core.GenerateSpeech({
-          text: text.slice(0, 5000),
-          voice: VOICE_MAP[companionId] || "honey",
-        });
-        url = result?.url;
-      }
+      // All voices now go through ElevenLabs via generateVoice
+      const res = await base44.functions.invoke("generateVoice", {
+        text: text.slice(0, 5000),
+        voice_id: voiceId,
+        companion_id: companionId,
+      });
+      const url = res.data?.url;
       if (!url) return;
       setAudioUrl(url);
       const audio = new Audio(url);
