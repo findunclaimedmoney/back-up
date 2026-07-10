@@ -102,6 +102,9 @@ export default function Register() {
       }
       // Flag so AuthContext doesn't double-fire (it handles Google signups only)
       sessionStorage.setItem("glimr_signup_handled", "1");
+      // Tell Mia's chat to send a welcome message with the user's name
+      sessionStorage.setItem("glimr_new_signup_welcome", "1");
+      sessionStorage.setItem("glimr_new_signup_name", fullName.split(" ")[0] || "there");
       // Send the new user straight to Mia so she can initiate contact
       window.location.href = "/chat/mia";
     } catch (err) {

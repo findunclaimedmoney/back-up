@@ -199,6 +199,32 @@ const navigate = useNavigate();
       setLoading(false);
     }
 
+    // New signup welcome — Mia reaches out to brand-new users
+    const isNewSignup = sessionStorage.getItem("glimr_new_signup_welcome");
+    if (isNewSignup && companion.id === "mia" && sorted.length === 0) {
+      const firstName = sessionStorage.getItem("glimr_new_signup_name") || "there";
+      sessionStorage.removeItem("glimr_new_signup_welcome");
+      sessionStorage.removeItem("glimr_new_signup_name");
+      const welcomeText = `Hi ${firstName}, welcome to GLIMR. How can I make your day?`;
+      try {
+        const saved = await base44.entities.Message.create({ role: "assistant", content: welcomeText, companion_id: companion.id });
+        setMessages([saved]);
+        // Try to auto-play Mia's voice — browsers may block this; if so the "Listen" button is still visible
+        try {
+          const result = await base44.integrations.Core.GenerateSpeech({ text: welcomeText, voice: "sunny" });
+          if (result?.url) {
+            const audio = new Audio(result.url);
+            audio.play().catch(() => {});
+          }
+        } catch (e) {
+          console.error("Welcome voice generation failed:", e);
+        }
+        return;
+      } catch (err) {
+        console.error("Welcome message creation failed:", err);
+      }
+    }
+
     // Proactive check-in — she reaches out first
     if (sorted.length > 0) {
       const lastMsg = sorted[sorted.length - 1];
