@@ -170,6 +170,134 @@ Deno.serve(async (req) => {
         });
       }
 
+      case 'create_ad': {
+        const { budget_usd = 11, duration_days = 7, ad_text, image_prompt } = body;
+        // Meta Ads minimum for AU lifetime budget is ~A$10.22 — enforce minimum
+        const minBudget = 1100;
+        const budgetCents = Math.max(Math.round(budget_usd * 100), minBudget);
+        const conn = await base44.asServiceRole.connectors.getConnection('meta_ads');
+
+        // Get ad account
+        const accountsResp = await fetch(
+          'https://graph.facebook.com/v25.0/me/adaccounts?fields=account_id,name,currency',
+          { headers: { Authorization: `Bearer ${conn.accessToken}` } }
+        );
+        const accountsData = await accountsResp.json();
+        if (!accountsData.data || accountsData.data.length === 0) {
+          return Response.json({ error: 'No ad accounts found' }, { status: 400 });
+        }
+        const actId = accountsData.data[0].account_id;
+
+        // Generate ad image
+        const imageResult = await base44.asServiceRole.integrations.Core.GenerateImage({
+          prompt: image_prompt || 'A warm, inviting social media ad for GLIMR, an AI companionship app addressing loneliness. Show a person smiling at their phone, warm golden tones, modern minimal design, emotional connection.',
+        });
+
+        // Get Facebook page for ad creative
+        const fbConn = await base44.asServiceRole.connectors.getConnection('facebook_pages');
+        const pagesResp = await fetch(
+          'https://graph.facebook.com/v25.0/me/accounts?fields=id,name,access_token',
+          { headers: { Authorization: `Bearer ${fbConn.accessToken}` } }
+        );
+        const pagesData = await pagesResp.json();
+        const page = pagesData.data?.[0];
+
+        if (!page) {
+          return Response.json({ error: 'No Facebook Page found — needed for ad creative' }, { status: 400 });
+        }
+
+        // Step 1: Create campaign
+        const campaignResp = await fetch(`https://graph.facebook.com/v25.0/act_${actId}/campaigns`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: `GLIMR Ad — ${new Date().toISOString().split('T')[0]}`,
+            objective: 'OUTCOME_TRAFFIC',
+            status: 'PAUSED',
+            special_ad_categories: JSON.stringify([]),
+            is_adset_budget_sharing_enabled: false,
+            access_token: conn.accessToken,
+          }),
+        });
+        const campaignData = await campaignResp.json();
+        if (campaignData.error) return Response.json({ error: `Campaign: ${campaignData.error.message}`, fb_error: campaignData.error }, { status: 400 });
+
+        // Step 2: Create ad set with lifetime budget
+        const startTime = new Date();
+        const endTime = new Date();
+        endTime.setDate(endTime.getDate() + duration_days);
+
+        const adSetResp = await fetch(`https://graph.facebook.com/v25.0/act_${actId}/adsets`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: `GLIMR Ad Set — $${budget_usd} / ${duration_days}d`,
+            campaign_id: campaignData.id,
+            lifetime_budget: budgetCents,
+            billing_event: 'IMPRESSIONS',
+            optimization_goal: 'LINK_CLICKS',
+            start_time: Math.floor(startTime.getTime() / 1000),
+            end_time: Math.floor(endTime.getTime() / 1000),
+            promoted_object: { page_id: page.id },
+            targeting: { geo_locations: { countries: ['AU'] }, age_min: 18, age_max: 65 },
+            bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
+            status: 'PAUSED',
+            access_token: conn.accessToken,
+          }),
+        });
+        const adSetData = await adSetResp.json();
+        if (adSetData.error) return Response.json({ error: `Ad Set: ${adSetData.error.message}`, fb_error: adSetData.error }, { status: 400 });
+
+        // Step 3: Create ad creative
+        const creativeResp = await fetch(`https://graph.facebook.com/v25.0/act_${actId}/adcreatives`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'GLIMR Ad Creative',
+            object_story_spec: {
+              page_id: page.id,
+              link_data: {
+                link: 'https://glimr.app',
+                message: ad_text || 'Find your companion. Someone who listens, remembers, and truly cares. Start free today.',
+                picture: imageResult.url,
+              },
+            },
+            access_token: conn.accessToken,
+          }),
+        });
+        const creativeData = await creativeResp.json();
+        if (creativeData.error) return Response.json({ error: `Creative: ${creativeData.error.message}`, fb_error: creativeData.error }, { status: 400 });
+
+        // Step 4: Create ad
+        const adResp = await fetch(`https://graph.facebook.com/v25.0/act_${actId}/ads`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'GLIMR Ad',
+            adset_id: adSetData.id,
+            creative: { creative_id: creativeData.id },
+            status: 'PAUSED',
+            access_token: conn.accessToken,
+          }),
+        });
+        const adData = await adResp.json();
+        if (adData.error) return Response.json({ error: `Ad: ${adData.error.message}`, fb_error: adData.error }, { status: 400 });
+
+        return Response.json({
+          success: true,
+          campaign_id: campaignData.id,
+          adset_id: adSetData.id,
+          ad_id: adData.id,
+          image_url: imageResult.url,
+          budget: `$${budget_usd}`,
+          duration: `${duration_days} days`,
+          start: startTime.toISOString(),
+          end: endTime.toISOString(),
+          status: 'PAUSED',
+          message: `Ad created: $${budget_usd} budget over ${duration_days} days (AU targeting). It's PAUSED — review and activate it in Meta Ads Manager.`,
+        });
+      }
+
       default:
         return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }
