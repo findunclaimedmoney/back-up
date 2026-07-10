@@ -20,6 +20,7 @@ import { buildReferralLink } from "@/lib/companionStructure";
 import OnlyFansCard from "@/components/companion/OnlyFansCard";
 import CompanionStatsBar from "@/components/companion/CompanionStatsBar";
 import SocialCaptions from "@/components/companion/SocialCaptions";
+import MarketingTemplates from "@/components/companion/MarketingTemplates";
 
 const STATUS_STYLES = {
   pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
@@ -177,6 +178,9 @@ export default function CompanionHub() {
 
         {/* Social media captions */}
         <SocialCaptions referralLink={refLink} />
+
+        {/* Post & video templates */}
+        <MarketingTemplates referralLink={refLink} />
 
         {/* Stats overview */}
         <CompanionStatsBar summary={summary} />
