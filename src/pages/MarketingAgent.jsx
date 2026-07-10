@@ -102,53 +102,44 @@ export default function MarketingAgent() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); } catch {}
   }, [messages]);
 
-  const initConversation = useCallback(async () => {
-    if (conversation) return conversation;
-    try {
-      const conv = await base44.agents.createConversation({
-        agent_name: AGENT_NAME,
-        metadata: { name: "Marketing Agent Chat", description: "Marketing strategy & execution" },
-      });
-      setConversation(conv);
-      return conv;
-    } catch (err) {
-      console.error("Failed to create conversation:", err);
-      return null;
-    }
+  // Subscribe to conversation updates once we have a conversation ID
+  useEffect(() => {
+    if (!conversation) return;
+    const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
+      const allMsgs = data.messages || [];
+      if (allMsgs.length > 0) {
+        setMessages(allMsgs);
+        const last = allMsgs[allMsgs.length - 1];
+        const hasPendingTools = last?.tool_calls?.some(tc =>
+          ["pending", "running", "in_progress"].includes(tc.status)
+        );
+        // Stop thinking only when the last message is from assistant, has content, and no pending tools
+        if (last?.role === "assistant" && last.content && !hasPendingTools) {
+          setThinking(false);
+        }
+      }
+    });
+    return () => unsubscribe();
   }, [conversation]);
 
   const handleSend = async (rawText) => {
     const text = (rawText ?? input).trim();
     if (!text || thinking) return;
     setInput("");
-    const userMsg = { role: "user", content: text };
-    const updated = [...messages, userMsg];
-    setMessages(updated);
+    setMessages(prev => [...prev, { role: "user", content: text }]);
     setThinking(true);
 
     try {
-      const conv = await initConversation();
-      if (!conv) throw new Error("Could not start conversation");
+      let conv = conversation;
+      if (!conv) {
+        conv = await base44.agents.createConversation({
+          agent_name: AGENT_NAME,
+          metadata: { name: "Marketing Agent Chat", description: "Marketing strategy & execution" },
+        });
+        setConversation(conv);
+      }
 
       await base44.agents.addMessage(conv, { role: "user", content: text });
-
-      let assistantContent = "";
-      const poll = setInterval(async () => {
-        try {
-          const latest = await base44.agents.getConversation(conv.id);
-          const lastMsg = latest.messages?.[latest.messages.length - 1];
-          if (lastMsg && lastMsg.role === "assistant" && lastMsg.content && lastMsg.content !== assistantContent) {
-            assistantContent = lastMsg.content;
-            setMessages([...updated, { role: "assistant", content: assistantContent, tool_calls: lastMsg.tool_calls }]);
-            if (lastMsg.content && !lastMsg.tool_calls?.some(tc => ["pending", "running", "in_progress"].includes(tc.status))) {
-              clearInterval(poll);
-              setThinking(false);
-            }
-          }
-        } catch {}
-      }, 1500);
-
-      setTimeout(() => { clearInterval(poll); setThinking(false); }, 120000);
     } catch (err) {
       setMessages(prev => [...prev, { role: "assistant", content: `Something went wrong: ${err.message}. Try again?` }]);
       setThinking(false);
