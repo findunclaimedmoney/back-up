@@ -25,6 +25,16 @@ export default function CreditUsageCard({ creditBalance = 0, monthlyCredits = 0,
           </div>
         </div>
 
+        {/* Explainer video */}
+        <div className="mb-6 rounded-2xl overflow-hidden border border-border bg-background/50">
+          <video
+            src="https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/30bf421c4_Credit_Explainer.mp4"
+            controls
+            playsInline
+            className="w-full aspect-video object-cover"
+          />
+        </div>
+
         {/* Balance summary */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           <div className="px-4 py-3 rounded-2xl bg-primary/10 border border-primary/20">
