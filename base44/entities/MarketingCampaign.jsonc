@@ -1,0 +1,83 @@
+{
+  "name": "MarketingCampaign",
+  "type": "object",
+  "properties": {
+    "topic": {
+      "type": "string",
+      "description": "Campaign topic or angle"
+    },
+    "caption": {
+      "type": "string",
+      "description": "Full Facebook post caption including hashtags and CTA"
+    },
+    "hashtags": {
+      "type": "string",
+      "description": "Hashtags for the post"
+    },
+    "cta": {
+      "type": "string",
+      "description": "Call to action line"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Generated video URL for approval"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "facebook",
+        "instagram",
+        "both"
+      ],
+      "default": "facebook",
+      "description": "Which platform this campaign targets"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "published",
+        "rejected"
+      ],
+      "default": "draft",
+      "description": "draft = awaiting approval, approved = approved not yet published, published = live on Facebook, rejected = declined"
+    },
+    "fb_post_id": {
+      "type": "string",
+      "description": "Facebook post ID after publishing"
+    },
+    "batch_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this campaign batch was generated"
+    }
+  },
+  "required": [
+    "topic",
+    "caption",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

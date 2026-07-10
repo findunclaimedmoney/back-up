@@ -37,6 +37,7 @@ const MoonPayReturn = React.lazy(() => import('./pages/MoonPayReturn'));
 const Legal = React.lazy(() => import('./pages/Legal'));
 const FbOffer = React.lazy(() => import('./pages/FbOffer'));
 const VoicePreview = React.lazy(() => import('./pages/VoicePreview'));
+const CampaignReview = React.lazy(() => import('./pages/CampaignReview'));
 const Account = React.lazy(() => import('./pages/Account'));
 import ProtectedRoute from '@/components/ProtectedRoute';
 import MobileShell from '@/components/MobileShell';
@@ -91,6 +92,7 @@ const AuthenticatedApp = () => {
         <Route path="/legal" element={<Legal />} />
       <Route path="/fb-offer" element={<FbOffer />} />
       <Route path="/voice-preview" element={<VoicePreview />} />
+      <Route path="/campaign-review" element={<CampaignReview />} />
         <Route path="/account" element={<Account />} />
         <Route path="/vip-lounge" element={<VipLounge />} />
         <Route path="/zac" element={<ZacLanding />} />
