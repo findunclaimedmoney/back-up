@@ -152,8 +152,8 @@ export default function Landing() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-4">
-                <span className="text-[10px] font-medium tracking-wide text-primary uppercase">See it in action</span>
-                <h3 className="font-heading text-xl font-semibold text-white">GLIMR</h3>
+                <span className="text-[10px] font-medium tracking-wide text-primary uppercase">She nurtures</span>
+                <h3 className="font-heading text-xl font-semibold text-white">Natalie</h3>
               </div>
             </div>
           </div>
