@@ -332,4 +332,50 @@ Before responding to the user's next inquiry, read:
 
 ---
 
+## 14. NEXT BUILD — Mia's Marketing Dashboard
+
+> **Priority task for next session. The user wants a dedicated dashboard where Mia (the marketing agent persona) can log in and see everything she did each day.**
+
+### What to build
+A **Mia's Dashboard** page — a visual daily activity feed that shows what Mia accomplished each day so she (and the admin) can stay up to date at a glance.
+
+### Data sources to pull from (all exist already)
+| Activity | Source |
+|---|---|
+| Facebook campaigns generated | `MarketingCampaign` entity — filter by `batch_date` for today |
+| Facebook DMs auto-replied | `facebookAutoReply` function logs / execution history |
+| Proactive check-ins sent | `proactiveCheckin` function execution history |
+| Follow-up emails sent | `dailyFollowup` / `sendUserFollowupEmail` function logs |
+| Daily signup digests | `dailySignupSummary` function |
+| Marketing reports | `generateMarketingReport` function |
+| Scheduled calendar events | Google Calendar connector (already authorized) |
+| Ad campaign performance | Meta Ads connector (already authorized) |
+
+### Suggested page structure
+- **Route:** `/mia-dashboard` (admin-only — gate with `ProtectedRoute`)
+- **Daily summary header:** date, total actions today, quick stats
+- **Activity timeline:** chronological feed of everything Mia did today (campaigns created, DMs replied, emails sent, check-ins, reports)
+- **Campaign review quick-access:** link to `/campaign-review` for pending drafts
+- **Weekly view toggle:** see last 7 days of activity
+
+### Key files to reference
+- `base44/entities/MarketingCampaign.jsonc` — campaign data
+- `base44/functions/generateDailyCampaigns/entry.ts` — daily campaign generation
+- `base44/functions/facebookAutoReply/entry.ts` — FB DM auto-reply
+- `base44/functions/proactiveCheckin/entry.ts` — proactive companion messages
+- `base44/functions/dailyFollowup/entry.ts` — follow-up emails
+- `base44/functions/dailySignupSummary/entry.ts` — signup digests
+- `base44/functions/generateMarketingReport/entry.ts` — weekly reports
+- `src/pages/Dashboard.jsx` — existing admin dashboard (for reference on style/structure)
+- `src/pages/CampaignReview.jsx` — campaign review page (link from Mia's dashboard)
+- `base44/agents/marketing_agent.jsonc` — Mia's agent config
+
+### Notes
+- The dashboard should feel like Mia's personal workspace — warm, not corporate
+- Use the existing dark theme + gold primary color
+- Consider a backend function `getMiaActivity` that aggregates today's actions from all sources into one API call
+- The marketing agent already has HubSpot, Facebook, Instagram, Meta Ads, Gmail, Google Calendar, and Google Sheets connector access
+
+---
+
 *End of handover. The next agent should now be fully up to date.*
