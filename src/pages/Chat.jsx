@@ -269,7 +269,7 @@ It's been a while since you last talked. You're thinking about this person. Reac
         }
       }
     }
-  }, [companion]);
+  }, [companion?.id]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
