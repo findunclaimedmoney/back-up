@@ -25,6 +25,10 @@
       },
       "description": "Additional gallery photo URLs"
     },
+    "onlyfans_url": {
+      "type": "string",
+      "description": "Companion's OnlyFans profile URL (optional, shown on their public card)"
+    },
     "rate_per_minute_usd": {
       "type": "number",
       "default": 0,

@@ -17,6 +17,8 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useGoBack } from "@/hooks/useGoBack";
 import { buildReferralLink } from "@/lib/companionStructure";
+import OnlyFansCard from "@/components/companion/OnlyFansCard";
+import CompanionStatsBar from "@/components/companion/CompanionStatsBar";
 
 const STATUS_STYLES = {
   pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
@@ -169,29 +171,11 @@ export default function CompanionHub() {
           </div>
         </div>
 
-        {/* Earnings summary */}
-        <div className="grid grid-cols-2 gap-3">
-          <StatCard
-            icon={DollarSign}
-            label="Total earned"
-            value={`$${summary?.totalEarnings?.toFixed(2) || "0.00"}`}
-          />
-          <StatCard
-            icon={Wallet}
-            label="Available"
-            value={`$${summary?.availablePayout?.toFixed(2) || "0.00"}`}
-          />
-          <StatCard
-            icon={Clock}
-            label="Pending"
-            value={`$${summary?.pendingPayout?.toFixed(2) || "0.00"}`}
-          />
-          <StatCard
-            icon={TrendingUp}
-            label="Paid out"
-            value={`$${summary?.paidOut?.toFixed(2) || "0.00"}`}
-          />
-        </div>
+        {/* OnlyFans link */}
+        <OnlyFansCard companion={companion} />
+
+        {/* Stats overview */}
+        <CompanionStatsBar summary={summary} />
 
         {/* Earnings breakdown */}
         <div className="rounded-2xl border border-border bg-card p-5">
