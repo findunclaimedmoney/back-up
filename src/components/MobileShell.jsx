@@ -8,6 +8,7 @@ import SettingsModal from "@/components/SettingsModal";
 import { useGoBack } from "@/hooks/useGoBack";
 
 const SKIP_HEADER_PATTERNS = [
+  /^\/$/,
   /^\/chat\//,
   /^\/zac$/,
   /^\/jess$/,
