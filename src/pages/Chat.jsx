@@ -205,7 +205,7 @@ const navigate = useNavigate();
       const firstName = sessionStorage.getItem("glimr_new_signup_name") || "there";
       sessionStorage.removeItem("glimr_new_signup_welcome");
       sessionStorage.removeItem("glimr_new_signup_name");
-      const welcomeText = `Hi ${firstName}, welcome to GLIMR. How can I make your day?`;
+      const welcomeText = `Hi ${firstName}, welcome to GLIMR. How can I make your day GLIMR?`;
       try {
         const saved = await base44.entities.Message.create({ role: "assistant", content: welcomeText, companion_id: companion.id });
         setMessages([saved]);
