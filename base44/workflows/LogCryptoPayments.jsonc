@@ -1,0 +1,48 @@
+{
+  "name": "Log Crypto Payments to Google Sheets",
+  "description": "When a CryptoOrder status changes to 'paid', automatically log the payment details to a Google Sheet for real-time sales tracking.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "CryptoOrder",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"paid\" and .trigger.old_data.status != \"paid\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "log_crypto_payments",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "log_payment": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "logCryptoPaymentToSheet",
+            "args": {
+              "order_id": "${ .trigger.entity_id }",
+              "order_type": "${ .trigger.data.order_type }",
+              "reference": "${ .trigger.data.reference }",
+              "usd_amount": "${ .trigger.data.usd_amount }",
+              "crypto_asset": "${ .trigger.data.crypto_asset }",
+              "crypto_amount": "${ .trigger.data.crypto_amount }",
+              "status": "${ .trigger.data.status }",
+              "paid_date": "${ .trigger.data.paid_date }",
+              "created_date": "${ .trigger.data.created_date }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Log payment to Google Sheets",
+            "description": "Append row with payment details"
+          }
+        }
+      }
+    ]
+  }
+}
