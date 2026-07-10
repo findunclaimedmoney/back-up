@@ -18,7 +18,6 @@ import {
   Check,
 } from "lucide-react";
 import MobileAppBadges from "@/components/MobileAppBadges";
-import MiaVideoWidget from "@/components/MiaVideoWidget";
 
 const FEATURES = [
   { icon: MessageCircle, title: "Text chat", desc: "Real conversations that remember you" },
@@ -277,8 +276,6 @@ export default function Landing() {
           </div>
         </div>
       </footer>
-
-      <MiaVideoWidget />
     </div>
   );
 }

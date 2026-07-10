@@ -5,6 +5,7 @@ import { ArrowLeft, Settings } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileBottomTabs, { ROOT_PATHS } from "@/components/MobileBottomTabs";
 import SettingsModal from "@/components/SettingsModal";
+import SupportChatWidget from "@/components/SupportChatWidget";
 import { useGoBack } from "@/hooks/useGoBack";
 
 const SKIP_HEADER_PATTERNS = [
@@ -95,6 +96,7 @@ onClick={goBack}              className="flex items-center gap-1.5 min-h-[44px] 
         </motion.div>
       </AnimatePresence>
       {showTabs && <MobileBottomTabs />}
+      <SupportChatWidget />
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </>
   );
