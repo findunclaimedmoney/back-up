@@ -1,8 +1,8 @@
 import React from "react";
-import { Check, Sparkles, Crown } from "lucide-react";
+import { Check, Sparkles, Crown, Coins } from "lucide-react";
 
 export default function TierCard({ tier, current, loading, onUpgrade }) {
-  const { name, price, description, features, highlighted, badge, ctaLabel } = tier;
+  const { name, price, credits, description, features, highlighted, badge, ctaLabel } = tier;
 
   return (
     <div
@@ -25,10 +25,20 @@ export default function TierCard({ tier, current, loading, onUpgrade }) {
       <h3 className="font-heading text-xl font-semibold mb-1">{name}</h3>
       <p className="text-sm text-muted-foreground mb-5 leading-relaxed">{description}</p>
 
-      <div className="mb-6">
+      <div className="mb-2">
         <span className="font-heading text-4xl font-semibold tracking-tight">${price}</span>
         {price > 0 && <span className="text-sm text-muted-foreground ml-1">/mo</span>}
       </div>
+
+      {credits > 0 && (
+        <div className="flex items-center gap-1.5 mb-6 px-3 py-2 rounded-xl bg-primary/10 border border-primary/20">
+          <Coins className="w-4 h-4 text-primary" />
+          <span className="text-sm font-medium text-primary">{credits} credits</span>
+          <span className="text-xs text-muted-foreground">/ month</span>
+        </div>
+      )}
+
+      {credits === 0 && <div className="mb-6" />}
 
       <ul className="space-y-2.5 mb-8 flex-1">
         {features.map((f, i) => (
@@ -42,7 +52,7 @@ export default function TierCard({ tier, current, loading, onUpgrade }) {
       <button
         onClick={onUpgrade}
         disabled={current || loading}
-        className={`w-full px-6 py-3 rounded-full font-medium text-sm transition-all ${
+        className={`min-h-[44px] w-full px-6 py-3 rounded-full font-medium text-sm transition-all ${
           current
             ? "bg-muted text-muted-foreground cursor-default"
             : highlighted

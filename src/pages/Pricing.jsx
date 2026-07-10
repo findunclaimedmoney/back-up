@@ -3,75 +3,13 @@ import { base44 } from "@/api/base44Client";
 import { Sparkles, ArrowLeft, CheckCircle, Settings, Bitcoin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { TIERS } from "@/lib/creditSystem";
 import TierCard from "@/components/pricing/TierCard";
 import IntimacyAddOnCard from "@/components/pricing/IntimacyAddOnCard";
 import TopUpCard from "@/components/pricing/TopUpCard";
+import CreditUsageCard from "@/components/pricing/CreditUsageCard";
 import CryptoPaymentModal from "@/components/pricing/CryptoPaymentModal";
 import PullToRefresh from "@/components/PullToRefresh";
-
-const TIERS = [
-  {
-    id: "free",
-    name: "Free",
-    price: 0,
-    description: "Start your journey with GLIMR",
-    ctaLabel: "Get Started",
-    features: [
-      "Text chat with all companions",
-      "1 companion at a time",
-      "Basic emotional memory",
-      "Community support",
-    ],
-  },
-  {
-    id: "plus",
-    name: "Plus",
-    price: 59,
-    description: "See and hear your companion",
-    ctaLabel: "Upgrade to Plus",
-    features: [
-      "Everything in Free",
-      "80 min HD video per month",
-      "Voice replies",
-      "All companions unlocked",
-      "Enhanced memory system",
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 89,
-    description: "Deep connection & romance",
-    ctaLabel: "Upgrade to Pro",
-    highlighted: true,
-    badge: "popular",
-    features: [
-      "Everything in Plus",
-      "160 min HD video per month",
-      "Intimacy & Romantic layer",
-      "Fantasy outfits & uniforms",
-      "Companion's Diary",
-      "Priority processing",
-    ],
-  },
-  {
-    id: "vip",
-    name: "VIP",
-    price: 349,
-    description: "The full GLIMR experience",
-    ctaLabel: "Request Invitation",
-    badge: "vip",
-    features: [
-      "Everything in Pro",
-      "500 min HD video per month",
-      "Twin / Clone companion",
-      "GLIMR Home holographic device",
-      "Deepest intimacy & personalization",
-      "Dedicated memory palace",
-      "Early access to new companions",
-    ],
-  },
-];
 
 export default function Pricing() {
   const goBack = useGoBack();
@@ -80,6 +18,8 @@ export default function Pricing() {
   const [success, setSuccess] = useState(false);
   const [intimacyPackage, setIntimacyPackage] = useState(false);
   const [creditBalance, setCreditBalance] = useState(0);
+  const [monthlyCredits, setMonthlyCredits] = useState(0);
+  const [creditsUsed, setCreditsUsed] = useState(0);
   const [minutesUsed, setMinutesUsed] = useState(0);
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
   const [addonLoading, setAddonLoading] = useState(null);
@@ -105,6 +45,8 @@ export default function Pricing() {
       if (res.data?.tier) setCurrentTier(res.data.tier);
       setIntimacyPackage(res.data?.intimacy_package || false);
       setCreditBalance(res.data?.credit_balance || 0);
+      setMonthlyCredits(res.data?.monthly_credits || 0);
+      setCreditsUsed(res.data?.credits_used || 0);
       setMinutesUsed(res.data?.video_minutes_used || 0);
       setSessionsCompleted(res.data?.intimacy_sessions_completed || 0);
     } catch (err) {
@@ -313,6 +255,16 @@ export default function Pricing() {
               </div>
             </section>
           )}
+
+          <section className="px-6 pb-12">
+            <div className="max-w-3xl mx-auto">
+              <CreditUsageCard
+                creditBalance={creditBalance}
+                monthlyCredits={monthlyCredits}
+                creditsUsed={creditsUsed}
+              />
+            </div>
+          </section>
 
           <section className="px-6 pb-12">
             <div className="max-w-3xl mx-auto">

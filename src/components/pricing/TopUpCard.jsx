@@ -1,12 +1,6 @@
 import { useState } from "react";
-import { Wallet, Loader2, Plus, Check } from "lucide-react";
-
-const PACKS = [
-  { id: "pack_5", amount: 5, label: "$5" },
-  { id: "pack_10", amount: 10, label: "$10", popular: true },
-  { id: "pack_25", amount: 25, label: "$25" },
-  { id: "pack_50", amount: 50, label: "$50" },
-];
+import { Loader2, Plus, Check, Coins } from "lucide-react";
+import { TOPUP_PACKS, creditsToUsd } from "@/lib/creditSystem";
 
 export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
   const [selected, setSelected] = useState(null);
@@ -16,29 +10,29 @@ export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
       <div className="p-8">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Wallet className="w-6 h-6 text-primary" />
+            <Coins className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h3 className="font-heading text-xl font-semibold">Top Up Credit</h3>
-            <p className="text-sm text-muted-foreground">Add credit for intimate video sessions</p>
+            <h3 className="font-heading text-xl font-semibold">Top Up Credits</h3>
+            <p className="text-sm text-muted-foreground">Add credits for messages, video & voice</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary/10 border border-primary/20 mb-6">
-          <Wallet className="w-4 h-4 text-primary" />
+          <Coins className="w-4 h-4 text-primary" />
           <p className="text-sm text-foreground">
-            Current balance: <span className="font-semibold">${creditBalance.toFixed(2)}</span>
+            Balance: <span className="font-semibold">{creditBalance.toFixed(2)} credits</span>
+            <span className="text-muted-foreground ml-2">(${creditsToUsd(creditBalance).toFixed(2)})</span>
           </p>
         </div>
 
         <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-          Credit is used when you start an intimate video session. Each session
-          deducts from your balance based on duration — $6 for 15 min, $11 for
-          30 min, $20 for 1 hour. Top up anytime; credit never expires.
+          Credits are used across all features — text messages, live video, and voice replies.
+          Top up anytime; prepaid credits never expire.
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {PACKS.map((pack) => (
+          {TOPUP_PACKS.map((pack) => (
             <button
               key={pack.id}
               onClick={() => {
@@ -58,8 +52,9 @@ export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
                 </span>
               )}
               <Plus className="w-4 h-4 text-muted-foreground" />
-              <span className="font-heading text-2xl font-semibold">{pack.label}</span>
-              <span className="text-[11px] text-muted-foreground">credit</span>
+              <span className="font-heading text-2xl font-semibold">{pack.credits}</span>
+              <span className="text-[11px] text-muted-foreground">credits</span>
+              <span className="text-[10px] text-muted-foreground/70">${pack.price}</span>
               {loading === pack.id && (
                 <Loader2 className="w-4 h-4 text-primary animate-spin mt-1" />
               )}
@@ -70,7 +65,7 @@ export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
         {creditBalance > 0 && (
           <div className="flex items-center gap-2 mt-6 text-xs text-muted-foreground">
             <Check className="w-3.5 h-3.5 text-primary" />
-            You have enough credit for {Math.floor(creditBalance / 6)} more session{Math.floor(creditBalance / 6) === 1 ? "" : "s"}.
+            Enough for ~{Math.floor(creditBalance / 0.05)} text messages or ~{Math.floor(creditBalance / 0.10)} video minutes.
           </div>
         )}
       </div>

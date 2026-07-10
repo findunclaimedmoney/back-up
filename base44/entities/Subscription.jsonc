@@ -13,6 +13,21 @@
       "default": "free",
       "description": "The user's subscription tier"
     },
+    "monthly_credits": {
+      "type": "number",
+      "default": 0,
+      "description": "Credits granted per billing period for this tier (0=free, 12=plus, 18=pro, 70=vip)"
+    },
+    "credits_used": {
+      "type": "number",
+      "default": 0,
+      "description": "Credits consumed this billing period (resets on renewal)"
+    },
+    "credit_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Available credit balance (monthly allowance + top-ups - consumed)"
+    },
     "video_minutes_used": {
       "type": "number",
       "default": 0,
@@ -32,11 +47,6 @@
       "type": "boolean",
       "default": false,
       "description": "Whether intimacy is included in the user's tier (pro/vip)"
-    },
-    "credit_balance": {
-      "type": "number",
-      "default": 0,
-      "description": "Prepaid credit balance for intimacy sessions (in USD)"
     },
     "intimacy_training_stage": {
       "type": "number",

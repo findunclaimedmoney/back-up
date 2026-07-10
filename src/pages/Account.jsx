@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useGoBack } from "@/hooks/useGoBack";
-import { ArrowLeft, Loader2, LogOut, Trash2, CreditCard, Mail, User, Crown, Settings } from "lucide-react";
+import { ArrowLeft, Loader2, LogOut, Trash2, CreditCard, Mail, User, Crown, Settings, Coins, MessageCircle, Video, Mic } from "lucide-react";
+import { TIER_LABELS, TIER_CREDITS, CONSUMPTION_ITEMS, creditsToUsd } from "@/lib/creditSystem";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -15,11 +16,10 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-const TIER_LABELS = {
-  free: "Free",
-  plus: "Plus",
-  pro: "Pro",
-  vip: "VIP",
+const ACTION_ICONS = {
+  text_message: MessageCircle,
+  video_minute: Video,
+  voice_reply: Mic,
 };
 
 export default function Account() {
@@ -75,6 +75,9 @@ export default function Account() {
   };
 
   const tier = sub?.tier || "free";
+  const creditBalance = sub?.credit_balance ?? 0;
+  const monthlyCredits = sub?.monthly_credits || TIER_CREDITS[tier] || 0;
+  const creditsUsed = sub?.credits_used || 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -135,55 +138,100 @@ export default function Account() {
               </div>
             </section>
 
-            {/* Subscription */}
+            {/* Subscription & Credits */}
             <section className="rounded-2xl border border-border bg-card p-5">
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
                   <Crown className="w-4.5 h-4.5 text-primary" />
                 </div>
-                <h2 className="font-heading text-lg font-semibold">Subscription</h2>
+                <h2 className="font-heading text-lg font-semibold">Subscription & Credits</h2>
               </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Current plan</span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                    {TIER_LABELS[tier] || tier}
-                  </span>
+
+              {/* Tier badge */}
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm text-muted-foreground">Current plan</span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                  {TIER_LABELS[tier] || tier}
+                </span>
+              </div>
+
+              {/* Credit balance — prominent */}
+              <div className="rounded-2xl bg-primary/10 border border-primary/20 p-4 mb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Coins className="w-5 h-5 text-primary" />
+                  <span className="text-xs uppercase tracking-wide text-muted-foreground font-medium">Credit Balance</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Credit balance</span>
-                  <span className="text-sm font-medium">${sub?.credit_balance ?? 0}</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="font-heading text-3xl font-bold text-primary">{creditBalance.toFixed(2)}</span>
+                  <span className="text-sm text-muted-foreground">credits</span>
+                  <span className="text-sm text-muted-foreground ml-auto">≈ ${creditsToUsd(creditBalance).toFixed(2)}</span>
                 </div>
-                {sub?.current_period_end && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Renews</span>
-                    <span className="text-sm font-medium">
-                      {new Date(sub.current_period_end).toLocaleDateString()}
-                    </span>
+                {monthlyCredits > 0 && (
+                  <div className="mt-3 pt-3 border-t border-primary/10">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Monthly allowance</span>
+                      <span className="font-medium">{monthlyCredits} credits / month</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs mt-1">
+                      <span className="text-muted-foreground">Used this period</span>
+                      <span className="font-medium">{creditsUsed.toFixed(2)} credits</span>
+                    </div>
+                    {/* Progress bar */}
+                    <div className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full transition-all"
+                        style={{ width: `${monthlyCredits > 0 ? Math.min(100, (creditsUsed / monthlyCredits) * 100) : 0}%` }}
+                      />
+                    </div>
                   </div>
                 )}
+              </div>
+
+              {/* Credit costs per action */}
+              <div className="space-y-2 mb-4">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Credits per action</p>
+                {CONSUMPTION_ITEMS.map((item) => {
+                  const Icon = ACTION_ICONS[item.key] || Coins;
+                  const canAfford = Math.floor(creditBalance / item.cost);
+                  return (
+                    <div key={item.key} className="flex items-center justify-between py-2 px-3 rounded-lg bg-background/50 border border-border">
+                      <div className="flex items-center gap-2.5">
+                        <Icon className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm">{item.label}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm font-medium text-primary">{item.cost}</span>
+                        <span className="text-xs text-muted-foreground ml-1">· {canAfford} left</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {sub?.current_period_end && (
+                <div className="flex items-center justify-between mb-4 text-sm">
+                  <span className="text-muted-foreground">Renews</span>
+                  <span className="font-medium">{new Date(sub.current_period_end).toLocaleDateString()}</span>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-2">
                 {tier !== "free" && (
                   <button
                     onClick={handleManageBilling}
                     disabled={billingLoading}
-                    className="inline-flex items-center gap-2 min-h-[44px] w-full justify-center mt-2 px-5 py-2.5 rounded-full border border-border text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 min-h-[44px] w-full justify-center px-5 py-2.5 rounded-full border border-border text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50"
                   >
-                    {billingLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <CreditCard className="w-4 h-4" />
-                    )}
+                    {billingLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
                     Manage subscription
                   </button>
                 )}
-                {tier === "free" && (
-                  <Link
-                    to="/pricing"
-                    className="inline-flex items-center gap-2 min-h-[44px] w-full justify-center mt-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-                  >
-                    Upgrade plan
-                  </Link>
-                )}
+                <Link
+                  to="/pricing"
+                  className="inline-flex items-center gap-2 min-h-[44px] w-full justify-center px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+                >
+                  {tier === "free" ? "Upgrade plan" : "Top up credits"}
+                </Link>
               </div>
             </section>
 

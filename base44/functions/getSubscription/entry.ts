@@ -7,6 +7,13 @@ const MONTHLY_MESSAGE_LIMITS = {
   vip: 0,
 };
 
+const TIER_MONTHLY_CREDITS = {
+  free: 0,
+  plus: 12,
+  pro: 18,
+  vip: 70,
+};
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -18,10 +25,12 @@ Deno.serve(async (req) => {
     if (subs.length === 0) {
       return Response.json({
         tier: 'free',
+        monthly_credits: TIER_MONTHLY_CREDITS.free,
+        credits_used: 0,
+        credit_balance: 0,
         video_minutes_used: 0,
         video_minutes_limit: 0,
         intimacy_package: false,
-        credit_balance: 0,
         intimacy_sessions_completed: 0,
         twin_enabled: false,
         remaining: 0,
@@ -41,10 +50,12 @@ Deno.serve(async (req) => {
 
     return Response.json({
       tier,
+      monthly_credits: sub.monthly_credits ?? TIER_MONTHLY_CREDITS[tier] ?? 0,
+      credits_used: sub.credits_used || 0,
+      credit_balance: sub.credit_balance || 0,
       video_minutes_used: used,
       video_minutes_limit: limit,
       intimacy_package: sub.intimacy_package || false,
-      credit_balance: sub.credit_balance || 0,
       intimacy_sessions_completed: sub.intimacy_sessions_completed || 0,
       twin_enabled: sub.twin_enabled || false,
       remaining: Math.max(0, limit - used),
