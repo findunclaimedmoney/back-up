@@ -100,10 +100,14 @@ export const AuthProvider = ({ children }) => {
       setAuthChecked(true);
 
       // If this is a brand-new account (created in the last 5 minutes),
-      // fire admin notification + Mia's welcome email (catches Google signups too)
+      // fire admin notification + Mia's welcome email — BUT only if Register.jsx
+      // hasn't already handled it (it sets a flag for email signups).
+      // This catches Google signups which bypass the Register page entirely.
       if (currentUser?.id && currentUser?.created_date) {
         const ageMs = Date.now() - new Date(currentUser.created_date).getTime();
-        if (ageMs < 5 * 60 * 1000) {
+        const alreadyHandled = sessionStorage.getItem("glimr_signup_handled");
+        if (ageMs < 5 * 60 * 1000 && !alreadyHandled) {
+          sessionStorage.setItem("glimr_signup_handled", "1");
           try {
             await Promise.all([
               base44.functions.invoke("notifyAdminSignup", {
@@ -118,6 +122,8 @@ export const AuthProvider = ({ children }) => {
           } catch (e) {
             console.error("Welcome/notification failed:", e);
           }
+        } else if (alreadyHandled) {
+          sessionStorage.removeItem("glimr_signup_handled");
         }
       }
     } catch (error) {

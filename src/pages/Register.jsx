@@ -73,6 +73,8 @@ export default function Register() {
       } catch (e) {
         console.error("Welcome/notification failed:", e);
       }
+      // Flag so AuthContext doesn't double-fire (it handles Google signups only)
+      sessionStorage.setItem("glimr_signup_handled", "1");
       window.location.href = "/";
     } catch (err) {
       setError(err.message || "Invalid verification code");

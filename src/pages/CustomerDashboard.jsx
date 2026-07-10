@@ -7,7 +7,7 @@ import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import FeatureAccessGrid from "@/components/dashboard/FeatureAccessGrid";
 import CompanionShortcuts from "@/components/dashboard/CompanionShortcuts";
 import PullToRefresh from "@/components/PullToRefresh";
-import MiaVideoWidget from "@/components/MiaVideoWidget";
+
 
 export default function CustomerDashboard() {
   const [profile, setProfile] = useState(null);
@@ -177,7 +177,6 @@ export default function CustomerDashboard() {
           </section>
         </main>
       </PullToRefresh>
-      <MiaVideoWidget />
     </div>
   );
 }
