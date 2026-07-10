@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, MessageCircle, Mic, Video, Camera, ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 const JESS_VIDEO =
   "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/14f0062f2_Jesss_Engaging_Greeting.mp4";
@@ -102,7 +103,20 @@ const goBack = useGoBack();
           <Link to="/" className="flex items-center gap-2">
             <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png" alt="GLIMR" className="h-7 w-auto rounded-md" />
           </Link>
-          {!isMobile && (
+          {isMobile ? (
+            <Accordion type="single" collapsible className="w-full max-w-xs">
+              <AccordionItem value="footer-nav" className="border-b-0">
+                <AccordionTrigger className="text-sm text-muted-foreground hover:text-foreground py-2">
+                  Navigation
+                </AccordionTrigger>
+                <AccordionContent className="flex flex-col gap-3 pb-2">
+                  <Link to="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
+                  <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+                  <Link to="/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy & Terms</Link>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          ) : (
             <div className="flex items-center gap-6">
               <Link to="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
               <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>

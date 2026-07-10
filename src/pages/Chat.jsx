@@ -220,21 +220,21 @@ It's been a while since you last talked. You're thinking about this person. Reac
           const result = await base44.integrations.Core.InvokeLLM({ prompt });
           const replyText = typeof result === 'string' ? result : result?.output || result?.response || JSON.stringify(result);
           const proactiveTempId = generateTempId();
-          const proactiveMsg = { _tempId: proactiveTempId, role: 'assistant', content: replyText.trim(), companion_id: companion.id };
-          const proactivePrevMessages = [...messages];
+          const proactiveMsg = { _tempId: proactiveTempId, role: 'assistant', content: replyText.trim(), companion_id: companion.id, status: 'sending' };
           setMessages(prev => [...prev, proactiveMsg]);
-          try {
-            const saved = await base44.entities.Message.create({ role: 'assistant', content: replyText.trim(), companion_id: companion.id });
-            setMessages(prev => prev.map(m => m._tempId === proactiveTempId ? { ...saved } : m));
-          } catch (err) {
-            console.error("Proactive message save failed:", err);
-            setMessages(proactivePrevMessages);
-            toast({
-              variant: "destructive",
-              title: "Message not sent",
-              description: "We couldn't deliver the message. Please try again.",
+          base44.entities.Message.create({ role: 'assistant', content: replyText.trim(), companion_id: companion.id })
+            .then((saved) => {
+              setMessages(prev => prev.map(m => m._tempId === proactiveTempId ? { ...saved } : m));
+            })
+            .catch((err) => {
+              console.error("Proactive message save failed:", err);
+              setMessages(prev => prev.map(m => m._tempId === proactiveTempId ? { ...m, status: 'error' } : m));
+              toast({
+                variant: "destructive",
+                title: "Message not sent",
+                description: "Tap retry to try again.",
+              });
             });
-          }
         } catch (err) {
           console.error(err);
         } finally {
@@ -302,8 +302,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
     // Show the user message instantly — local object URL for attached photos
     const localImageUrl = photoFile ? URL.createObjectURL(photoFile) : null;
     const userTempId = generateTempId();
-    const userMsg = { _tempId: userTempId, role: "user", content: text, companion_id: companion.id, image_url: localImageUrl };
-    const prevMessagesBeforeUser = [...messages];
+    const userMsg = { _tempId: userTempId, role: "user", content: text, companion_id: companion.id, image_url: localImageUrl, status: "sending" };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setThinking(true);
@@ -330,11 +329,11 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
         })
         .catch((err) => {
           console.error("Message save failed:", err);
-          setMessages(prevMessagesBeforeUser);
+          setMessages((prev) => prev.map((m) => (m._tempId === userTempId ? { ...m, status: "error" } : m)));
           toast({
             variant: "destructive",
             title: "Message not sent",
-            description: "Your message couldn't be delivered. Please try again.",
+            description: "Tap retry to try again.",
           });
         });
 
@@ -387,23 +386,23 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
         role: "assistant",
         content: replyText.trim(),
         companion_id: companion.id,
+        status: "sending",
       };
 
-      const prevMessagesBeforeReply = [...messages];
       setMessages((prev) => [...prev, reply]);
-      try {
-        const saved = await base44.entities.Message.create({ role: "assistant", content: replyText.trim(), companion_id: companion.id });
-        setMessages((prev) => prev.map((m) => (m._tempId === replyTempId ? { ...saved } : m)));
-      } catch (err) {
-        console.error("Reply save failed:", err);
-        setMessages(prevMessagesBeforeReply);
-        toast({
-          variant: "destructive",
-          title: "Reply not saved",
-          description: "We couldn't save the reply. Please try again.",
+      base44.entities.Message.create({ role: "assistant", content: replyText.trim(), companion_id: companion.id })
+        .then((saved) => {
+          setMessages((prev) => prev.map((m) => (m._tempId === replyTempId ? { ...saved } : m)));
+        })
+        .catch((err) => {
+          console.error("Reply save failed:", err);
+          setMessages((prev) => prev.map((m) => (m._tempId === replyTempId ? { ...m, status: "error" } : m)));
+          toast({
+            variant: "destructive",
+            title: "Reply not saved",
+            description: "Tap retry to try again.",
+          });
         });
-        throw err;
-      }
 
       // Maybe send a photo — selfie, together, or nothing
       const photoExchange = `Me: ${text || "[photo]"}${finalImageUrl ? " [photo]" : ""}\n${companion.name}: ${replyText.trim()}`;
@@ -418,21 +417,22 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
               content: photoDecision.caption || "",
               companion_id: companion.id,
               image_url: photoUrl,
+              status: "sending",
             };
-            const prevMessagesBeforePhoto = [...messages];
             setMessages((prev) => [...prev, photoMsg]);
-            try {
-              const saved = await base44.entities.Message.create({ role: "assistant", content: photoDecision.caption || "", companion_id: companion.id, image_url: photoUrl });
-              setMessages((prev) => prev.map((m) => (m._tempId === photoTempId ? { ...saved } : m)));
-            } catch (err) {
-              console.error("Photo message save failed:", err);
-              setMessages(prevMessagesBeforePhoto);
-              toast({
-                variant: "destructive",
-                title: "Photo not saved",
-                description: "The photo couldn't be delivered. Please try again.",
+            base44.entities.Message.create({ role: "assistant", content: photoDecision.caption || "", companion_id: companion.id, image_url: photoUrl })
+              .then((saved) => {
+                setMessages((prev) => prev.map((m) => (m._tempId === photoTempId ? { ...saved } : m)));
+              })
+              .catch((err) => {
+                console.error("Photo message save failed:", err);
+                setMessages((prev) => prev.map((m) => (m._tempId === photoTempId ? { ...m, status: "error" } : m)));
+                toast({
+                  variant: "destructive",
+                  title: "Photo not saved",
+                  description: "Tap retry to try again.",
+                });
               });
-            }
           }
         }
       });
@@ -466,6 +466,29 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
       return null;
     } finally {
       setThinking(false);
+    }
+  };
+
+  const handleRetry = async (tempId) => {
+    const msg = messages.find((m) => m._tempId === tempId);
+    if (!msg) return;
+    setMessages((prev) => prev.map((m) => (m._tempId === tempId ? { ...m, status: "sending" } : m)));
+    try {
+      const saved = await base44.entities.Message.create({
+        role: msg.role,
+        content: msg.content,
+        companion_id: msg.companion_id,
+        image_url: msg.image_url,
+      });
+      setMessages((prev) => prev.map((m) => (m._tempId === tempId ? { ...saved } : m)));
+    } catch (err) {
+      console.error("Retry failed:", err);
+      setMessages((prev) => prev.map((m) => (m._tempId === tempId ? { ...m, status: "error" } : m)));
+      toast({
+        variant: "destructive",
+        title: "Still not sent",
+        description: "Please try again in a moment.",
+      });
     }
   };
 
@@ -582,7 +605,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
           ) : (
             <>
               {messages.map((msg) => (
-                <MessageBubble key={msg.id || msg._tempId} message={msg} companionId={companion.id} />
+                <MessageBubble key={msg.id || msg._tempId} message={msg} companionId={companion.id} onRetry={handleRetry} />
               ))}
               {thinking && (
                 <div className="flex justify-start gap-2.5">

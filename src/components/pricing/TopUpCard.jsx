@@ -40,6 +40,7 @@ export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
                 onPurchase(pack.id);
               }}
               disabled={loading !== null}
+              aria-label={`Purchase ${pack.credits} credits for $${pack.price}`}
               className={`relative flex flex-col items-center gap-2 p-5 rounded-2xl border transition-all text-center disabled:opacity-50 ${
                 loading === pack.id
                   ? "border-primary bg-primary/5"
