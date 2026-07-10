@@ -61,7 +61,27 @@ Deno.serve(async (req) => {
           console.error('Avatar creation failed:', avatarErr);
         }
 
-        return Response.json({ companion_id: companionId, companion_name: companion.name });
+        // Add $19.90 starter credits to the user's balance
+        const STARTER_CREDIT = 19.90;
+        const existingSubs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+        if (existingSubs.length > 0) {
+          const sub = existingSubs[0];
+          const newBalance = (sub.credit_balance || 0) + STARTER_CREDIT;
+          await base44.entities.Subscription.update(sub.id, {
+            credit_balance: newBalance,
+            stripe_customer_id: session.customer?.toString() || sub.stripe_customer_id,
+          });
+        } else {
+          await base44.entities.Subscription.create({
+            tier: 'free',
+            video_minutes_limit: 0,
+            video_minutes_used: 0,
+            credit_balance: STARTER_CREDIT,
+            stripe_customer_id: session.customer?.toString() || null,
+          });
+        }
+
+        return Response.json({ companion_id: companionId, companion_name: companion.name, credit_added: STARTER_CREDIT });
       }
 
       const CREDIT_AMOUNTS = {

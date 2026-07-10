@@ -25,7 +25,7 @@ const ADDON_CONFIG = {
     '60min': { price: 899, name: 'Feature Session — 60 Minutes', description: 'Voice replies, selfie photos, and proactive check-ins', minutes: 60 },
   },
   custom_avatar: {
-    'single': { price: 4900, name: 'Custom Avatar Creation', description: 'Create a custom AI companion from your photo' },
+    'single': { price: 6890, name: 'Custom Avatar + Starter Credits', description: 'Create a custom AI companion from your photo ($49) + $19.90 starter credits' },
   },
 };
 
