@@ -286,7 +286,7 @@ export default function LiveAvatarView({ companion, onClose }) {
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
             <p className="text-sm text-muted-foreground">{companion.name} is getting ready…</p>
           </div>
-        ) : avatarProcessing || liveAvatarStatus === "processing" ? (
+        ) : avatarProcessing || liveAvatarStatus === "processing" || liveAvatarStatus === "pending_payment" ? (
           <div className="text-center max-w-sm">
             <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
               <Clock className="w-7 h-7 text-primary" />

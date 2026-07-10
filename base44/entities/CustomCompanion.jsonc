@@ -46,12 +46,13 @@
     "avatar_status": {
       "type": "string",
       "enum": [
+        "pending_payment",
         "processing",
         "active",
         "failed"
       ],
       "default": "processing",
-      "description": "Status of the custom LiveAvatar image avatar creation: processing (up to 24hrs), active (ready for video), failed"
+      "description": "Status of the custom LiveAvatar image avatar creation: pending_payment (awaiting $49 creation fee), processing (up to 24hrs), active (ready for video), failed"
     }
   },
   "required": [

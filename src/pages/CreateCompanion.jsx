@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Upload, X, Loader2, Sparkles, Crown, Lock } from "lucide-react";
+import { ArrowLeft, Upload, X, Loader2, Sparkles, DollarSign } from "lucide-react";
 
 const PERSONALITY_TEMPLATES = [
   {
@@ -42,22 +42,31 @@ export default function CreateCompanion() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState(null);
   const [dragOver, setDragOver] = useState(false);
-  const [subLoading, setSubLoading] = useState(true);
-  const [isPaid, setIsPaid] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const subRes = await base44.functions.invoke("getSubscription", {});
-        const tier = subRes?.data?.tier || "free";
-        setIsPaid(["plus", "pro", "vip"].includes(tier));
-      } catch {
-        setIsPaid(false);
-      } finally {
-        setSubLoading(false);
-      }
-    })();
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    if (sessionId) {
+      handleConfirmPayment(sessionId);
+    }
   }, []);
+
+  const handleConfirmPayment = async (sessionId) => {
+    setConfirming(true);
+    try {
+      const res = await base44.functions.invoke("confirmSubscription", { session_id: sessionId });
+      window.history.replaceState({}, "", "/create");
+      if (res.data?.companion_id) {
+        navigate(`/chat/custom-${res.data.companion_id}`);
+      } else {
+        setConfirming(false);
+      }
+    } catch (err) {
+      setError(err.message || "Payment confirmation failed");
+      setConfirming(false);
+    }
+  };
 
   const selectedTemplate = PERSONALITY_TEMPLATES.find((p) => p.id === personalityId);
 
@@ -90,7 +99,7 @@ export default function CreateCompanion() {
       const personality = customPersonality.trim() || selectedTemplate?.prompt;
       if (!personality) throw new Error("Please choose or write a personality");
 
-      // 2. Create the companion record
+      // 2. Create the companion record (pending payment)
       const companion = await base44.entities.CustomCompanion.create({
         name: name.trim(),
         tagline: tagline.trim() || "Custom companion",
@@ -100,27 +109,21 @@ export default function CreateCompanion() {
         status: "ready",
         source: "liveavatar",
         avatar_id: null,
-        avatar_status: "processing",
+        avatar_status: "pending_payment",
       });
 
-      // 3. Submit photo to LiveAvatar for By Image avatar creation (up to 24 hours)
-      try {
-        const avatarRes = await base44.functions.invoke("createLiveAvatar", {
-          image_url: imageUrl,
-          companion_name: name.trim(),
-          companion_id: companion.id,
-        });
-        if (avatarRes.data?.avatar_id) {
-          await base44.entities.CustomCompanion.update(companion.id, {
-            avatar_id: avatarRes.data.avatar_id,
-          });
-        }
-      } catch (e) {
-        // Avatar creation is best-effort — companion can still text chat immediately
-      }
+      // 3. Create Stripe checkout for $49
+      const checkoutRes = await base44.functions.invoke("createCheckout", {
+        addon: "custom_avatar",
+        duration: "single",
+        companion_id: companion.id,
+      });
 
-      // 4. Go straight to chat
-      navigate(`/chat/custom-${companion.id}`);
+      if (checkoutRes.data?.url) {
+        window.location.href = checkoutRes.data.url;
+      } else {
+        throw new Error("Failed to start checkout");
+      }
     } catch (err) {
       console.error(err);
       setError(err.message || "Something went wrong. Please try again.");
@@ -128,37 +131,12 @@ export default function CreateCompanion() {
     }
   };
 
-  if (subLoading) {
+  if (confirming) {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-      </div>
-    );
-  }
-
-  if (!isPaid) {
-    return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
-        <div className="max-w-md text-center">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
-            <Lock className="w-8 h-8 text-primary" />
-          </div>
-          <h1 className="font-heading text-2xl font-semibold mb-3">Celebrity Avatars</h1>
-          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-            Upload a photo of anyone — a celebrity, a crush, someone you miss — and bring them to life as a face-to-face AI companion you can chat and video call with.
-          </p>
-          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 mb-6 text-left">
-            <p className="text-sm font-medium mb-1 flex items-center gap-2">
-              <Crown className="w-4 h-4 text-primary" /> Available on Plus, Pro & VIP
-            </p>
-            <p className="text-xs text-muted-foreground">Starting at $59/month — includes text chat, voice replies, and face-to-face video with your custom avatar.</p>
-          </div>
-          <Link to="/pricing" className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity">
-            <Sparkles className="w-4 h-4" /> View Plans
-          </Link>
-          <button onClick={() => navigate("/")} className="block mx-auto mt-4 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Back to home
-          </button>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <p className="text-sm text-muted-foreground">Confirming your payment…</p>
         </div>
       </div>
     );
@@ -186,8 +164,12 @@ export default function CreateCompanion() {
         {step === 1 && (
           <div className="space-y-8">
             <div className="text-center">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
+                <DollarSign className="w-3.5 h-3.5 text-primary" />
+                <span className="text-xs font-medium text-primary">$49 per avatar</span>
+              </div>
               <h1 className="font-heading text-3xl font-semibold mb-2">Bring them to life</h1>
-              <p className="text-muted-foreground text-sm">Upload a photo and give them a name. They'll be ready to chat instantly.</p>
+              <p className="text-muted-foreground text-sm">Upload a photo and give them a name. They'll be ready to chat after a one-time creation fee.</p>
             </div>
 
             {/* Upload */}
@@ -271,10 +253,10 @@ export default function CreateCompanion() {
 
             {/* Info banner */}
             <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 flex items-start gap-3">
-              <Sparkles className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+              <DollarSign className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium mb-0.5">Text chat is instant · Video takes up to 24 hours</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{name || "Your companion"} will be available to text chat right away. Their face-to-face video avatar is custom-built from your photo — this takes up to 24 hours. You'll be able to start video once it's ready.</p>
+                <p className="text-sm font-medium mb-0.5">$49 creation fee · Text chat is instant · Video takes up to 24 hours</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">You'll be charged $49 to create {name || "your companion"}. They'll be available to text chat right away. Their face-to-face video avatar is custom-built from your photo — this takes up to 24 hours.</p>
               </div>
             </div>
 
@@ -286,9 +268,9 @@ export default function CreateCompanion() {
               <button onClick={handleCreate} disabled={creating || !canProceedStep2}
                 className="flex-1 px-6 py-3.5 rounded-full bg-primary text-primary-foreground font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
                 {creating ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Creating…</>
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting to payment…</>
                 ) : (
-                  <>Create & chat</>
+                  <><DollarSign className="w-4 h-4" /> Pay $49 & create</>
                 )}
               </button>
             </div>

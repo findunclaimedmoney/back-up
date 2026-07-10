@@ -24,6 +24,9 @@ const ADDON_CONFIG = {
     '30min': { price: 499, name: 'Feature Session — 30 Minutes', description: 'Voice replies, selfie photos, and proactive check-ins', minutes: 30 },
     '60min': { price: 899, name: 'Feature Session — 60 Minutes', description: 'Voice replies, selfie photos, and proactive check-ins', minutes: 60 },
   },
+  custom_avatar: {
+    'single': { price: 4900, name: 'Custom Avatar Creation', description: 'Create a custom AI companion from your photo' },
+  },
 };
 
 Deno.serve(async (req) => {
@@ -59,6 +62,12 @@ Deno.serve(async (req) => {
         }
       }
 
+      const isCustomAvatar = body.addon === 'custom_avatar';
+      const successUrl = isCustomAvatar
+        ? `${origin}/create?session_id={CHECKOUT_SESSION_ID}`
+        : `${origin}/pricing?session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = isCustomAvatar ? `${origin}/create` : `${origin}/pricing`;
+
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         line_items: [{
@@ -69,10 +78,10 @@ Deno.serve(async (req) => {
           },
           quantity: 1,
         }],
-        success_url: `${origin}/pricing?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/pricing`,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
         client_reference_id: user.id,
-        metadata: { type: 'addon', addon: body.addon, duration: body.duration, user_id: user.id },
+        metadata: { type: 'addon', addon: body.addon, duration: body.duration, user_id: user.id, ...(body.companion_id ? { companion_id: body.companion_id } : {}) },
       });
 
       return Response.json({ url: session.url });

@@ -34,6 +34,36 @@ Deno.serve(async (req) => {
       const addon = session.metadata.addon;
       const duration = session.metadata.duration;
 
+      // Custom avatar creation — trigger avatar processing, no credits added
+      if (addon === 'custom_avatar') {
+        const companionId = session.metadata?.companion_id;
+        if (!companionId) return Response.json({ error: 'Missing companion ID' }, { status: 400 });
+
+        const companion = await base44.entities.CustomCompanion.get(companionId);
+        if (!companion) return Response.json({ error: 'Companion not found' }, { status: 404 });
+
+        await base44.entities.CustomCompanion.update(companionId, {
+          avatar_status: 'processing',
+        });
+
+        try {
+          const avatarRes = await base44.functions.invoke('createLiveAvatar', {
+            image_url: companion.image_url,
+            companion_name: companion.name,
+            companion_id: companionId,
+          });
+          if (avatarRes.data?.avatar_id) {
+            await base44.entities.CustomCompanion.update(companionId, {
+              avatar_id: avatarRes.data.avatar_id,
+            });
+          }
+        } catch (avatarErr) {
+          console.error('Avatar creation failed:', avatarErr);
+        }
+
+        return Response.json({ companion_id: companionId, companion_name: companion.name });
+      }
+
       const CREDIT_AMOUNTS = {
         intimacy: { '15min': 4.00, '30min': 8.00, '60min': 15.00 },
         topup: { 'pack_5': 5.00, 'pack_10': 10.00, 'pack_25': 25.00, 'pack_50': 50.00 },
