@@ -121,7 +121,18 @@ Users can redeem promo codes on the Pricing page for free credits. Example: WELC
 
 export default function SupportChatWidget() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([{ role: "assistant", content: GREETING }]);
+  const STORAGE_KEY = "glimr_mia_support_chat";
+
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return [{ role: "assistant", content: GREETING }];
+  });
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const scrollRef = useRef(null);
@@ -131,6 +142,12 @@ export default function SupportChatWidget() {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, thinking]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    } catch {}
+  }, [messages]);
 
   const handleSendText = async (rawText) => {
     const text = rawText.trim();
