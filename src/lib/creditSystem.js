@@ -105,7 +105,7 @@ export const TIER_LABELS = {
 export const CREDIT_COSTS = {
   text_message: 0.05,
   video_minute: 0.10,
-  voice_reply: 0.02,
+  voice_reply: 0.04,
 };
 
 export const CONSUMPTION_ITEMS = [
@@ -125,7 +125,7 @@ export const CONSUMPTION_ITEMS = [
     key: "voice_reply",
     label: "Voice reply",
     cost: CREDIT_COSTS.voice_reply,
-    description: "AI-generated voice message from your companion",
+    description: "AI-generated voice message from your companion ($0.20 per reply)",
   },
 ];
 
