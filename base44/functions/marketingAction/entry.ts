@@ -298,6 +298,64 @@ Deno.serve(async (req) => {
         });
       }
 
+      case 'schedule_event': {
+        const { title, description, start_time, end_time } = body;
+        if (!title || !start_time) return Response.json({ error: 'title and start_time are required' }, { status: 400 });
+        const conn = await base44.asServiceRole.connectors.getConnection('googlecalendar');
+        const resp = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${conn.accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            summary: title,
+            description: description || '',
+            start: { dateTime: start_time },
+            end: { dateTime: end_time || new Date(new Date(start_time).getTime() + 60 * 60 * 1000).toISOString() },
+          }),
+        });
+        const data = await resp.json();
+        if (data.error) return Response.json({ error: data.error.message }, { status: 400 });
+        return Response.json({ success: true, event_id: data.id, event_link: data.htmlLink, message: `Scheduled "${title}" on your calendar` });
+      }
+
+      case 'list_calendar_events': {
+        const { max_results = 10 } = body;
+        const conn = await base44.asServiceRole.connectors.getConnection('googlecalendar');
+        const timeMin = new Date().toISOString();
+        const resp = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?maxResults=${max_results}&orderBy=startTime&singleEvents=true&timeMin=${timeMin}`, {
+          headers: { Authorization: `Bearer ${conn.accessToken}` },
+        });
+        const data = await resp.json();
+        if (data.error) return Response.json({ error: data.error.message }, { status: 400 });
+        return Response.json({ events: data.items || [], message: `Found ${(data.items || []).length} upcoming events` });
+      }
+
+      case 'sheets_append': {
+        const { spreadsheet_id, sheet_name = 'Sheet1', values } = body;
+        if (!spreadsheet_id || !values || !Array.isArray(values)) return Response.json({ error: 'spreadsheet_id and values[] are required' }, { status: 400 });
+        const conn = await base44.asServiceRole.connectors.getConnection('googlesheets');
+        const range = `${sheet_name}!A1`;
+        const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet_id}/values/${range}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${conn.accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ values: [values] }),
+        });
+        const data = await resp.json();
+        if (data.error) return Response.json({ error: data.error.message }, { status: 400 });
+        return Response.json({ success: true, updated_range: data.updates?.updatedRange, message: 'Row added to Google Sheet' });
+      }
+
+      case 'sheets_read': {
+        const { spreadsheet_id, range = 'Sheet1!A1:Z1000' } = body;
+        if (!spreadsheet_id) return Response.json({ error: 'spreadsheet_id is required' }, { status: 400 });
+        const conn = await base44.asServiceRole.connectors.getConnection('googlesheets');
+        const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet_id}/values/${range}`, {
+          headers: { Authorization: `Bearer ${conn.accessToken}` },
+        });
+        const data = await resp.json();
+        if (data.error) return Response.json({ error: data.error.message }, { status: 400 });
+        return Response.json({ rows: data.values || [], message: `Read ${(data.values || []).length} rows` });
+      }
+
       default:
         return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }
