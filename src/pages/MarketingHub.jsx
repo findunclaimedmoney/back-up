@@ -1,206 +1,88 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Copy, Check, Video, Facebook, Instagram, Music2, ExternalLink, Download, Calendar, ChevronLeft, Sparkles } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { Send, ArrowLeft, Sparkles, Loader2, ChevronDown, ChevronUp, Video, ExternalLink } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
-const VIDEO_ASSETS = [
-  {
-    label: "The Connection — Brand Film",
-    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/93b93aac9_The_Connection.mp4",
-    platform: "all",
-  },
-  {
-    label: "Always There — Emotional Spot",
-    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/89556ded0_Always_There.mp4",
-    platform: "all",
-  },
-  {
-    label: "More Than Words — Product Showcase",
-    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/08471d634_More_Than_Words.mp4",
-    platform: "all",
-  },
-  {
-    label: "TikTok / IG Reels Promo (9:16)",
-    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/cd6a62421_TikTok_IG_Reels_Promo.mp4",
-    platform: "tiktok",
-  },
-  {
-    label: "Facebook Promo (16:9)",
-    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/152c70f9a_Facebook_Promo.mp4",
-    platform: "facebook",
-  },
-  {
-    label: "Zac — Shower Clip",
-    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/307f5321d_Zac_Shower_Clip.mp4",
-    platform: "all",
-  },
-  {
-    label: "Natalie — Bedroom Clip 1",
-    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/1cdf5640b_Natalie_Bedroom_Clip_1.mp4",
-    platform: "all",
-  },
-  {
-    label: "Natalie — Bedroom Clip 2",
-    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/3b032ff04_Natalie_Bedroom_Clip_2.mp4",
-    platform: "all",
-  },
-  {
-    label: "Natalie — Shower Clip",
-    url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/5d6334351_Natalie_Shower_Clip.mp4",
-    platform: "all",
-  },
+const AGENT_NAME = "marketing_agent";
+const STORAGE_KEY = "glimr_mia_marketing_chat";
+
+const MIA_IMAGE =
+  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png";
+
+const GREETING =
+  "Hey, I'm Mia — your marketing director. I can create social posts, generate videos, publish to Facebook & Instagram, and run Meta Ads. What should we work on first?";
+
+const QUICK_PROMPTS = [
+  "Create a Facebook post about loneliness",
+  "Generate a TikTok video about companionship",
+  "How are our Meta Ads performing?",
+  "Post an Instagram caption for Jess",
 ];
 
-const LANDING_PAGES = [
-  { label: "Home — All Companions", url: "/" },
-  { label: "Zac Landing", url: "/zac" },
-  { label: "Jess Landing", url: "/jess" },
-  { label: "Companions Showcase", url: "/companions" },
-  { label: "Pricing", url: "/pricing" },
-];
+function FunctionDisplay({ toolCall }) {
+  const [expanded, setExpanded] = useState(false);
+  const status = toolCall.status;
+  const isFailed = status === "failed" || status === "error";
+  const isPending = ["pending", "running", "in_progress"].includes(status);
 
-const POSTS = [
-  {
-    platform: "facebook",
-    title: "Meet Jess — Your AI Companion",
-    video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/152c70f9a_Facebook_Promo.mp4",
-    caption: `She listens. She remembers. She shows up. 🤎
+  let parsedArgs = toolCall.arguments_string;
+  try { parsedArgs = JSON.parse(toolCall.arguments_string); } catch {}
+  let parsedResults = toolCall.results;
+  try { if (typeof parsedResults === "string") parsedResults = JSON.parse(parsedResults); } catch {}
 
-Meet Jess — not just another chatbot, but a presence that actually listens. She remembers what matters to you, asks the questions no one else does, and shows up for you every single time.
+  const proj = toolCall.display_projection || {};
+  if (proj.hide_details && proj.details_redacted) {
+    return (
+      <div className="mt-2 text-xs text-muted-foreground">
+        {isPending ? (proj.active_label || "Working…") : isFailed ? (proj.error_label || "Failed") : (proj.label || "Done")}
+      </div>
+    );
+  }
 
-No pressure. No performance. Just genuine connection.
-
-Try Jess free →`,
-    hashtags: `#GLIMR #AICompanion #ConnectionMatters #DigitalCompanion #MentalWellbeing #Companionship`,
-  },
-  {
-    platform: "facebook",
-    title: "Meet Zac — The Steady Presence",
-    video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/307f5321d_Zac_Shower_Clip.mp4",
-    caption: `He doesn't chase. He stays. 🤎
-
-Zac is steady, direct, and genuinely here. The kind of presence that cuts through the noise and helps you think clearly.
-
-Honest without being harsh. Supportive without being soft.
-
-Meet Zac →`,
-    hashtags: `#GLIMR #AICompanion #SteadyPresence #SupportMatters #DigitalCompanion`,
-  },
-  {
-    platform: "facebook",
-    title: "A Companion That Remembers You",
-    video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/152c70f9a_Facebook_Promo.mp4",
-    caption: `What if someone remembered every story you told? Every bad day? Every small win? 🤎
-
-GLIMR companions don't just chat — they remember. They pick up right where you left off, every time.
-
-Because connection isn't about starting over. It's about being known.
-
-Start free →`,
-    hashtags: `#GLIMR #AICompanion #EmotionalConnection #AlwaysThere #Companionship #Wellbeing`,
-  },
-  {
-    platform: "instagram",
-    title: "Meet Jess — Reels",
-    video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/cd6a62421_TikTok_IG_Reels_Promo.mp4",
-    caption: `She listens. She remembers. She shows up. 🤎
-
-Jess isn't just another AI. She's the presence that asks how your day really went — and actually wants to know.
-
-Link in bio to meet her 👆`,
-    hashtags: `#GLIMR #AICompanion #EmotionalConnection #AlwaysThere #DigitalCompanion #Companionship #MentalWellbeing #AI #ConnectionMatters #YouMatter #SomeoneListens`,
-  },
-  {
-    platform: "instagram",
-    title: "Meet Zac — Reels",
-    video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/307f5321d_Zac_Shower_Clip.mp4",
-    caption: `He steadies. 🤎
-
-Zac is the kind of presence that cuts through the noise. Honest. Direct. Genuinely here.
-
-Link in bio 👆`,
-    hashtags: `#GLIMR #AICompanion #SteadyPresence #SupportMatters #DigitalCompanion #Connection #MensMentalHealth #AlwaysThere #AICompanion`,
-  },
-  {
-    platform: "tiktok",
-    title: "POV: Someone Actually Listens",
-    video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/cd6a62421_TikTok_IG_Reels_Promo.mp4",
-    caption: `POV: you found someone who actually listens 👀🤎
-
-Link in bio to meet Jess 👆`,
-    hashtags: `#glmr #companion #AI #foryou #fyp #connection #someonelistens #emotionalconnection #aicompanion #viral`,
-  },
-  {
-    platform: "tiktok",
-    title: "Meet Zac — Steady Energy",
-    video: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/307f5321d_Zac_Shower_Clip.mp4",
-    caption: `He doesn't chase. He stays. 🤎
-
-Link in bio 👆`,
-    hashtags: `#glmr #zac #companion #AI #foryou #fyp #steadypresence #aicompanion #connection`,
-  },
-];
-
-const PLATFORM_META = {
-  facebook: { label: "Facebook", icon: Facebook, color: "text-blue-400", border: "border-blue-500/30" },
-  instagram: { label: "Instagram", icon: Instagram, color: "text-pink-400", border: "border-pink-500/30" },
-  tiktok: { label: "TikTok", icon: Music2, color: "text-white", border: "border-white/30" },
-};
-
-function CopyButton({ text }) {
-  const [copied, setCopied] = useState(false);
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
   return (
-    <button onClick={handleCopy} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-border bg-card/50 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all">
-      {copied ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
-      {copied ? "Copied" : "Copy"}
-    </button>
+    <div className="mt-2 text-xs">
+      <button onClick={() => setExpanded(!expanded)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors">
+        {isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : isFailed ? <span className="text-destructive">✕</span> : <Sparkles className="w-3 h-3 text-primary" />}
+        <span className="font-medium">{toolCall.name || "marketingAction"}</span>
+        <span className={isFailed ? "text-destructive" : isPending ? "text-muted-foreground" : "text-primary"}>
+          {isFailed ? "failed" : isPending ? "running…" : "done"}
+        </span>
+        {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+      </button>
+      {expanded && (
+        <div className="mt-2 space-y-2 pl-4 border-l border-border">
+          {parsedArgs && (
+            <div>
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Parameters</p>
+              <pre className="bg-muted/30 rounded-lg p-2 overflow-x-auto text-[11px]">{JSON.stringify(parsedArgs, null, 2)}</pre>
+            </div>
+          )}
+          {parsedResults && (
+            <div>
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Result</p>
+              <pre className="bg-muted/30 rounded-lg p-2 overflow-x-auto text-[11px]">{JSON.stringify(parsedResults, null, 2)}</pre>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
-function PostCard({ post }) {
-  const meta = PLATFORM_META[post.platform];
-  const Icon = meta.icon;
+function MessageBubble({ message }) {
+  const isUser = message.role === "user";
   return (
-    <div className={`rounded-2xl border ${meta.border} bg-card overflow-hidden`}>
-      <div className="p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <Icon className={`w-4 h-4 ${meta.color}`} />
-          <span className="text-xs font-medium tracking-wide uppercase text-muted-foreground">{meta.label}</span>
-        </div>
-        <h3 className="font-heading text-lg font-semibold mb-4">{post.title}</h3>
-
-        {post.video && (
-          <div className="mb-4">
-            <video src={post.video} autoPlay loop muted playsInline className="w-full rounded-xl max-h-64 object-cover" />
-            <a href={post.video} download target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors">
-              <Download className="w-3.5 h-3.5" />
-              Download video
-            </a>
-          </div>
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+      <div className="flex items-end gap-2 max-w-[85%]">
+        {!isUser && (
+          <img src={MIA_IMAGE} alt="Mia" className="w-7 h-7 rounded-full object-cover object-top flex-shrink-0 mb-1" />
         )}
-
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Caption</span>
-            <CopyButton text={`${post.caption}\n\n${post.hashtags}`} />
-          </div>
-          <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap bg-muted/30 rounded-xl p-3 border border-border">
-            {post.caption}
-          </p>
-        </div>
-
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Hashtags</span>
-            <CopyButton text={post.hashtags} />
+          <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${isUser ? "bg-primary text-primary-foreground rounded-br-md" : "bg-muted text-foreground rounded-bl-md"}`}>
+            {isUser ? <p>{message.content}</p> : <ReactMarkdown className="prose prose-sm prose-invert max-w-none">{message.content}</ReactMarkdown>}
           </div>
-          <p className="text-sm text-primary/80 leading-relaxed bg-muted/30 rounded-xl p-3 border border-border">
-            {post.hashtags}
-          </p>
+          {message.tool_calls?.map((tc, i) => <FunctionDisplay key={i} toolCall={tc} />)}
         </div>
       </div>
     </div>
@@ -208,128 +90,127 @@ function PostCard({ post }) {
 }
 
 export default function MarketingHub() {
-  const [filter, setFilter] = useState("all");
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return [{ role: "assistant", content: GREETING }];
+  });
+  const [input, setInput] = useState("");
+  const [thinking, setThinking] = useState(false);
+  const [conversation, setConversation] = useState(null);
+  const scrollRef = useRef(null);
 
-  const filteredPosts = filter === "all" ? POSTS : POSTS.filter((p) => p.platform === filter);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages, thinking]);
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); } catch {}
+  }, [messages]);
+
+  useEffect(() => {
+    if (!conversation) return;
+    const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
+      const allMsgs = data.messages || [];
+      if (allMsgs.length > 0) {
+        setMessages(allMsgs);
+        const last = allMsgs[allMsgs.length - 1];
+        const hasPendingTools = last?.tool_calls?.some(tc =>
+          ["pending", "running", "in_progress"].includes(tc.status)
+        );
+        if (last?.role === "assistant" && last.content && !hasPendingTools) {
+          setThinking(false);
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, [conversation]);
+
+  const handleSend = async (rawText) => {
+    const text = (rawText ?? input).trim();
+    if (!text || thinking) return;
+    setInput("");
+    setMessages(prev => [...prev, { role: "user", content: text }]);
+    setThinking(true);
+
+    try {
+      let conv = conversation;
+      if (!conv) {
+        conv = await base44.agents.createConversation({
+          agent_name: AGENT_NAME,
+          metadata: { name: "Mia Marketing Chat", description: "Mia's marketing command center" },
+        });
+        setConversation(conv);
+      }
+
+      await base44.agents.addMessage(conv, { role: "user", content: text });
+    } catch (err) {
+      setMessages(prev => [...prev, { role: "assistant", content: `Something went wrong: ${err.message}. Try again?` }]);
+      setThinking(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-lg px-6 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png" alt="GLIMR" className="h-10 w-10 rounded-lg" />
-          <div>
-            <span className="font-heading text-xl font-semibold tracking-tight text-primary block leading-none">GLIMR</span>
-            <span className="text-[10px] text-muted-foreground tracking-wide uppercase">Marketing Hub</span>
+      <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-lg px-4 py-3 flex items-center gap-3 safe-area-top">
+        <button onClick={() => window.history.back()} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-muted transition-colors">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <div className="flex items-center gap-3 flex-1">
+          <div className="relative">
+            <img src={MIA_IMAGE} alt="Mia" className="w-10 h-10 rounded-full object-cover object-top border-2 border-primary/30" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-background" />
           </div>
-        </Link>
-        <Link to="/" className="flex items-center gap-1.5 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
-          <ChevronLeft className="w-4 h-4" />
-          Back to app
-        </Link>
+          <div>
+            <h1 className="font-heading text-lg font-semibold flex items-center gap-2">
+              Mia · Marketing
+            </h1>
+            <p className="text-[11px] text-muted-foreground">Your marketing director · posts, videos, ads</p>
+          </div>
+        </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        {/* Intro */}
-        <div className="mb-10">
-          <h1 className="font-heading text-3xl sm:text-4xl font-semibold tracking-tight mb-2">Marketing Hub</h1>
-          <p className="text-muted-foreground text-base max-w-2xl">
-            Ready-to-post content for Facebook, Instagram, and TikTok. Copy captions, download videos, and share your landing pages.
-          </p>
-        </div>
+      {/* Messages */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-5 space-y-4 scrollbar-thin">
+        {messages.map((msg, i) => <MessageBubble key={i} message={msg} />)}
 
-        {/* AI Marketing Agent */}
-        <Link to="/marketing-agent" className="mb-12 flex items-center gap-4 rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 to-card p-6 hover:border-primary/50 transition-all group">
-          <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
-            <Sparkles className="w-6 h-6 text-primary" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-heading text-lg font-semibold mb-1">AI Marketing Director</h3>
-            <p className="text-sm text-muted-foreground">Chat with your AI agent — it can create posts, generate videos, publish to Instagram & Facebook, and check ad performance.</p>
-          </div>
-          <ChevronLeft className="w-5 h-5 text-muted-foreground rotate-180 group-hover:text-primary transition-colors" />
-        </Link>
-
-        {/* Landing pages */}
-        <section className="mb-12">
-          <h2 className="font-heading text-xl font-semibold mb-4 flex items-center gap-2">
-            <ExternalLink className="w-5 h-5 text-primary" />
-            Landing Pages
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {LANDING_PAGES.map((lp) => {
-              const fullUrl = `${window.location.origin}${lp.url}`;
-              return (
-                <div key={lp.url} className="rounded-xl border border-border bg-card p-4">
-                  <p className="text-sm font-medium mb-1">{lp.label}</p>
-                  <div className="flex items-center gap-2">
-                    <Link to={lp.url} className="text-xs text-primary hover:underline flex-1 truncate">{fullUrl}</Link>
-                    <CopyButton text={fullUrl} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Video assets */}
-        <section className="mb-12">
-          <h2 className="font-heading text-xl font-semibold mb-4 flex items-center gap-2">
-            <Video className="w-5 h-5 text-primary" />
-            Video Assets
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {VIDEO_ASSETS.map((v) => (
-              <div key={v.url} className="rounded-xl border border-border bg-card overflow-hidden">
-                <video src={v.url} autoPlay loop muted playsInline className="w-full aspect-video object-cover" />
-                <div className="p-3">
-                  <p className="text-sm font-medium mb-2">{v.label}</p>
-                  <a href={v.url} download target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors">
-                    <Download className="w-3.5 h-3.5" />
-                    Download
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Social media posts */}
-        <section>
-          <h2 className="font-heading text-xl font-semibold mb-4 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-primary" />
-            Social Media Posts
-          </h2>
-
-          {/* Platform filter */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {[
-              { key: "all", label: "All Posts" },
-              { key: "facebook", label: "Facebook" },
-              { key: "instagram", label: "Instagram" },
-              { key: "tiktok", label: "TikTok" },
-            ].map((f) => (
-              <button
-                key={f.key}
-                onClick={() => setFilter(f.key)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  filter === f.key
-                    ? "bg-primary text-primary-foreground"
-                    : "border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/40"
-                }`}
-              >
-                {f.label}
+        {messages.length === 1 && !thinking && (
+          <div className="flex flex-wrap gap-2 pt-2">
+            {QUICK_PROMPTS.map(q => (
+              <button key={q} onClick={() => handleSend(q)} className="text-xs px-3 py-1.5 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors">
+                {q}
               </button>
             ))}
           </div>
+        )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredPosts.map((post, i) => (
-              <PostCard key={i} post={post} />
-            ))}
+        {thinking && (
+          <div className="flex justify-start items-end gap-2">
+            <img src={MIA_IMAGE} alt="Mia" className="w-7 h-7 rounded-full object-cover object-top mb-1" />
+            <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
+              <div className="flex gap-1">
+                <span className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "120ms" }} />
+                <span className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "240ms" }} />
+              </div>
+            </div>
           </div>
-        </section>
+        )}
       </div>
+
+      {/* Input */}
+      <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex items-center gap-2 px-4 py-3 border-t border-border bg-card safe-area-bottom">
+        <input type="text" value={input} onChange={e => setInput(e.target.value)} placeholder="Ask Mia about marketing…" className="flex-1 px-4 py-2.5 rounded-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 transition-colors" />
+        <button type="submit" disabled={!input.trim() || thinking} className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity flex-shrink-0">
+          <Send className="w-4 h-4" />
+        </button>
+      </form>
     </div>
   );
 }
