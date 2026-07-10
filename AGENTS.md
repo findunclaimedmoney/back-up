@@ -1,5 +1,18 @@
 # AGENTS.md
 
+## ⚠️ MANDATORY: Read Handover File First
+
+**Before responding to ANY user inquiry or message, you MUST read `docs/HANDOVER.md` in full.**
+
+This file contains the complete project state, recent session work, active issues, architecture overview, and conventions specific to the GLIMR app. It is the single source of truth for getting up to speed.
+
+1. Read `docs/HANDOVER.md` completely
+2. Check the `<current_page>` in developer comments for the file the user is viewing
+3. Read any files directly related to the user's question
+4. Only then respond to the user
+
+Do NOT skip this step. The user has explicitly requested that every new agent reads this file before responding.
+
 ## Project Context
 
 This is a Base44 app repository. Treat it as user-owned application code, keep changes focused on the user's request, and preserve existing project conventions.
