@@ -42,7 +42,14 @@ export default function MobileShell() {
     return () => vv.removeEventListener("resize", onChange);
   }, []);
 
-  if (!isMobile) return <Outlet />;
+  if (!isMobile) {
+    return (
+      <>
+        <Outlet />
+        <SupportChatWidget />
+      </>
+    );
+  }
 
   const rootView = ROOT_PATHS.has(location.pathname);
   const skipHeader = shouldSkipHeader(location.pathname);
