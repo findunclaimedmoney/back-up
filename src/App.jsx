@@ -30,6 +30,7 @@ const CryptoPayment = React.lazy(() => import('./pages/CryptoPayment'));
 const CompanionLanding = React.lazy(() => import('./pages/CompanionLanding'));
 const CompanionApply = React.lazy(() => import('./pages/CompanionApply'));
 const CompanionHub = React.lazy(() => import('./pages/CompanionHub'));
+const PromoAdmin = React.lazy(() => import('./pages/PromoAdmin'));
 const HealthCheck = React.lazy(() => import('./pages/HealthCheck'));
 const MoonPayReturn = React.lazy(() => import('./pages/MoonPayReturn'));
 const Legal = React.lazy(() => import('./pages/Legal'));
@@ -94,6 +95,7 @@ const AuthenticatedApp = () => {
         <Route path="/companions" element={<CompanionLanding />} />
         <Route path="/companion-apply" element={<CompanionApply />} />
         <Route path="/companion-hub" element={<CompanionHub />} />
+        <Route path="/promo-admin" element={<PromoAdmin />} />
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
           <Route path="/chat/:companionId" element={<Chat />} />
           <Route path="/games" element={<Games />} />

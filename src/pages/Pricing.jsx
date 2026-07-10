@@ -9,6 +9,7 @@ import IntimacyAddOnCard from "@/components/pricing/IntimacyAddOnCard";
 import TopUpCard from "@/components/pricing/TopUpCard";
 import CreditUsageCard from "@/components/pricing/CreditUsageCard";
 import CryptoPaymentModal from "@/components/pricing/CryptoPaymentModal";
+import PromoCodeRedeemer from "@/components/pricing/PromoCodeRedeemer";
 import PullToRefresh from "@/components/PullToRefresh";
 
 export default function Pricing() {
@@ -263,6 +264,12 @@ export default function Pricing() {
                 monthlyCredits={monthlyCredits}
                 creditsUsed={creditsUsed}
               />
+            </div>
+          </section>
+
+          <section className="px-6 pb-12">
+            <div className="max-w-3xl mx-auto">
+              <PromoCodeRedeemer onRedeemed={loadSubscription} />
             </div>
           </section>
 
