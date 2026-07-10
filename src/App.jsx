@@ -31,6 +31,7 @@ const CompanionLanding = React.lazy(() => import('./pages/CompanionLanding'));
 const CompanionApply = React.lazy(() => import('./pages/CompanionApply'));
 const CompanionHub = React.lazy(() => import('./pages/CompanionHub'));
 const HealthCheck = React.lazy(() => import('./pages/HealthCheck'));
+const MoonPayReturn = React.lazy(() => import('./pages/MoonPayReturn'));
 const Legal = React.lazy(() => import('./pages/Legal'));
 const Account = React.lazy(() => import('./pages/Account'));
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -82,6 +83,7 @@ const AuthenticatedApp = () => {
         <Route path="/avatar-landing" element={<AvatarLanding />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/health" element={<HealthCheck />} />
+        <Route path="/moonpay" element={<MoonPayReturn />} />
         <Route path="/legal" element={<Legal />} />
         <Route path="/account" element={<Account />} />
         <Route path="/vip-lounge" element={<VipLounge />} />
