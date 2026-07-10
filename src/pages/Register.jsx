@@ -60,6 +60,8 @@ export default function Register() {
           console.error("Referral tracking failed:", err);
         }
       }
+      // Notify admin of the new signup (fire-and-forget)
+      base44.functions.invoke("notifyAdminSignup", { user_email: email }).catch(() => {});
       window.location.href = "/";
     } catch (err) {
       setError(err.message || "Invalid verification code");
