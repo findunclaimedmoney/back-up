@@ -20,7 +20,14 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const subs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+    // First try user-scoped (created_by_id matches current user — normal Stripe checkout flow)
+    let subs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+
+    // Fallback: admin-granted subscriptions are created by the service role,
+    // so created_by_id won't match — check owner_user_id instead
+    if (subs.length === 0) {
+      subs = await base44.asServiceRole.entities.Subscription.filter({ owner_user_id: user.id });
+    }
 
     if (subs.length === 0) {
       return Response.json({

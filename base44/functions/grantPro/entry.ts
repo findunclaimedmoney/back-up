@@ -32,13 +32,11 @@ Deno.serve(async (req) => {
 
     // Use service role so we can grant to a specific user (manual payments, admin overrides)
     const targetId = target_user_id || user.id;
-    const existing = await base44.asServiceRole.entities.Subscription.filter({ created_by_id: targetId });
+    const existing = await base44.asServiceRole.entities.Subscription.filter({ owner_user_id: targetId });
     if (existing.length > 0) {
-      await base44.asServiceRole.entities.Subscription.update(existing[0].id, payload);
+      await base44.asServiceRole.entities.Subscription.update(existing[0].id, { ...payload, owner_user_id: targetId });
     } else {
-      // Create via service role, then patch ownership to the target user
-      const created = await base44.asServiceRole.entities.Subscription.create(payload);
-      await base44.asServiceRole.entities.Subscription.updateMany({ id: created.id }, { $set: { created_by_id: targetId } });
+      await base44.asServiceRole.entities.Subscription.create({ ...payload, owner_user_id: targetId });
     }
 
     return Response.json({ success: true, tier, target_user_id: targetId, ...cfg });
