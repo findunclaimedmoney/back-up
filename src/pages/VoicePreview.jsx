@@ -6,12 +6,10 @@ import { Link } from "react-router-dom";
 const SAMPLE_LINE = "Hey… I was just thinking about you. How's your day been? I'm here whenever you want to talk.";
 
 const VOICES = [
-  { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah", desc: "Mature, Reassuring, Confident", accent: "American" },
-  { id: "cgSgspJ2msm6clMCkdW9", name: "Jessica", desc: "Playful, Bright, Warm", accent: "American" },
-  { id: "hpp4J3VqNfWAUOO0d1Us", name: "Bella", desc: "Professional, Bright, Warm", accent: "American" },
-  { id: "pFZP5JQG7iQjIQuC4Bku", name: "Lily", desc: "Velvety Actress", accent: "British" },
-  { id: "FGY2WhTYpPnrIDTdsKH5", name: "Laura", desc: "Enthusiast, Quirky Attitude", accent: "American" },
-  { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah", desc: "Mature, Reassuring, Confident", accent: "American" },
+  { id: "ThT5KcBeYPX3keUQqHPh", name: "Dorothy", desc: "Pleasant, Warm, Gentle", accent: "British" },
+  { id: "Xb7hH8MSUJpSbSDYk0k2", name: "Alice", desc: "Confident, Clear, Warm", accent: "British" },
+  { id: "pFZP5JQG7iQjIQuC4Bku", name: "Lily", desc: "Raspy, Velvety, Calm", accent: "British" },
+  { id: "XB0fDUnXU5powFXDhCwa", name: "Charlotte", desc: "Warm, Seductive, Alluring", accent: "English-Swedish" },
 ];
 
 export default function VoicePreview() {

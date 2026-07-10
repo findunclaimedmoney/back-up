@@ -1,12 +1,12 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
-// Map companion IDs to specific ElevenLabs voice IDs
+// Map companion IDs to specific ElevenLabs voice IDs (British/Australian accents only)
 const ELEVENLABS_VOICE_MAP = {
-  zac: 'pQfZu2BaypIFGTAcfvg5',
-  jess: 'cgSgspJ2msm6clMCkdW9',      // Jessica — Playful, Bright, Warm
-  mia: 'FGY2WhTYpPnrIDTdsKH5',       // Laura — Enthusiast, Quirky
-  luna: 'EXAVITQu4vr4xnSDxMaL',      // Sarah — Mature, Reassuring, Calm
-  sophie: 'hpp4J3VqNfWAUOO0d1Us',    // Bella — Professional, Bright, Warm
+  zac: 'onwK4e9ZLuTAKqWW03F9',       // Daniel — Deep, British, middle-aged male
+  jess: 'ThT5KcBeYPX3keUQqHPh',      // Dorothy — Pleasant, young, British female
+  mia: 'Xb7hH8MSUJpSbSDYk0k2',       // Alice — Confident, British female
+  luna: 'pFZP5JQG7iQjIQuC4Bku',      // Lily — Raspy, calm, British female
+  sophie: 'XB0fDUnXU5powFXDhCwa',    // Charlotte — Warm, English-Swedish female
 };
 
 Deno.serve(async (req) => {
