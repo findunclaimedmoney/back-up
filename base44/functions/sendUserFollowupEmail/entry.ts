@@ -7,7 +7,13 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { user_id, goal } = body;
 
-    const user = await base44.asServiceRole.entities.User.get(user_id);
+    let user;
+    if (user_id) {
+      user = await base44.asServiceRole.entities.User.get(user_id);
+    } else if (body.user_email) {
+      const users = await base44.asServiceRole.entities.User.filter({ email: body.user_email });
+      user = users[0];
+    }
     if (!user || !user.email) return Response.json({ error: 'User not found' }, { status: 404 });
 
     // Get their subscription and activity

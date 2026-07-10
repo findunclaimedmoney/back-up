@@ -98,6 +98,22 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
       setAuthChecked(true);
+
+      // If this is a brand-new account (created in the last 5 minutes),
+      // fire admin notification + Mia's welcome email (catches Google signups too)
+      if (currentUser?.id && currentUser?.created_date) {
+        const ageMs = Date.now() - new Date(currentUser.created_date).getTime();
+        if (ageMs < 5 * 60 * 1000) {
+          base44.functions.invoke("notifyAdminSignup", {
+            user_email: currentUser.email,
+            user_name: currentUser.full_name,
+          }).catch(() => {});
+          base44.functions.invoke("sendUserFollowupEmail", {
+            user_id: currentUser.id,
+            goal: "They just signed up. Welcome them warmly to GLIMR, introduce them to the companions, and encourage them to start their first conversation. Mention it's free to start chatting. Keep it warm, genuine, and not salesy."
+          }).catch(() => {});
+        }
+      }
     } catch (error) {
       console.error('User auth check failed:', error);
       setIsLoadingAuth(false);

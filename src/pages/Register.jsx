@@ -62,6 +62,11 @@ export default function Register() {
       }
       // Notify admin of the new signup (fire-and-forget)
       base44.functions.invoke("notifyAdminSignup", { user_email: email }).catch(() => {});
+      // Have Mia reach out to the new user with a welcome email (fire-and-forget)
+      base44.functions.invoke("sendUserFollowupEmail", {
+        user_email: email,
+        goal: "They just signed up moments ago. Welcome them to GLIMR warmly. Tell them they can start chatting with a companion for free right now — no credit card needed. Mention there are companions like Mia, Jess, Luna, Sophie, Natalie, and Zac. Keep it short, warm, and inviting — like a friend welcoming them to something special.",
+      }).catch(() => {});
       window.location.href = "/";
     } catch (err) {
       setError(err.message || "Invalid verification code");
