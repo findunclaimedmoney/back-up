@@ -6,7 +6,7 @@ const FEATURES = [
   {
     icon: Sparkles,
     title: "Celebrity Avatar",
-    cost: "$68.90 minimum",
+    cost: "$99 one-time",
     desc: "Upload anyone's photo & bring them to life",
     to: "/create",
     cta: "Create avatar",

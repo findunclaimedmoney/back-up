@@ -166,10 +166,10 @@ export default function CreateCompanion() {
             <div className="text-center">
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
                 <DollarSign className="w-3.5 h-3.5 text-primary" />
-                <span className="text-xs font-medium text-primary">$68.90 minimum</span>
+                <span className="text-xs font-medium text-primary">$99 one-time</span>
               </div>
               <h1 className="font-heading text-3xl font-semibold mb-2">Bring them to life</h1>
-              <p className="text-muted-foreground text-sm">Upload a photo and give them a name. $49 avatar creation + $19.90 starter credits = $68.90 total.</p>
+              <p className="text-muted-foreground text-sm">Upload a photo and give them a name. $49 avatar creation + $19.90 starter credits + margin = $99 total.</p>
             </div>
 
             {/* Upload */}
@@ -255,8 +255,8 @@ export default function CreateCompanion() {
             <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 flex items-start gap-3">
               <DollarSign className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium mb-0.5">$68.90 total · $49 avatar + $19.90 credits · Text chat is instant · Video takes up to 24 hours</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">You'll be charged $68.90 to create {name || "your companion"} — $49 for the avatar and $19.90 added as credits to start chatting. They'll be available to text chat right away. Their face-to-face video avatar is custom-built from your photo — this takes up to 24 hours.</p>
+                <p className="text-sm font-medium mb-0.5">$99 total · $49 avatar + $19.90 credits · Text chat is instant · Video takes up to 24 hours</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">You'll be charged $99 to create {name || "your companion"} — $49 for the avatar, $19.90 added as starter credits, and you're ready to chat. They'll be available to text chat right away. Their face-to-face video avatar is custom-built from your photo — this takes up to 24 hours.</p>
               </div>
             </div>
 
@@ -270,7 +270,7 @@ export default function CreateCompanion() {
                 {creating ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /> Redirecting to payment…</>
                 ) : (
-                  <><DollarSign className="w-4 h-4" /> Pay $68.90 & create</>
+                  <><DollarSign className="w-4 h-4" /> Pay $99 & create</>
                 )}
               </button>
             </div>
