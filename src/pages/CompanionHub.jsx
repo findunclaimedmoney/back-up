@@ -19,6 +19,7 @@ import { useGoBack } from "@/hooks/useGoBack";
 import { buildReferralLink } from "@/lib/companionStructure";
 import OnlyFansCard from "@/components/companion/OnlyFansCard";
 import CompanionStatsBar from "@/components/companion/CompanionStatsBar";
+import SocialCaptions from "@/components/companion/SocialCaptions";
 
 const STATUS_STYLES = {
   pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
@@ -173,6 +174,9 @@ export default function CompanionHub() {
 
         {/* OnlyFans link */}
         <OnlyFansCard companion={companion} />
+
+        {/* Social media captions */}
+        <SocialCaptions referralLink={refLink} />
 
         {/* Stats overview */}
         <CompanionStatsBar summary={summary} />
