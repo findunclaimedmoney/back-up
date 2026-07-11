@@ -77,7 +77,7 @@ export const COMPANIONS = [
   },
   {
     id: "zac2",
-    name: "Zac",
+    name: "Blake",
     tagline: "He captivates",
     subtitle: "Confident, magnetic, and dangerously charming",
     description:

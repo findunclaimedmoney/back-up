@@ -59,7 +59,7 @@ export default function ZacConfidentLanding() {
               <span className="text-xs font-medium tracking-[0.2em] uppercase text-primary">Your companion</span>
             </div>
             <h1 className="font-heading text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight text-white mb-3">
-              Zac
+              Blake
             </h1>
             <p className="text-lg sm:text-xl text-white/80 font-light leading-relaxed max-w-lg mb-6">
               Confident, magnetic, and dangerously charming. He doesn't chase — he draws you in. And when the charm drops, you'll see what's underneath.
@@ -80,7 +80,7 @@ export default function ZacConfidentLanding() {
               to="/chat/zac2"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
             >
-              Talk with Zac
+              Talk with Blake
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -158,7 +158,7 @@ export default function ZacConfidentLanding() {
             to="/chat/zac2"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
           >
-            Start talking with Zac
+            Start talking with Blake
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
