@@ -30,7 +30,7 @@ function VideoCard({ videos, name, tagline, description, accentText, chatId }) {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-contain"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
