@@ -5,6 +5,7 @@ import { SOFIA_SYSTEM_PROMPT } from "@/lib/sofiaBrain";
 import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
 import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
 import { JESSICA_SYSTEM_PROMPT } from "@/lib/jessicaBrain";
+import { base44 } from "@/api/base44Client";
 
 
 const withEmotions = (prompt) => `${prompt}\n\n${MIA_EMOTION_STATES_PROMPT}`;
@@ -118,3 +119,29 @@ export const COMPANIONS = [
 ];
 
 export const getCompanion = (id) => COMPANIONS.find((c) => c.id === id);
+
+export async function getCompanionAsync(id) {
+  const staticCompanion = getCompanion(id);
+  if (staticCompanion) return staticCompanion;
+  try {
+    const configs = await base44.entities.CompanionConfig.filter({ companion_id: id, status: "active" });
+    if (configs.length > 0) {
+      const c = configs[0];
+      return {
+        id: c.companion_id,
+        name: c.name,
+        tagline: c.tagline,
+        subtitle: c.subtitle || c.tagline,
+        description: c.bio || "",
+        image: c.image_url,
+        accent: c.accent || "from-amber-500/20 to-rose-500/10",
+        personality: c.personality,
+        voice_id: c.voice_id || null,
+        avatar_id: c.avatar_id || null,
+      };
+    }
+  } catch (e) {
+    console.error("Failed to load companion config:", e);
+  }
+  return null;
+}

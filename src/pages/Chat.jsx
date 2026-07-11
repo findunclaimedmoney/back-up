@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { getCompanion } from "@/lib/companions";
+import { getCompanion, getCompanionAsync } from "@/lib/companions";
 import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
 import PullToRefresh from "@/components/PullToRefresh";
@@ -122,6 +122,8 @@ const navigate = useNavigate();
   const staticCompanion = getCompanion(companionId);
   const [customCompanion, setCustomCompanion] = useState(null);
   const [customLoading, setCustomLoading] = useState(isCustom);
+  const [entityCompanion, setEntityCompanion] = useState(null);
+  const [entityLoading, setEntityLoading] = useState(!staticCompanion && !isCustom);
 
   useEffect(() => {
     if (!isCustom) return;
@@ -132,6 +134,17 @@ const navigate = useNavigate();
       .finally(() => { if (!cancelled) setCustomLoading(false); });
     return () => { cancelled = true; };
   }, [companionId]);
+
+  // Load from CompanionConfig entity if not in the static array
+  useEffect(() => {
+    if (staticCompanion || isCustom) { setEntityLoading(false); return; }
+    let cancelled = false;
+    getCompanionAsync(companionId)
+      .then((c) => { if (!cancelled) setEntityCompanion(c); })
+      .catch((err) => { console.error(err); })
+      .finally(() => { if (!cancelled) setEntityLoading(false); });
+    return () => { cancelled = true; };
+  }, [companionId, staticCompanion, isCustom]);
 
   const companion = useMemo(() => {
     if (isCustom) {
@@ -149,8 +162,8 @@ const navigate = useNavigate();
         avatar_status: customCompanion.avatar_status || null,
       };
     }
-    return staticCompanion;
-  }, [isCustom, customCompanion, companionId, staticCompanion]);
+    return staticCompanion || entityCompanion;
+  }, [isCustom, customCompanion, companionId, staticCompanion, entityCompanion]);
 
   const [messages, setMessages] = useState([]);
   const [memories, setMemories] = useState([]);
@@ -164,7 +177,7 @@ const navigate = useNavigate();
   const [dailyLimit, setDailyLimit] = useState(null);
 
   const loadData = useCallback(async () => {
-    if (!companion) { if (!(isCustom && customLoading)) setLoading(false); return; }
+    if (!companion) { if (!(isCustom && customLoading) && !entityLoading) setLoading(false); return; }
 
     setLoading(true);
 
@@ -287,7 +300,7 @@ It's been a while since you last talked. You're thinking about this person. Reac
   }, [messages, thinking]);
 
   if (!companion) {
-    if (isCustom && customLoading) {
+    if ((isCustom && customLoading) || entityLoading) {
       return (
         <div className="flex flex-col items-center justify-center h-screen bg-background text-foreground">
           <div className="w-6 h-6 border-2 border-muted border-t-primary rounded-full animate-spin" />
