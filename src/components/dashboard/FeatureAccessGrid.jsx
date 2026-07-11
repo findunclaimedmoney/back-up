@@ -22,7 +22,7 @@ const FEATURES = [
   {
     icon: Mic,
     title: "Voice replies",
-    cost: "0.02 credits / reply",
+    cost: "0.04 credits / reply",
     desc: "Hear your companion speak to you",
     to: "/companions",
     cta: "Listen",

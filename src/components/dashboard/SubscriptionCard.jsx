@@ -22,6 +22,11 @@ export default function SubscriptionCard({ tier, creditBalance, monthlyCredits, 
         </span>
       </div>
 
+      {/* Plain English explainer */}
+      <p className="text-xs text-muted-foreground leading-relaxed mb-3 px-1">
+        Credits are how you pay for everything — texting, video calls, and voice replies. Your {TIER_LABELS[tier] || tier} plan gives you {monthlyCredits} credits each month. Use them on any companion, any time.
+      </p>
+
       {/* Credit balance — prominent */}
       <div className="rounded-2xl bg-primary/10 border border-primary/20 p-4 mb-4">
         <div className="flex items-center gap-2 mb-2">
