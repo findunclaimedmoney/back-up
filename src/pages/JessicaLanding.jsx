@@ -6,7 +6,7 @@ import { useGoBack } from "@/hooks/useGoBack";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 const JESSICA_IMAGE =
-  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/22caf2b40_photo_2026-07-03_17-00-35.jpg";
+  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/739a1409e_generated_image.png";
 
 const TRAITS = [
   { icon: MessageCircle, label: "Text chat" },
