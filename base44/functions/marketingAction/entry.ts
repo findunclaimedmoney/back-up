@@ -129,7 +129,18 @@ Deno.serve(async (req) => {
         const createData = await createResp.json();
         if (createData.error) return Response.json({ error: createData.error.message }, { status: 400 });
 
-        // Step 2: Publish
+        // Step 2: Wait for media container to finish processing
+        let mediaReady = false;
+        for (let i = 0; i < 10; i++) {
+          await new Promise(r => setTimeout(r, 3000));
+          const statusResp = await fetch(`https://graph.instagram.com/v25.0/${createData.id}?fields=status&access_token=${conn.accessToken}`);
+          const statusData = await statusResp.json();
+          if (statusData.status === 'FINISHED') { mediaReady = true; break; }
+          if (statusData.status === 'ERROR') return Response.json({ error: 'Instagram media processing failed' }, { status: 400 });
+        }
+        if (!mediaReady) return Response.json({ error: 'Instagram media processing timed out — try again' }, { status: 400 });
+
+        // Step 3: Publish
         const publishResp = await fetch(`https://graph.instagram.com/v25.0/${igUserId}/media_publish`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
