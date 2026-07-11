@@ -31,7 +31,13 @@ GLIMR is a companionship platform addressing loneliness through AI companions th
 
 Return 3 DIFFERENT campaign angles (e.g. emotional story about loneliness, feature highlight like voice/video chat, social proof/testimonial style, question-based engagement, seasonal). Each must feel distinct.
 
-Return JSON with: campaigns array, each having "topic" (short label), "video_description" (detailed visual prompt for a 6-second vertical video — be specific about subject, setting, mood, lighting), "video_style" (visual mood descriptor).`,
+CRITICAL VIDEO RULES:
+- The video_description MUST be written entirely in English.
+- The video MUST be directly relevant to GLIMR — show human connection, companionship, someone using their phone to chat, a warm presence, or the feeling of being heard and remembered.
+- Do NOT generate abstract, random, or off-brand visuals. Every video must clearly relate to companionship, loneliness, or digital connection.
+- Include on-screen or scene context that evokes GLIMR's brand: warm lighting, a person feeling less alone, a phone screen with a conversation, etc.
+
+Return JSON with: campaigns array, each having "topic" (short label, in English), "video_description" (detailed visual prompt for a 6-second vertical video — in English, GLIMR-relevant, specific about subject, setting, mood, lighting), "video_style" (visual mood descriptor, in English).`,
       response_json_schema: {
         type: 'object',
         properties: {
@@ -80,7 +86,7 @@ Return JSON: caption (the post text), hashtags (space-separated with #), cta (fi
       let videoUrl = null;
       try {
         const video = await base44.asServiceRole.integrations.Core.GenerateVideo({
-          prompt: `${camp.video_description}. Style: ${camp.video_style}`,
+          prompt: `Create a 6-second vertical marketing video for GLIMR, an AI companionship platform that fights loneliness. English language only. ${camp.video_description}. Style: ${camp.video_style}. The video must clearly relate to human connection, companionship, or feeling less alone. Do not include any text or speech in languages other than English.`,
           duration: 6,
           aspect_ratio: '9:16',
         });
