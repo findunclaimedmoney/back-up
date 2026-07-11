@@ -109,8 +109,8 @@ Deno.serve(async (req) => {
       }
 
       case 'publish_instagram': {
-        const { caption, image_url } = body;
-        if (!image_url) return Response.json({ error: 'Instagram requires an image_url' }, { status: 400 });
+        const { caption, image_url, video_url } = body;
+        if (!image_url && !video_url) return Response.json({ error: 'Instagram requires an image_url or video_url' }, { status: 400 });
 
         const conn = await base44.asServiceRole.connectors.getConnection('instagram');
         const userResp = await fetch(`https://graph.instagram.com/me?fields=id,username&access_token=${conn.accessToken}`);
@@ -120,18 +120,22 @@ Deno.serve(async (req) => {
 
         const igUserId = userData.id;
 
-        // Step 1: Create media container
+        // Step 1: Create media container (REELS for video, IMAGE for photo)
+        const containerBody = video_url
+          ? { media_type: 'REELS', video_url, caption, access_token: conn.accessToken }
+          : { image_url, caption, access_token: conn.accessToken };
         const createResp = await fetch(`https://graph.instagram.com/v25.0/${igUserId}/media`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image_url, caption, access_token: conn.accessToken }),
+          body: JSON.stringify(containerBody),
         });
         const createData = await createResp.json();
         if (createData.error) return Response.json({ error: createData.error.message }, { status: 400 });
 
-        // Step 2: Wait for media container to finish processing
+        // Step 2: Wait for media container to finish processing (video takes longer)
+        const maxPolls = video_url ? 20 : 10;
         let mediaReady = false;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < maxPolls; i++) {
           await new Promise(r => setTimeout(r, 3000));
           const statusResp = await fetch(`https://graph.instagram.com/v25.0/${createData.id}?fields=status&access_token=${conn.accessToken}`);
           const statusData = await statusResp.json();
@@ -198,22 +202,26 @@ Deno.serve(async (req) => {
 
         const igPromise = (async () => {
           try {
-            if (!image_url) return { error: 'Instagram requires an image_url' };
+            if (!image_url && !video_url) return { error: 'Instagram requires an image_url or video_url' };
             const conn = await base44.asServiceRole.connectors.getConnection('instagram');
             const userResp = await fetch(`https://graph.instagram.com/me?fields=id,username&access_token=${conn.accessToken}`);
             const userData = await userResp.json();
             if (userData.error) return { error: userData.error.message };
 
+            const igContainer = video_url
+              ? { media_type: 'REELS', video_url, caption: message, access_token: conn.accessToken }
+              : { image_url, caption: message, access_token: conn.accessToken };
             const createResp = await fetch(`https://graph.instagram.com/v25.0/${userData.id}/media`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ image_url, caption: message, access_token: conn.accessToken }),
+              body: JSON.stringify(igContainer),
             });
             const createData = await createResp.json();
             if (createData.error) return { error: createData.error.message };
 
+            const maxPolls = video_url ? 20 : 10;
             let mediaReady = false;
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < maxPolls; i++) {
               await new Promise(r => setTimeout(r, 3000));
               const statusResp = await fetch(`https://graph.instagram.com/v25.0/${createData.id}?fields=status&access_token=${conn.accessToken}`);
               const statusData = await statusResp.json();
