@@ -66,6 +66,11 @@
       ],
       "default": "pending",
       "description": "Overall twin subscription status"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes"
     }
   },
   "required": [

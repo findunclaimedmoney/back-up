@@ -50,6 +50,11 @@
     "admin_notes": {
       "type": "string",
       "description": "Internal notes for the production team"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes"
     }
   },
   "required": [

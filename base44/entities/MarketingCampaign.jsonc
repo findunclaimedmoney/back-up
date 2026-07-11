@@ -59,6 +59,11 @@
       "type": "string",
       "format": "date",
       "description": "Date this campaign batch was generated"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes"
     }
   },
   "required": [

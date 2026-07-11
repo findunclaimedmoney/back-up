@@ -30,6 +30,11 @@
       ],
       "default": "intimacy",
       "description": "Whether this was an intimacy session or standard video"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes"
     }
   },
   "required": [

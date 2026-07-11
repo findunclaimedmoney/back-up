@@ -27,6 +27,11 @@
       ],
       "default": "fact",
       "description": "What kind of memory this is: fact (concrete info), emotion (how they felt), intimacy (vulnerable/shared), moment (a specific exchange that mattered), pattern (recurring theme), arc (how something has changed over time), sensory (the texture of a moment)"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes"
     }
   },
   "required": [

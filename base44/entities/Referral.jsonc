@@ -32,6 +32,11 @@
       "type": "number",
       "default": 0,
       "description": "Running total of affiliate commission earned from this referral"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes"
     }
   },
   "required": [

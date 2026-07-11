@@ -97,6 +97,11 @@
     "owner_user_id": {
       "type": "string",
       "description": "User ID this subscription belongs to (used when granted by admin/service role)"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes"
     }
   },
   "required": [],

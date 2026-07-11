@@ -14,6 +14,11 @@
     "purpose": {
       "type": "string",
       "description": "What this config entry is for"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes"
     }
   },
   "required": [

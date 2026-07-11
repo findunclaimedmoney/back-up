@@ -41,6 +41,8 @@ const FbOffer = React.lazy(() => import('./pages/FbOffer'));
 const VoicePreview = React.lazy(() => import('./pages/VoicePreview'));
 const CampaignReview = React.lazy(() => import('./pages/CampaignReview'));
 const Account = React.lazy(() => import('./pages/Account'));
+const About = React.lazy(() => import('./pages/About'));
+const Contact = React.lazy(() => import('./pages/Contact'));
 import ProtectedRoute from '@/components/ProtectedRoute';
 import MobileShell from '@/components/MobileShell';
 
@@ -96,6 +98,8 @@ const AuthenticatedApp = () => {
       <Route path="/voice-preview" element={<VoicePreview />} />
       <Route path="/campaign-review" element={<CampaignReview />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/vip-lounge" element={<VipLounge />} />
         <Route path="/zac" element={<ZacConfidentLanding />} />
         <Route path="/zac-steady" element={<ZacLanding />} />

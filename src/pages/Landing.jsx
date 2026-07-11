@@ -335,6 +335,12 @@ export default function Landing() {
             <a href="mailto:admin@glimr.com.au" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
               Support: admin@glimr.com.au
             </a>
+            <Link to="/about" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
+              About
+            </Link>
+            <Link to="/contact" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Contact
+            </Link>
             <Link to="/legal" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
               Privacy & Terms
             </Link>
