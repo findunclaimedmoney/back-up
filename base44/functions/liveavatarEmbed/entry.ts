@@ -42,12 +42,13 @@ Deno.serve(async (req) => {
       let intimacyActive = sub.intimacy_package || false;
 
       // Free/Plus users: deduct from credit_balance to activate intimacy session
+      // 1 credit = 1 video minute (A$5 consumer price, A$2.33 cost)
       if (!intimacyActive && body.duration) {
-        const SESSION_PRICES = { 15: 75.00, 30: 150.00, 60: 300.00 };
-        const sessionPrice = SESSION_PRICES[body.duration];
+        const VALID_DURATIONS = [15, 30, 60];
+        const creditsNeeded = body.duration; // 1 credit per minute
         const balance = sub.credit_balance || 0;
 
-        if (!sessionPrice) {
+        if (!VALID_DURATIONS.includes(body.duration)) {
           return Response.json({
             error: 'Invalid duration',
             message: 'Select a valid session duration (15, 30, or 60 minutes).',
@@ -56,32 +57,32 @@ Deno.serve(async (req) => {
           }, { status: 400 });
         }
 
-        if (balance < sessionPrice) {
+        if (balance < creditsNeeded) {
           return Response.json({
             error: 'Insufficient credit',
-            message: `You need A$${sessionPrice.toFixed(2)} for a ${body.duration}-minute session. You have A$${balance.toFixed(2)} in credit.`,
+            message: `You need ${creditsNeeded} credits for a ${body.duration}-minute session. You have ${balance.toFixed(1)} credits.`,
             upgrade_required: true,
             credit_balance: balance,
-            session_price: sessionPrice,
+            credits_needed: creditsNeeded,
           }, { status: 402 });
         }
 
         intimacyActive = true;
         sessionMaxDuration = body.duration * 60;
-        const newBalance = balance - sessionPrice;
+        const newBalance = balance - creditsNeeded;
 
         await base44.entities.Subscription.update(sub.id, {
           credit_balance: newBalance,
           video_minutes_used: (sub.video_minutes_used || 0) + body.duration,
         });
 
-        // Low balance email notification
-        if (newBalance < 75.00) {
+        // Low balance email notification (less than 1 session = 15 credits)
+        if (newBalance < 15) {
           try {
             await base44.integrations.Core.SendEmail({
               to: user.email,
               subject: 'Your GLIMR credit is running low',
-              body: `Hi ${user.full_name || 'there'},\n\nYour intimate session with ${companion_name} just started, and your remaining credit balance is A$${newBalance.toFixed(2)}.\n\nThat's not enough for another session. Top up anytime to keep the connection going:\nhttps://glimr.app/pricing\n\nWith warmth,\nThe GLIMR Team`,
+              body: `Hi ${user.full_name || 'there'},\n\nYour session with ${companion_name} just started, and your remaining credit balance is ${newBalance.toFixed(1)} credits.\n\nThat's not enough for another 15-minute session. Top up anytime to keep the connection going:\nhttps://glimr.app/pricing\n\nWith warmth,\nThe GLIMR Team`,
             });
           } catch (e) {
             // Best-effort notification
@@ -205,7 +206,7 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       url: embedData.data.url,
       session_duration_seconds: sessionMaxDuration,
       credit_balance: remainingBalance,
-      low_balance_warning: remainingBalance < 75.00,
+      low_balance_warning: remainingBalance < 15,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
