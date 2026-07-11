@@ -6,6 +6,7 @@ import { TIER_CREDITS } from "@/lib/creditSystem";
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import FeatureAccessGrid from "@/components/dashboard/FeatureAccessGrid";
 import CompanionShortcuts from "@/components/dashboard/CompanionShortcuts";
+import IntimacyJourneyBanner from "@/components/dashboard/IntimacyJourneyBanner";
 import PullToRefresh from "@/components/PullToRefresh";
 
 
@@ -108,6 +109,12 @@ export default function CustomerDashboard() {
             creditsUsed={creditsUsed}
             videoMinutesLimit={sub?.video_minutes_limit || 0}
             videoMinutesUsed={sub?.video_minutes_used || 0}
+          />
+
+          {/* Intimacy journey */}
+          <IntimacyJourneyBanner
+            videoMinutesUsed={sub?.video_minutes_used || 0}
+            intimacyPackage={sub?.intimacy_package || false}
           />
 
           {/* Feature access */}

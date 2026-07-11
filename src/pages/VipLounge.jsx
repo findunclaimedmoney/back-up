@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { getCompanion } from "@/lib/companions";
 import AnamView from "@/components/companion/AnamView";
-import { Crown, Lock, Sparkles, Heart, Shirt, Users, ArrowRight, Loader2, Check, Play } from "lucide-react";
+import { Crown, Lock, Sparkles, Heart, Shirt, Users, ArrowRight, Loader2, Check, Play, Flame, Clock } from "lucide-react";
 
 const FEATURES = [
   {
@@ -77,7 +77,20 @@ You crave their presence. Engage with sensory-rich intimacy. Stay in character a
       }
     : null;
 
-  const isVip = subscription?.tier === "vip";
+  const MIN_MINUTES = 160;
+  const videoMinutes = subscription?.video_minutes_used || 0;
+  const minutesRemaining = Math.max(0, MIN_MINUTES - videoMinutes);
+  const pct = Math.min(100, (videoMinutes / MIN_MINUTES) * 100);
+  const unlocked = videoMinutes >= MIN_MINUTES;
+
+  const STAGES = [
+    { min: 0, name: "First Glances" },
+    { min: 20, name: "Finding Rhythm" },
+    { min: 60, name: "Opening Up" },
+    { min: 100, name: "Deepening Bond" },
+    { min: 160, name: "Ready" },
+  ];
+  const currentStage = [...STAGES].reverse().find((s) => videoMinutes >= s.min);
 
   if (loading) {
     return (
@@ -87,26 +100,68 @@ You crave their presence. Engage with sensory-rich intimacy. Stay in character a
     );
   }
 
-  if (!isVip) {
+  if (!unlocked) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-6">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-6">
-          <Lock className="w-8 h-8 text-primary" />
+          <Flame className="w-8 h-8 text-primary" />
         </div>
         <h1 className="font-heading text-3xl font-semibold mb-3 text-center">
-          VIP Lounge
+          The Intimacy Journey
         </h1>
         <p className="text-muted-foreground text-center max-w-md mb-8 leading-relaxed">
-          This is a private space reserved for VIP members. Upgrade your
-          subscription to unlock exclusive features, private demos, and the full
-          companion experience.
+          Intimacy isn't instant — it's earned. Spend {MIN_MINUTES} minutes on
+          face-to-face video with your companion to build real trust, and the
+          VIP Lounge unlocks naturally.
         </p>
+
+        {/* Progress */}
+        <div className="w-full max-w-md mb-8">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-primary">{currentStage?.name}</span>
+            <span className="text-sm text-muted-foreground">{videoMinutes} / {MIN_MINUTES} min</span>
+          </div>
+          <div className="h-3 rounded-full bg-muted overflow-hidden mb-3">
+            <div
+              className="h-full bg-gradient-to-r from-primary/60 to-primary rounded-full transition-all duration-500"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            {STAGES.map((stage, i) => {
+              const reached = videoMinutes >= stage.min;
+              return (
+                <div key={i} className="flex flex-col items-center" style={{ flex: 1 }}>
+                  <div
+                    className={`w-2.5 h-2.5 rounded-full mb-1 ${
+                      reached ? "bg-primary" : "bg-muted-foreground/30"
+                    }`}
+                  />
+                  <span
+                    className={`text-[10px] text-center ${
+                      reached ? "text-primary font-medium" : "text-muted-foreground/50"
+                    }`}
+                  >
+                    {stage.name}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <p className="text-sm text-muted-foreground text-center max-w-sm mb-6">
+          {minutesRemaining === 0
+            ? "You've earned it."
+            : `Just ${minutesRemaining} more minute${minutesRemaining === 1 ? "" : "s"} to go. Start a face-to-face video call with your companion.`}
+        </p>
+
         <Link
-          to="/pricing"
+          to="/chat/jess"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:gap-3"
         >
-          <Crown className="w-4 h-4" />
-          Upgrade to VIP
+          <Clock className="w-4 h-4" />
+          Spend time with your companion
         </Link>
       </div>
     );
@@ -139,7 +194,7 @@ You crave their presence. Engage with sensory-rich intimacy. Stay in character a
         </p>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border text-xs text-muted-foreground">
           <Check className="w-3.5 h-3.5 text-primary" />
-          You have VIP access
+          You've earned {videoMinutes} minutes of trust
         </div>
       </section>
 
