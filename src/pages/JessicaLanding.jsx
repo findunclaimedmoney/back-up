@@ -51,7 +51,7 @@ export default function JessicaLanding() {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover object-top sm:object-center"
+          className="absolute inset-0 w-full h-full object-contain"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-background/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent" />
