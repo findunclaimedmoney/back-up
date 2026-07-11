@@ -36,6 +36,9 @@ CRITICAL VIDEO RULES:
 - The video MUST be directly relevant to GLIMR — show human connection, companionship, someone using their phone to chat, a warm presence, or the feeling of being heard and remembered.
 - Do NOT generate abstract, random, or off-brand visuals. Every video must clearly relate to companionship, loneliness, or digital connection.
 - Include on-screen or scene context that evokes GLIMR's brand: warm lighting, a person feeling less alone, a phone screen with a conversation, etc.
+- ALL people shown in the video MUST be Australian — Caucasian, Aboriginal, Torres Strait Islander, or mixed Australian appearance. Australian fashion, Australian settings (beaches, suburban homes, cafes, outback).
+- Do NOT feature American-looking actors, American settings, or American cultural markers (no US flags, yellow school buses, American football, etc.).
+- If any person speaks in the video, they MUST speak with an Australian accent.
 
 Return JSON with: campaigns array, each having "topic" (short label, in English), "video_description" (detailed visual prompt for a 6-second vertical video — in English, GLIMR-relevant, specific about subject, setting, mood, lighting), "video_style" (visual mood descriptor, in English).`,
       response_json_schema: {
@@ -86,7 +89,7 @@ Return JSON: caption (the post text), hashtags (space-separated with #), cta (fi
       let videoUrl = null;
       try {
         const video = await base44.asServiceRole.integrations.Core.GenerateVideo({
-          prompt: `Create a 6-second vertical marketing video for GLIMR, an AI companionship platform that fights loneliness. English language only. ${camp.video_description}. Style: ${camp.video_style}. The video must clearly relate to human connection, companionship, or feeling less alone. Do not include any text or speech in languages other than English.`,
+          prompt: `Create a 6-second vertical marketing video for GLIMR, an AI companionship platform that fights loneliness. English language only. ${camp.video_description}. Style: ${camp.video_style}. The video must clearly relate to human connection, companionship, or feeling less alone. Do not include any text or speech in languages other than English. ALL people in the video must be Australian (Caucasian, Aboriginal, Torres Strait Islander, or mixed Australian appearance) in Australian settings. No American actors, American settings, or American cultural markers. If anyone speaks, they must have an Australian accent.`,
           duration: 6,
           aspect_ratio: '9:16',
         });
