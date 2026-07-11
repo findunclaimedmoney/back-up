@@ -168,7 +168,7 @@ export default function Features() {
         </div>
         {creditBalance > 0 && (
           <div className="max-w-3xl mx-auto mt-6 text-center text-sm text-muted-foreground">
-            Your credit balance: <span className="text-foreground font-medium">${creditBalance.toFixed(2)}</span>
+            Your credit balance: <span className="text-foreground font-medium">{creditBalance.toFixed(1)} credits</span>
           </div>
         )}
       </section>

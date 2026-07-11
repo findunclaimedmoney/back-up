@@ -88,9 +88,9 @@ Deno.serve(async (req) => {
       redeemed_user_ids: [...redeemedIds, user.id]
     });
 
-    const newBalance = sub.id
-      ? (sub.credit_balance || 0) + promo.credit_amount
-      : promo.credit_amount;
+    const newBalance = subs.length === 0
+      ? promo.credit_amount
+      : (sub.credit_balance || 0) + promo.credit_amount;
 
     return Response.json({
       success: true,

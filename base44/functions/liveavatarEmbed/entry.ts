@@ -19,7 +19,12 @@ Deno.serve(async (req) => {
     if (!apiKey) return Response.json({ error: 'LiveAvatar API key not configured' }, { status: 500 });
 
     // --- Subscription & Intimacy Layer ---
-    const subs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+    // First try user-scoped (created_by_id matches — normal Stripe checkout flow)
+    let subs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+    // Fallback: admin/service-role-granted subscriptions use owner_user_id
+    if (subs.length === 0) {
+      subs = await base44.asServiceRole.entities.Subscription.filter({ owner_user_id: user.id });
+    }
     const sub = subs[0];
 
     let effectivePersonality = personality;
@@ -199,7 +204,10 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
     }
 
     // Fetch updated balance after any credit deduction
-    const updatedSubs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+    let updatedSubs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+    if (updatedSubs.length === 0) {
+      updatedSubs = await base44.asServiceRole.entities.Subscription.filter({ owner_user_id: user.id });
+    }
     const remainingBalance = updatedSubs[0]?.credit_balance ?? 0;
 
     return Response.json({
