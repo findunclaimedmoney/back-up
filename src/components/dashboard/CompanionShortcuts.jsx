@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 export default function CompanionShortcuts({ customCompanions = [] }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-      {COMPANIONS.map((c) => (
+      {COMPANIONS.filter((c) => c.id === "jess").map((c) => (
         <Link
           key={c.id}
           to={`/chat/${c.id}`}
