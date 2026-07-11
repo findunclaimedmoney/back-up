@@ -7,7 +7,7 @@ import ChatInput from "@/components/companion/ChatInput";
 import PullToRefresh from "@/components/PullToRefresh";
 import { ArrowLeft, Video, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
-import AnamView from "@/components/companion/AnamView";
+import LiveAvatarView from "@/components/companion/LiveAvatarView";
 import { decidePhotoAction, generateCompanionPhoto } from "@/lib/companionPhotos";
 import { getDeviceFingerprint } from "@/lib/deviceFingerprint";
 import { useGoBack } from "@/hooks/useGoBack";
@@ -682,7 +682,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
 
       {/* Face-to-face video */}
       {videoMode && (
-        <AnamView companion={companion} onClose={() => setVideoMode(false)} />
+        <LiveAvatarView companion={companion} onClose={() => setVideoMode(false)} />
       )}
     </div>
   );
