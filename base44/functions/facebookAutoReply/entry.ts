@@ -121,12 +121,17 @@ Write your reply (plain text, no markdown, no quotes):`,
           }
         }
 
-        // Send the reply
+        // Send the reply — use the sender's PSID, not the conversation thread ID
+        const senderId = latestMessage?.from?.id;
+        if (!senderId) {
+          errors.push(`Could not determine sender ID for conversation ${conv.id}`);
+          continue;
+        }
         const sendRes = await fetch(`${FB_API}/${pageId}/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            recipient: { id: conv.id },
+            recipient: { id: senderId },
             message: { text: replyText },
             messaging_type: 'RESPONSE',
             access_token: pageToken,
