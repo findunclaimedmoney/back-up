@@ -8,26 +8,31 @@ Deno.serve(async (req) => {
     if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const stripeKey = Deno.env.get('STRIPE_API_KEY');
-    const currentSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
+    const keyPrefix = stripeKey ? stripeKey.substring(0, 8) : 'NOT SET';
+    const isLiveKey = stripeKey ? stripeKey.startsWith('sk_live_') : false;
+    const isTestKey = stripeKey ? stripeKey.startsWith('sk_test_') : false;
 
-    // List all webhook endpoints
-    const webhookRes = await fetch('https://api.stripe.com/v1/webhook_endpoints?limit=20', {
+    // Get account details
+    const acctRes = await fetch('https://api.stripe.com/v1/account', {
       headers: { 'Authorization': `Bearer ${stripeKey}` },
     });
-    const webhookData = await webhookRes.json();
+    const acct = await acctRes.json();
 
     return Response.json({
-      current_stored_secret_prefix: currentSecret ? currentSecret.substring(0, 12) + '...' : 'NOT SET',
-      webhook_endpoints: (webhookData.data || []).map(ep => ({
-        id: ep.id,
-        url: ep.url,
-        status: ep.status,
-        enabled_events: ep.enabled_events,
-        api_version: ep.api_version,
-        description: ep.description,
-        secret_prefix: ep.secret ? ep.secret.substring(0, 12) + '...' : null,
-        matches_stored_secret: ep.secret && currentSecret ? ep.secret === currentSecret : false,
-      })),
+      key_prefix: keyPrefix,
+      is_live_key: isLiveKey,
+      is_test_key: isTestKey,
+      mode: isLiveKey ? 'LIVE' : isTestKey ? 'TEST' : 'UNKNOWN',
+      account: {
+        id: acct.id,
+        business_name: acct.business_name?.name || acct.settings?.dashboard?.display_name,
+        email: acct.email,
+        country: acct.country,
+        default_currency: acct.default_currency,
+        charges_enabled: acct.charges_enabled,
+        payouts_enabled: acct.payouts_enabled,
+        details_submitted: acct.details_submitted,
+      },
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
