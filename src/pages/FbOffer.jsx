@@ -53,6 +53,16 @@ export default function FbOffer() {
         <div className="rounded-3xl border border-primary/30 bg-card overflow-hidden">
           {/* Banner */}
           <div className="bg-primary/10 px-6 py-8 text-center">
+            <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-primary/20">
+              <video
+                src="https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/14f0062f2_Jesss_Engaging_Greeting.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
             <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
               <Gift className="w-8 h-8 text-primary" />
             </div>
