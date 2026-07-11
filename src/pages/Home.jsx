@@ -22,5 +22,5 @@ export default function Home() {
     );
   }
 
-  return <Navigate to="/monica" replace />;
+  return <Navigate to="/jessica" replace />;
 }
