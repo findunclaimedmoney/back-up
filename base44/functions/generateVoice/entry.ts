@@ -7,7 +7,6 @@ const ELEVENLABS_VOICE_MAP = {
   mia: 'Xb7hH8MSUJpSbSDYk0k2',       // Alice — Confident, British female
   luna: 'pFZP5JQG7iQjIQuC4Bku',      // Lily — Raspy, calm, British female
   sophie: 'XB0fDUnXU5powFXDhCwa',    // Charlotte — Warm, English-Swedish female
-  natalie: 'XB0fDUnXU5powFXDhCwa',    // Charlotte — Warm, nurturing female (shares Sophie's voice)
 };
 
 Deno.serve(async (req) => {

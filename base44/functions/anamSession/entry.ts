@@ -159,12 +159,20 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
       }
     }
 
+    // If still no avatar, list avatars directly
+    if (!avatarId) {
+      const avatarsRes = await fetch(`${ANAM_API}/avatars`, { headers });
+      const avatarsData = await avatarsRes.json();
+      const avatarsList = avatarsData.data || [];
+      const firstAvatar = avatarsList.find((a) => a.id);
+      avatarId = firstAvatar?.id;
+    }
+
     if (!avatarId) {
       return Response.json({
-        error: 'Video not available',
-        message: `${companion_name} doesn't have a video avatar yet. Try Mia, Zac, or Natalie — they're ready for face-to-face.`,
-        available_companions: ['Mia', 'Zac', 'Natalie'],
-      }, { status: 404 });
+        error: 'No avatars available',
+        message: 'No Anam avatars found. Create one at lab.anam.ai.'
+      }, { status: 500 });
     }
 
     // If still no llmId, list LLMs and pick first

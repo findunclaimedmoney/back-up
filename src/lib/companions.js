@@ -2,7 +2,7 @@ import { MIA_EMOTIONAL_SYSTEM_PROMPT, MIA_EMOTION_STATES_PROMPT } from "@/lib/mi
 import { ZAC_SYSTEM_PROMPT } from "@/lib/zacBrain";
 import { SOFIA_SYSTEM_PROMPT } from "@/lib/sofiaBrain";
 import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
-import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
+
 
 const withEmotions = (prompt) => `${prompt}\n\n${MIA_EMOTION_STATES_PROMPT}`;
 
@@ -59,20 +59,6 @@ export const COMPANIONS = [
     personality: withEmotions(SOFIA_SYSTEM_PROMPT),
     avatar_id: null,
   },
-  {
-    id: "natalie",
-    name: "Natalie",
-    tagline: "She comforts",
-    subtitle: "Warm, nurturing, and effortlessly safe",
-    description:
-      "Natalie is the person you come to when you need to unwind and let your guard down. She notices when you're carrying tension and gently helps you release it.",
-    image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/47d34d2c5_generated_image.png",
-    accent: "from-rose-500/20 to-amber-500/10",
-    personality: withEmotions(NATALIE_SYSTEM_PROMPT),
-    avatar_id: null,
-  },
-
   {
     id: "zac",
     name: "Zac",
