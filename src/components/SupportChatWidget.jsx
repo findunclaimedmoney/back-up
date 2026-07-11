@@ -119,11 +119,8 @@ Users can redeem promo codes on the Pricing page for free credits. Example: WELC
 - If someone is confused about credits: "1 credit equals $5. You use credits for video ($0.50/min), voice replies ($0.20), and text messages ($0.25). Your monthly tier includes credits, and you can top up anytime."
 - Don't be pushy. You genuinely care about connection; pricing is just the practical bit.`;
 
-const PROACTIVE_DISMISS_KEY = "glimr_mia_proactive_dismissed";
-
 export default function SupportChatWidget() {
   const [open, setOpen] = useState(false);
-  const [showProactive, setShowProactive] = useState(false);
   const STORAGE_KEY = "glimr_mia_support_chat";
 
   // Floating drag state — lets the user move the open panel around the screen
@@ -176,24 +173,6 @@ export default function SupportChatWidget() {
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const scrollRef = useRef(null);
-
-  // Proactive greeting — appears after 5s if chat isn't open and user hasn't dismissed it this session
-  useEffect(() => {
-    if (open) {
-      setShowProactive(false);
-      return;
-    }
-    const dismissed = sessionStorage.getItem(PROACTIVE_DISMISS_KEY);
-    if (dismissed) return;
-    const timer = setTimeout(() => setShowProactive(true), 5000);
-    return () => clearTimeout(timer);
-  }, [open]);
-
-  const dismissProactive = (e) => {
-    e.stopPropagation();
-    setShowProactive(false);
-    sessionStorage.setItem(PROACTIVE_DISMISS_KEY, "1");
-  };
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -258,50 +237,21 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
 
   return (
     <>
-      {/* Floating bubble + proactive greeting */}
+      {/* Floating button */}
       {!open && (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-          {/* Proactive speech bubble */}
-          {showProactive && (
-            <div
-              className="relative max-w-[280px] cursor-pointer rounded-3xl bg-card border border-border shadow-2xl overflow-hidden animate-in"
-              onClick={() => { setOpen(true); setShowProactive(false); }}
-              style={{ animation: "slideInUp 0.4s ease-out" }}
-            >
-              <button
-                onClick={dismissProactive}
-                className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-black/60 transition-colors"
-              >
-                <X className="w-3 h-3" />
-              </button>
-              <div className="flex items-start gap-3 p-4 pr-9">
-                <img src={MIA_IMAGE} alt="Mia" className="w-11 h-11 rounded-full object-cover object-top flex-shrink-0" />
-                <div>
-                  <p className="text-xs font-bold text-primary mb-0.5">Mia</p>
-                  <p className="text-sm text-foreground leading-relaxed">
-                    Hey! Is there anything you'd like me to help you with? I'm right here whenever you need me. 💛
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-          <button
-            onClick={() => setOpen(true)}
-            className="flex items-center gap-2 pl-3 pr-5 py-3 rounded-full bg-primary text-primary-foreground shadow-2xl hover:opacity-90 transition-all"
-          >
-            <div className="relative">
-              <img src={MIA_IMAGE} alt="Mia" className="w-8 h-8 rounded-full object-cover object-top" />
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-primary" />
-            </div>
-            <div className="text-left">
-              <p className="text-xs font-bold leading-none">Need help?</p>
-              <p className="text-[10px] opacity-70 leading-none mt-0.5">Mia · 24/7 support</p>
-            </div>
-          </button>
-        </div>
+        <button
+          onClick={() => setOpen(true)}
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground shadow-2xl hover:opacity-90 transition-all"
+        >
+          <div className="relative flex items-center">
+            <MessageCircle className="w-5 h-5" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-green-400 border-2 border-primary" />
+          </div>
+          <span className="text-sm font-semibold">Customer Support Live</span>
+        </button>
       )}
 
-      {/* Chat panel — draggable via header */}
+      {/* Chat panel */}
       {open && (
         <div
           ref={panelRef}

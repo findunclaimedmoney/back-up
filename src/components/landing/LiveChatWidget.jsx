@@ -199,20 +199,17 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
 
   return (
     <>
-      {/* Floating bubble */}
+      {/* Floating button */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 pl-3 pr-5 py-3 rounded-full bg-[#1946D2] text-white shadow-2xl hover:bg-[#1538A8] transition-all group"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-[#1946D2] text-white shadow-2xl hover:bg-[#1538A8] transition-all"
         >
-          <div className="relative">
-            <img src={MIA_IMAGE} alt="Mia" className="w-8 h-8 rounded-full object-cover object-top" />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-[#1946D2]" />
+          <div className="relative flex items-center">
+            <MessageCircle className="w-5 h-5" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-green-400 border-2 border-[#1946D2]" />
           </div>
-          <div className="text-left">
-            <p className="text-xs font-bold leading-none">Mia is online</p>
-            <p className="text-[10px] text-white/70 leading-none mt-0.5">Chat 24/7</p>
-          </div>
+          <span className="text-sm font-semibold">Customer Support Live</span>
         </button>
       )}
 
