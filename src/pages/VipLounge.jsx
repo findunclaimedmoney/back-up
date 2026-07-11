@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { getCompanion } from "@/lib/companions";
-import AnamView from "@/components/companion/AnamView";
+import LiveAvatarView from "@/components/companion/LiveAvatarView";
 import { Crown, Lock, Sparkles, Heart, Shirt, Users, ArrowRight, Loader2, Check, Play, Flame, Clock } from "lucide-react";
 
 const FEATURES = [
@@ -433,13 +433,13 @@ This is the moment everything was building toward. The trust, the time, the slow
 
       {/* Active sessions */}
       {activeSession === "intimacy" && intimacyCompanion && (
-        <AnamView companion={intimacyCompanion} onClose={handleCloseSession} />
+        <LiveAvatarView companion={intimacyCompanion} onClose={handleCloseSession} />
       )}
       {activeSession === "outfits" && companion && (
-        <AnamView companion={{ ...companion, avatar_id: selectedAvatarId }} onClose={handleCloseSession} />
+        <LiveAvatarView companion={{ ...companion, avatar_id: selectedAvatarId }} onClose={handleCloseSession} />
       )}
       {activeSession === "twin" && companion && (
-        <AnamView companion={{ ...companion, avatar_id: selectedAvatarId }} onClose={handleCloseSession} />
+        <LiveAvatarView companion={{ ...companion, avatar_id: selectedAvatarId }} onClose={handleCloseSession} />
       )}
     </div>
   );
