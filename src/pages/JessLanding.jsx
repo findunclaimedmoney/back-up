@@ -40,7 +40,7 @@ const goBack = useGoBack();
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-fullobject-containp"
+          className="absolute inset-0 w-full h-full object-contain"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-transparent to-transparent" />
