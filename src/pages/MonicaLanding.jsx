@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, MessageCircle, Mic, Video, Camera, ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useTrackVisit } from "@/hooks/useTrackVisit";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 const MONICA_VIDEO =
@@ -18,6 +19,7 @@ const TRAITS = [
 export default function MonicaLanding() {
   const isMobile = useIsMobile();
   const goBack = useGoBack();
+  useTrackVisit("monica");
 
   return (
     <div className="min-h-screen bg-background text-foreground">

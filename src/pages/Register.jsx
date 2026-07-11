@@ -73,6 +73,16 @@ export default function Register() {
       } catch (e) {
         console.error("Profile update failed:", e);
       }
+      // Mark the landing page visit as converted (marketing attribution)
+      const visitId = localStorage.getItem("glimr_visit_id");
+      if (visitId) {
+        try {
+          await base44.functions.invoke("convertVisit", { visit_id: visitId });
+        } catch (e) {
+          console.error("Visit conversion tracking failed:", e);
+        }
+        localStorage.removeItem("glimr_visit_id");
+      }
       // If they signed up via a companion's referral link, record the referral
       const refCode = consumeReferralCode();
       if (refCode) {

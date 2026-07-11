@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, MessageCircle, Mic, Video, Crown, ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useTrackVisit } from "@/hooks/useTrackVisit";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 const ZAC_VIDEOS = [
@@ -18,7 +19,8 @@ const TRAITS = [
 
 export default function ZacLanding() {
   const isMobile = useIsMobile();
-const goBack = useGoBack();
+  const goBack = useGoBack();
+  useTrackVisit("zac-steady");
     const [activeVideo, setActiveVideo] = useState(0);
   const heroVideoRef = useRef(null);
 

@@ -110,9 +110,14 @@ export default function Dashboard() {
             <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/af6c8f20d_generated_image.png" alt="GLIMR" className="h-8 w-auto rounded-md" />
             <h1 className="font-heading text-xl font-semibold tracking-tight">Dashboard</h1>
           </div>
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Back to app
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/marketing-dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Marketing
+            </Link>
+            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Back to app
+            </Link>
+          </div>
         </div>
       </header>
 

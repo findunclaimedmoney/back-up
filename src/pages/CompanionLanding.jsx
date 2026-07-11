@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, MessageCircle, Mic, Video, Crown, Heart, ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useTrackVisit } from "@/hooks/useTrackVisit";
 
 import { COMPANIONS } from "@/lib/companions";
 
@@ -71,6 +72,7 @@ function VideoCard({ videos, name, tagline, description, accentText, chatId }) {
 export default function CompanionLanding() {
   const isMobile = useIsMobile();
 const goBack = useGoBack();
+  useTrackVisit("companions");
     return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}

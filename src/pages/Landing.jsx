@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { COMPANIONS } from "@/lib/companions";
 import { captureReferralCode } from "@/lib/companionStructure";
+import { useTrackVisit } from "@/hooks/useTrackVisit";
 import { TIERS } from "@/lib/creditSystem";
 import {
   MessageCircle,
@@ -35,6 +36,7 @@ export default function Landing() {
   useEffect(() => {
     captureReferralCode();
   }, []);
+  useTrackVisit("home");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
