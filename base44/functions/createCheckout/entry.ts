@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
       mode: 'subscription',
       line_items: [{
         price_data: {
-          currency: 'usd',
+          currency: 'aud',
           product_data: { name: config.name, description: config.description },
           unit_amount: config.price,
           recurring: { interval: 'month' },
