@@ -24,6 +24,7 @@ const AvatarLanding = React.lazy(() => import('./pages/AvatarLanding'));
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const VipLounge = React.lazy(() => import('./pages/VipLounge'));
 const ZacLanding = React.lazy(() => import('./pages/ZacLanding'));
+const ZacConfidentLanding = React.lazy(() => import('./pages/ZacConfidentLanding'));
 const JessLanding = React.lazy(() => import('./pages/JessLanding'));
 const MarketingHub = React.lazy(() => import('./pages/MarketingHub'));
 const CryptoPayment = React.lazy(() => import('./pages/CryptoPayment'));
@@ -95,7 +96,8 @@ const AuthenticatedApp = () => {
       <Route path="/campaign-review" element={<CampaignReview />} />
         <Route path="/account" element={<Account />} />
         <Route path="/vip-lounge" element={<VipLounge />} />
-        <Route path="/zac" element={<Navigate to="/jess" replace />} />
+        <Route path="/zac" element={<ZacConfidentLanding />} />
+        <Route path="/zac-steady" element={<ZacLanding />} />
         <Route path="/jess" element={<JessLanding />} />
         <Route path="/marketing" element={<CampaignReview />} />
         <Route path="/mia-marketing" element={<MarketingHub />} />

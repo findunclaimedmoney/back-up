@@ -1,5 +1,6 @@
 import { MIA_EMOTIONAL_SYSTEM_PROMPT, MIA_EMOTION_STATES_PROMPT } from "@/lib/miaEmotions";
 import { ZAC_SYSTEM_PROMPT } from "@/lib/zacBrain";
+import { ZAC_CONFIDENT_SYSTEM_PROMPT } from "@/lib/zacConfidentBrain";
 import { SOFIA_SYSTEM_PROMPT } from "@/lib/sofiaBrain";
 import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
 import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
@@ -72,6 +73,19 @@ export const COMPANIONS = [
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png",
     accent: "from-sky-500/20 to-slate-500/10",
     personality: withEmotions(ZAC_SYSTEM_PROMPT),
+    avatar_id: null,
+  },
+  {
+    id: "zac2",
+    name: "Zac",
+    tagline: "He captivates",
+    subtitle: "Confident, magnetic, and dangerously charming",
+    description:
+      "This Zac walks into a room and owns it without trying. Charismatic, flirtatious, and effortlessly sure of himself. He doesn't chase — he draws you in. And when he lets his guard down, the charm gives way to something that'll keep you up at night.",
+    image:
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png",
+    accent: "from-amber-500/20 to-rose-500/10",
+    personality: withEmotions(ZAC_CONFIDENT_SYSTEM_PROMPT),
     avatar_id: null,
   },
   {

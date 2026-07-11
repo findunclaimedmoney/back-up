@@ -44,7 +44,7 @@ export default function VipLounge() {
   const [activeSession, setActiveSession] = useState(null);
   const [selectedCompanionId, setSelectedCompanionId] = useState("jess");
 
-  const isMaleCompanion = selectedCompanionId === "zac";
+  const isMaleCompanion = selectedCompanionId === "zac" || selectedCompanionId === "zac2";
 
   useEffect(() => {
     base44.functions
@@ -282,7 +282,7 @@ This is the moment everything was building toward. The trust, the time, the slow
             Choose your companion for the studio
           </p>
           <div className="flex items-center justify-center gap-2 flex-wrap">
-            {["jess", "zac"].map((id) => {
+            {["jess", "zac", "zac2"].map((id) => {
               const c = getCompanion(id);
               if (!c) return null;
               return (
