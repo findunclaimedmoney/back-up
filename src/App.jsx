@@ -95,7 +95,7 @@ const AuthenticatedApp = () => {
       <Route path="/campaign-review" element={<CampaignReview />} />
         <Route path="/account" element={<Account />} />
         <Route path="/vip-lounge" element={<VipLounge />} />
-        <Route path="/zac" element={<ZacLanding />} />
+        <Route path="/zac" element={<Navigate to="/jess" replace />} />
         <Route path="/jess" element={<JessLanding />} />
         <Route path="/marketing" element={<MarketingHub />} />
         <Route path="/crypto" element={<CryptoPayment />} />

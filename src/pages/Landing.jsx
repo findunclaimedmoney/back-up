@@ -119,7 +119,7 @@ export default function Landing() {
           </p>
         </div>
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-4">
-          {COMPANIONS.map((c) => (
+          {COMPANIONS.filter((c) => c.id === "jess").map((c) => (
             <Link
               key={c.id}
               to="/register"
