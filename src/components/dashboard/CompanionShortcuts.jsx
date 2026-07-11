@@ -4,9 +4,10 @@ import { COMPANIONS } from "@/lib/companions";
 import { ArrowRight } from "lucide-react";
 
 export default function CompanionShortcuts({ customCompanions = [] }) {
+  const selectedId = localStorage.getItem("glimr_selected_companion") || "jess";
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-      {COMPANIONS.filter((c) => c.id === "jess").map((c) => (
+      {COMPANIONS.filter((c) => c.id === selectedId).map((c) => (
         <Link
           key={c.id}
           to={`/chat/${c.id}`}

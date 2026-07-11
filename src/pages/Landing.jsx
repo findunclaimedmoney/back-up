@@ -119,10 +119,11 @@ export default function Landing() {
           </p>
         </div>
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-4">
-          {COMPANIONS.filter((c) => c.id === "jess").map((c) => (
+          {COMPANIONS.map((c) => (
             <Link
               key={c.id}
               to="/register"
+              onClick={() => localStorage.setItem("glimr_selected_companion", c.id)}
               className="group relative overflow-hidden rounded-3xl border border-border bg-card transition-all hover:border-primary/40"
             >
               <div className="relative aspect-[3/4] overflow-hidden">
