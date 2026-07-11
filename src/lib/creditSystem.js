@@ -1,7 +1,7 @@
 /**
  * GLIMR Credit System — single source of truth.
  *
- * Conversion: $1 USD = 0.20 credits (1 credit = $5)
+ * Conversion: A$1 AUD = 0.20 credits (1 credit = A$5)
  *
  * Tiers grant a monthly credit allowance. Top-up packs add prepaid credits.
  * Credits are consumed per action: text messages, video minutes, voice replies.
@@ -119,13 +119,13 @@ export const CONSUMPTION_ITEMS = [
     key: "video_minute",
     label: "Video minute",
     cost: CREDIT_COSTS.video_minute,
-    description: "Live face-to-face video ($5.00 per minute — 1 credit = 1 minute)",
+    description: "Live face-to-face video (A$5.00 per minute — 1 credit = 1 minute)",
   },
   {
     key: "voice_reply",
     label: "Voice reply",
     cost: CREDIT_COSTS.voice_reply,
-    description: "AI-generated voice message from your companion ($0.20 per reply)",
+    description: "AI-generated voice message from your companion (A$0.20 per reply)",
   },
 ];
 

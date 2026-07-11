@@ -12,9 +12,9 @@ const OUTFITS = [
 ];
 
 const DURATIONS = [
-  { value: 15, label: "15 min", price: 75 },
-  { value: 30, label: "30 min", price: 150 },
-  { value: 60, label: "1 hour", price: 300 },
+  { value: 15, label: "15 min", price: 75, display: "A$75" },
+  { value: 30, label: "30 min", price: 150, display: "A$150" },
+  { value: 60, label: "1 hour", price: 300, display: "A$300" },
 ];
 
 export default function AnamView({ companion, onClose }) {
@@ -300,7 +300,7 @@ export default function AnamView({ companion, onClose }) {
             {subscription.credit_balance > 0 && (
               <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/10 border border-primary/20">
                 <DollarSign className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">${subscription.credit_balance.toFixed(2)} credit</span>
+                <span className="text-sm font-medium">A${subscription.credit_balance.toFixed(2)} credit</span>
               </div>
             )}
 
@@ -322,7 +322,7 @@ export default function AnamView({ companion, onClose }) {
                       <Clock className="w-4 h-4 text-muted-foreground" />
                       <span className="font-medium">{d.label}</span>
                     </div>
-                    <span className="font-heading text-lg font-semibold">${d.price}</span>
+                    <span className="font-heading text-lg font-semibold">{d.display}</span>
                   </button>
                 );
               })}

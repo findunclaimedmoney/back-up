@@ -43,7 +43,7 @@ export default function CreditUsageCard({ creditBalance = 0, monthlyCredits = 0,
               {remaining.toFixed(2)}
               <span className="text-sm text-muted-foreground ml-1.5">credits</span>
             </p>
-            <p className="text-xs text-muted-foreground mt-0.5">≈ ${creditsToUsd(remaining).toFixed(2)}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">≈ A${creditsToUsd(remaining).toFixed(2)}</p>
           </div>
           {monthlyCredits > 0 && (
             <div className="px-4 py-3 rounded-2xl bg-muted/40 border border-border">
@@ -60,7 +60,7 @@ export default function CreditUsageCard({ creditBalance = 0, monthlyCredits = 0,
         {/* What 1 credit gets you */}
         <div className="mb-5 rounded-2xl bg-primary/5 border border-primary/15 p-4">
           <p className="text-xs text-primary font-semibold uppercase tracking-wide mb-1">What 1 credit gets you</p>
-          <p className="text-[11px] text-muted-foreground mb-3">1 credit = ${creditsToUsd(1).toFixed(2)} — spend it on any mix below</p>
+          <p className="text-[11px] text-muted-foreground mb-3">1 credit = A${creditsToUsd(1).toFixed(2)} — spend it on any mix below</p>
           <div className="space-y-2">
             {CONSUMPTION_ITEMS.map((item) => {
               const Icon = ICONS[item.key] || Coins;
@@ -76,7 +76,7 @@ export default function CreditUsageCard({ creditBalance = 0, monthlyCredits = 0,
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold text-primary">{perCredit} {item.key === "video_minute" ? "min" : item.key === "voice_reply" ? "replies" : "msgs"}</p>
-                    <p className="text-[11px] text-muted-foreground">${usdPerUnit.toFixed(2)} / unit</p>
+                    <p className="text-[11px] text-muted-foreground">A${usdPerUnit.toFixed(2)} / unit</p>
                   </div>
                 </div>
               );

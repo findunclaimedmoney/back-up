@@ -240,10 +240,10 @@ export default function Pricing() {
                 </div>
                 <div className="flex-1 text-center sm:text-left">
                   <h3 className="font-heading text-lg font-semibold mb-1">
-                    You've spent ${sessionsCompleted * 6}+ on sessions
+                    You've spent A${sessionsCompleted * 6}+ on sessions
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Pro includes unlimited intimacy for $89/month. Stop paying per session.
+                    Pro includes unlimited intimacy for A$99/month. Stop paying per session.
                   </p>
                 </div>
                 <button

@@ -26,8 +26,8 @@ export default function TierCard({ tier, current, loading, onUpgrade }) {
       <p className="text-sm text-muted-foreground mb-5 leading-relaxed">{description}</p>
 
       <div className="mb-2">
-        <span className="font-heading text-4xl font-semibold tracking-tight">${price}</span>
-        {price > 0 && <span className="text-sm text-muted-foreground ml-1">/mo</span>}
+        <span className="font-heading text-4xl font-semibold tracking-tight">A${price}</span>
+        {price > 0 && <span className="text-sm text-muted-foreground ml-1">/mo AUD</span>}
       </div>
 
       {credits > 0 && (

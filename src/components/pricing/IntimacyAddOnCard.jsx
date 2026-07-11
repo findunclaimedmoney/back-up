@@ -5,7 +5,7 @@ const PACKAGES = [
   {
     id: "15min",
     label: "15 Minutes",
-    price: "$6",
+    price: "A$6",
     sublabel: "A quick moment",
     tagline: "A spark when you need it",
     features: [
@@ -18,7 +18,7 @@ const PACKAGES = [
   {
     id: "30min",
     label: "30 Minutes",
-    price: "$11",
+    price: "A$11",
     sublabel: "Sweet spot",
     tagline: "Enough time to truly settle in",
     popular: true,
@@ -32,7 +32,7 @@ const PACKAGES = [
   {
     id: "60min",
     label: "1 Hour",
-    price: "$20",
+    price: "A$20",
     sublabel: "Lose track of time",
     tagline: "The full depth of your bond",
     features: [
@@ -72,7 +72,7 @@ export default function IntimacyAddOnCard({ included, creditBalance = 0, loading
         ) : creditBalance > 0 ? (
           <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-primary/10 border border-primary/20 mb-6">
             <DollarSign className="w-4 h-4 text-primary" />
-            <p className="text-sm text-foreground">${creditBalance.toFixed(2)} in credit available</p>
+            <p className="text-sm text-foreground">A${creditBalance.toFixed(2)} in credit available</p>
           </div>
         ) : null}
 

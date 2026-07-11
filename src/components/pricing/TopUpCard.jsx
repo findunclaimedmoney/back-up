@@ -22,7 +22,7 @@ export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
           <Coins className="w-4 h-4 text-primary" />
           <p className="text-sm text-foreground">
             Balance: <span className="font-semibold">{creditBalance.toFixed(2)} credits</span>
-            <span className="text-muted-foreground ml-2">(${creditsToUsd(creditBalance).toFixed(2)})</span>
+            <span className="text-muted-foreground ml-2">(A${creditsToUsd(creditBalance).toFixed(2)})</span>
           </p>
         </div>
 
@@ -40,7 +40,7 @@ export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
                 onPurchase(pack.id);
               }}
               disabled={loading !== null}
-              aria-label={`Purchase ${pack.credits} credits for $${pack.price}`}
+              aria-label={`Purchase ${pack.credits} credits for A$${pack.price}`}
               className={`relative flex flex-col items-center gap-2 p-5 rounded-2xl border transition-all text-center disabled:opacity-50 ${
                 loading === pack.id
                   ? "border-primary bg-primary/5"
@@ -55,7 +55,7 @@ export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
               <Plus className="w-4 h-4 text-muted-foreground" />
               <span className="font-heading text-2xl font-semibold">{pack.credits}</span>
               <span className="text-[11px] text-muted-foreground">credits</span>
-              <span className="text-[10px] text-muted-foreground/70">${pack.price}</span>
+              <span className="text-[10px] text-muted-foreground/70">A${pack.price}</span>
               {loading === pack.id && (
                 <Loader2 className="w-4 h-4 text-primary animate-spin mt-1" />
               )}
