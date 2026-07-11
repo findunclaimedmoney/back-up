@@ -98,6 +98,14 @@
       "type": "string",
       "description": "User ID this subscription belongs to (used when granted by admin/service role)"
     },
+    "processed_session_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Stripe checkout session IDs already processed (prevents double-crediting between webhook and client redirect)"
+    },
     "description": {
       "type": "string",
       "maxLength": 1000,

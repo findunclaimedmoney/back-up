@@ -85,6 +85,10 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Credit balance totals across all users
+    const totalCreditBalance = allSubs.reduce((sum, s) => sum + (s.credit_balance || 0), 0);
+    const totalCreditsUsed = allSubs.reduce((sum, s) => sum + (s.credits_used || 0), 0);
+
     return Response.json({
       totals: {
         total_users: allSubs.length,
@@ -92,6 +96,11 @@ Deno.serve(async (req) => {
         free_users: tierCounts.free,
         intimacy_users: intimacySubs.length,
         twin_users: allSubs.filter(s => s.twin_enabled).length,
+      },
+      credit_stats: {
+        total_balance: parseFloat(totalCreditBalance.toFixed(2)),
+        total_used: parseFloat(totalCreditsUsed.toFixed(2)),
+        users_with_credits: allSubs.filter(s => (s.credit_balance || 0) > 0).length,
       },
       tier_counts: tierCounts,
       intimacy_by_tier: intimacyCount,

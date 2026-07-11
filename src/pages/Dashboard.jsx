@@ -12,6 +12,7 @@ import {
   DollarSign,
   Receipt,
   PiggyBank,
+  Coins,
 } from "lucide-react";
 import {
   BarChart,
@@ -129,6 +130,15 @@ export default function Dashboard() {
           <StatCard icon={Heart} label="Intimacy package" value={stats.totals.intimacy_users} sub={`${stats.totals.total_users > 0 ? Math.round((stats.totals.intimacy_users / stats.totals.total_users) * 100) : 0}% of users`} accent="bg-rose-500/10" />
           <StatCard icon={Zap} label="Twin enabled" value={stats.totals.twin_users} sub="VIP clones" accent="bg-amber-500/10" />
         </div>
+
+        {/* Credit stats */}
+        {stats.credit_stats && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <StatCard icon={PiggyBank} label="Total credit balance" value={stats.credit_stats.total_balance?.toFixed(1)} sub="Across all users" accent="bg-primary/10" />
+            <StatCard icon={Coins} label="Credits used" value={stats.credit_stats.total_used?.toFixed(1)} sub="Consumed this period" accent="bg-emerald-500/10" />
+            <StatCard icon={Receipt} label="Users with credits" value={stats.credit_stats.users_with_credits} sub="Purchased or granted" accent="bg-blue-500/10" />
+          </div>
+        )}
 
         {/* Tier distribution + intimacy breakdown */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
