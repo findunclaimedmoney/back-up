@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
         if (balance < sessionPrice) {
           return Response.json({
             error: 'Insufficient credit',
-            message: `You need $${sessionPrice.toFixed(2)} for a ${body.duration}-minute session. You have $${balance.toFixed(2)} in credit.`,
+            message: `You need A$${sessionPrice.toFixed(2)} for a ${body.duration}-minute session. You have A$${balance.toFixed(2)} in credit.`,
             upgrade_required: true,
             credit_balance: balance,
             session_price: sessionPrice,
@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
             await base44.integrations.Core.SendEmail({
               to: user.email,
               subject: 'Your GLIMR credit is running low',
-              body: `Hi ${user.full_name || 'there'},\n\nYour intimate session with ${companion_name} just started, and your remaining credit balance is $${newBalance.toFixed(2)}.\n\nThat's not enough for another session. Top up anytime to keep the connection going:\nhttps://glimr.app/pricing\n\nWith warmth,\nThe GLIMR Team`,
+              body: `Hi ${user.full_name || 'there'},\n\nYour intimate session with ${companion_name} just started, and your remaining credit balance is A$${newBalance.toFixed(2)}.\n\nThat's not enough for another session. Top up anytime to keep the connection going:\nhttps://glimr.app/pricing\n\nWith warmth,\nThe GLIMR Team`,
             });
           } catch (e) {
             // Best-effort notification

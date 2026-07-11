@@ -5,7 +5,7 @@ const PACKAGES = [
   {
     id: "15min",
     label: "15 Minutes",
-    price: "A$6",
+    price: "A$75",
     sublabel: "A quick moment",
     tagline: "A spark when you need it",
     features: [
@@ -18,7 +18,7 @@ const PACKAGES = [
   {
     id: "30min",
     label: "30 Minutes",
-    price: "A$11",
+    price: "A$150",
     sublabel: "Sweet spot",
     tagline: "Enough time to truly settle in",
     popular: true,
@@ -32,7 +32,7 @@ const PACKAGES = [
   {
     id: "60min",
     label: "1 Hour",
-    price: "A$20",
+    price: "A$300",
     sublabel: "Lose track of time",
     tagline: "The full depth of your bond",
     features: [

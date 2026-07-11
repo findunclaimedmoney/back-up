@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
       }
 
       const CREDIT_AMOUNTS = {
-        intimacy: { '15min': 4.00, '30min': 8.00, '60min': 15.00 },
+        intimacy: { '15min': 75.00, '30min': 150.00, '60min': 300.00 },
         topup: { 'pack_5': 5.00, 'pack_10': 10.00, 'pack_25': 25.00, 'pack_50': 50.00 },
         feature_session: { '15min': 2.99, '30min': 4.99, '60min': 8.99 },
       };

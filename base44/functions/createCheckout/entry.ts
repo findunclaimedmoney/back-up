@@ -9,9 +9,9 @@ const TIER_CONFIG = {
 
 const ADDON_CONFIG = {
   intimacy: {
-    '15min': { price: 600, name: 'Intimacy Session — 15 Minutes', description: 'A 15-minute intimate session with your companion',  minutes: 15 },
-    '30min': { price: 1100, name: 'Intimacy Session — 30 Minutes', description: 'A 30-minute intimate session with your companion',  minutes: 30 },
-    '60min': { price: 2000, name: 'Intimacy Session — 60 Minutes', description: 'A full hour intimate session with your companion',   minutes: 60 },
+    '15min': { price: 7500,  name: 'Intimacy Session — 15 Minutes', description: 'A 15-minute intimate session with your companion',  minutes: 15, credit: 15 },
+    '30min': { price: 15000, name: 'Intimacy Session — 30 Minutes', description: 'A 30-minute intimate session with your companion',  minutes: 30, credit: 30 },
+    '60min': { price: 30000, name: 'Intimacy Session — 60 Minutes', description: 'A full hour intimate session with your companion',   minutes: 60, credit: 60 },
   },
   topup: {
     'pack_5':  { price: 500,  name: 'GLIMR Credit — $5',  description: '$5 added to your credit balance', credit: 5 },
