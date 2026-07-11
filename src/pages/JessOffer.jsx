@@ -94,7 +94,7 @@ export default function JessOffer() {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          className="absolute inset-0 w-full h-full object-cover object-top sm:object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-background/40" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent" />
