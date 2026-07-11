@@ -121,10 +121,7 @@ export default function CustomerDashboard() {
           {/* Companion shortcuts */}
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-heading text-xl font-semibold">Your companions</h2>
-              <Link to="/companions" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                Browse all
-              </Link>
+              <h2 className="font-heading text-xl font-semibold">Your companion</h2>
             </div>
             <CompanionShortcuts customCompanions={customCompanions} />
           </section>
