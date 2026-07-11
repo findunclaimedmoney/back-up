@@ -117,7 +117,7 @@ const AuthenticatedApp = () => {
         <Route path="/companion-apply" element={<CompanionApply />} />
         <Route path="/companion-hub" element={<CompanionHub />} />
         <Route path="/promo-admin" element={<PromoAdmin />} />
-      <Route path="/companion-setup" element={<CompanionSetup />} />
+      <Route path="/create-companion" element={<CompanionSetup />} />
         <Route path="/marketing-agent" element={<MarketingAgent />} />
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
           <Route path="/chat/:companionId" element={<Chat />} />
