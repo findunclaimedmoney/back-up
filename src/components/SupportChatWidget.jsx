@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { MIA_PERSONALITY, MIA_GREETING, MIA_QUICK_QUESTIONS } from "@/lib/miaConsciousness";
 import SupportVoiceButton from "@/components/SupportVoiceButton";
 import VoiceRecorderButton from "@/components/VoiceRecorderButton";
-import { MessageCircle, X, Send, GripVertical } from "lucide-react";
+import { MessageCircle, X, Send, GripVertical, RefreshCw } from "lucide-react";
 
 const MIA_IMAGE =
   "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png";
@@ -290,12 +290,22 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => { setOpen(false); resetPos(); }}
-              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors flex-shrink-0"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button
+                onClick={() => window.location.reload()}
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
+                aria-label="Refresh page"
+                title="Refresh for latest version"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => { setOpen(false); resetPos(); }}
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
