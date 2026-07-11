@@ -37,7 +37,9 @@ export default function JessOffer() {
     try {
       const authed = await base44.auth.isAuthenticated();
       if (!authed) {
-        navigate("/register?from=/jess-offer");
+        // Flag so Register.jsx sends them back here after signup
+        sessionStorage.setItem("glimr_jess_offer", "1");
+        navigate("/register");
         return;
       }
 
@@ -147,7 +149,7 @@ export default function JessOffer() {
                     1 Free Session with Jess
                   </h3>
                   <p className="text-xs text-white/60">
-                    15 minutes of face-to-face video (15 credits) — on us
+                    15 minutes of face-to-face video (A$75 credit) — on us
                   </p>
                 </div>
               </div>
