@@ -1,8 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
-// Text messages are unlimited on all tiers
+// Free users get 10 messages; paid tiers are unlimited
 const MONTHLY_MESSAGE_LIMITS = {
-  free: 0,
+  free: 10,
   plus: 0,
   pro: 0,
   vip: 0,

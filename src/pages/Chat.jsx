@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { getCompanion, getCompanionAsync } from "@/lib/companions";
 import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
 import PullToRefresh from "@/components/PullToRefresh";
-import { ArrowLeft, Video } from "lucide-react";
+import { ArrowLeft, ArrowRight, Video, Lock } from "lucide-react";
 import LiveAvatarView from "@/components/companion/LiveAvatarView";
 import { decidePhotoAction, generateCompanionPhoto } from "@/lib/companionPhotos";
 import { getDeviceFingerprint } from "@/lib/deviceFingerprint";
@@ -346,6 +346,10 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
 
   const handleSend = async (text, photoFile) => {
 
+    // Free tier message cap — block sending when limit reached
+    if (dailyLimit > 0 && dailyRemaining !== null && dailyRemaining <= 0) {
+      return;
+    }
 
     // Show the user message instantly — local object URL for attached photos
     const localImageUrl = photoFile ? URL.createObjectURL(photoFile) : null;
@@ -391,6 +395,9 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
           if (res.data?.messages_remaining !== undefined) {
             setDailyRemaining(res.data.messages_remaining);
           }
+          if (res.data?.messages_limit !== undefined) {
+            setDailyLimit(res.data.messages_limit);
+          }
           if (res.data?.blocked) {
             setDailyRemaining(0);
           }
@@ -399,6 +406,12 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
         base44.functions.invoke("trackMessageUsage", {}).then((res) => {
           if (res.data?.messages_remaining !== undefined) {
             setDailyRemaining(res.data.messages_remaining);
+          }
+          if (res.data?.messages_limit !== undefined) {
+            setDailyLimit(res.data.messages_limit);
+          }
+          if (res.data?.blocked) {
+            setDailyRemaining(0);
           }
         }).catch(() => {});
       });
@@ -674,7 +687,30 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
         </PullToRefresh>
       </div>
 
-      <ChatInput onSend={handleSend} disabled={thinking || loading} />
+      {dailyLimit > 0 && dailyRemaining !== null && dailyRemaining <= 0 ? (
+        <div className="border-t border-border bg-background/80 backdrop-blur-md px-4 py-6" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-3">
+              <Lock className="w-5 h-5 text-primary" />
+            </div>
+            <p className="font-heading text-lg font-semibold mb-1">You've used your 10 free messages</p>
+            <p className="text-sm text-muted-foreground mb-4">Upgrade to keep chatting with {companion.name} — unlimited messages, voice replies, and live video.</p>
+            <Link
+              to="/pricing"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:bg-primary/90"
+            >
+              See plans
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <ChatInput
+          onSend={handleSend}
+          disabled={thinking || loading}
+          messagesRemaining={dailyLimit > 0 ? dailyRemaining : null}
+        />
+      )}
 
       {/* Face-to-face video */}
       {videoMode && (

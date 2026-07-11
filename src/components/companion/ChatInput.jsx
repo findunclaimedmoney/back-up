@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send, Camera, X } from "lucide-react";
 
-export default function ChatInput({ onSend, disabled }) {
+export default function ChatInput({ onSend, disabled, messagesRemaining }) {
   const [text, setText] = useState("");
   const [pendingPhoto, setPendingPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -100,7 +100,11 @@ export default function ChatInput({ onSend, disabled }) {
           </button>
         </div>
         <p className="text-center text-xs text-muted-foreground mt-2">
-          Your companion is here to listen and chat.
+          {messagesRemaining !== null && messagesRemaining !== undefined
+            ? messagesRemaining > 0
+              ? `${messagesRemaining} free message${messagesRemaining === 1 ? "" : "s"} remaining`
+              : "Upgrade to keep chatting"
+            : "Your companion is here to listen and chat."}
         </p>
       </div>
     </div>
