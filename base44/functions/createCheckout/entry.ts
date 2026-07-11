@@ -63,10 +63,13 @@ Deno.serve(async (req) => {
       }
 
       const isCustomAvatar = body.addon === 'custom_avatar';
+      const isFeatureSession = body.addon === 'feature_session';
       const successUrl = isCustomAvatar
         ? `${origin}/create?session_id={CHECKOUT_SESSION_ID}`
+        : isFeatureSession
+        ? `${origin}/features?session_id={CHECKOUT_SESSION_ID}`
         : `${origin}/pricing?session_id={CHECKOUT_SESSION_ID}`;
-      const cancelUrl = isCustomAvatar ? `${origin}/create` : `${origin}/pricing`;
+      const cancelUrl = isCustomAvatar ? `${origin}/create` : isFeatureSession ? `${origin}/features` : `${origin}/pricing`;
 
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Volume2, Camera, Bell } from "lucide-react";
+import { ArrowLeft, Volume2, Camera, Bell, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import FeatureSessionCard from "@/components/features/FeatureSessionCard";
 
@@ -70,10 +70,30 @@ const SESSIONS = [
 export default function Features() {
   const [loading, setLoading] = useState(null);
   const [creditBalance, setCreditBalance] = useState(0);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    loadSubscription();
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    if (sessionId) {
+      confirmSession(sessionId);
+    } else {
+      loadSubscription();
+    }
   }, []);
+
+  const confirmSession = async (sessionId) => {
+    try {
+      const res = await base44.functions.invoke("confirmSubscription", { session_id: sessionId });
+      if (res.data?.credit_added) {
+        setSuccess(true);
+        setCreditBalance(res.data.new_balance || 0);
+      }
+    } catch (err) {
+      console.error(err);
+      loadSubscription();
+    }
+  };
 
   const loadSubscription = async () => {
     try {
@@ -120,6 +140,25 @@ export default function Features() {
         </Link>
       </header>
 
+      {success && (
+        <section className="px-6 pt-12 pb-8 text-center">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-8 h-8 text-primary" />
+          </div>
+          <h1 className="font-heading text-3xl font-semibold mb-2">You're all set</h1>
+          <p className="text-muted-foreground mb-8">
+            Your credits have been added. Your companion is waiting.
+          </p>
+          <Link
+            to="/chat/jess"
+            className="inline-flex items-center min-h-[44px] px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm"
+          >
+            Start chatting
+          </Link>
+        </section>
+      )}
+
+      {!success && (
       <section className="px-6 pt-12 pb-8 text-center">
         <h1 className="font-heading text-4xl sm:text-5xl font-semibold tracking-tight mb-4">
           Beyond text
@@ -128,6 +167,7 @@ export default function Features() {
           Voice, photos, and a companion who reaches out. Three ways to feel closer.
         </p>
       </section>
+      )}
 
       <section className="px-6 pb-16">
         <div className="max-w-5xl mx-auto space-y-6">
