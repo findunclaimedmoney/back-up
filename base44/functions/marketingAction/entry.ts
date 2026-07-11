@@ -152,6 +152,103 @@ Deno.serve(async (req) => {
         return Response.json({ success: true, media_id: publishData.id, message: 'Posted to Instagram successfully' });
       }
 
+      case 'publish_all': {
+        const { message, image_url, video_url } = body;
+        const results = { facebook: null, instagram: null };
+
+        // Facebook + Instagram in parallel
+        const fbPromise = (async () => {
+          try {
+            const conn = await base44.asServiceRole.connectors.getConnection('facebook_pages');
+            const pagesResp = await fetch('https://graph.facebook.com/v25.0/me/accounts?fields=id,name,access_token', {
+              headers: { Authorization: `Bearer ${conn.accessToken}` },
+            });
+            const pagesData = await pagesResp.json();
+            if (!pagesData.data || pagesData.data.length === 0) {
+              return { error: 'No Facebook Pages found' };
+            }
+            const page = pagesData.data[0];
+            let postResp;
+            if (video_url) {
+              postResp = await fetch(`https://graph.facebook.com/v25.0/${page.id}/videos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ file_url: video_url, description: message, access_token: page.access_token }),
+              });
+            } else if (image_url) {
+              postResp = await fetch(`https://graph.facebook.com/v25.0/${page.id}/photos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: image_url, message, access_token: page.access_token }),
+              });
+            } else {
+              postResp = await fetch(`https://graph.facebook.com/v25.0/${page.id}/feed`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, access_token: page.access_token }),
+              });
+            }
+            const result = await postResp.json();
+            if (result.error) return { error: result.error.message };
+            return { success: true, post_id: result.id || result.post_id };
+          } catch (err) {
+            return { error: err.message };
+          }
+        })();
+
+        const igPromise = (async () => {
+          try {
+            if (!image_url) return { error: 'Instagram requires an image_url' };
+            const conn = await base44.asServiceRole.connectors.getConnection('instagram');
+            const userResp = await fetch(`https://graph.instagram.com/me?fields=id,username&access_token=${conn.accessToken}`);
+            const userData = await userResp.json();
+            if (userData.error) return { error: userData.error.message };
+
+            const createResp = await fetch(`https://graph.instagram.com/v25.0/${userData.id}/media`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ image_url, caption: message, access_token: conn.accessToken }),
+            });
+            const createData = await createResp.json();
+            if (createData.error) return { error: createData.error.message };
+
+            let mediaReady = false;
+            for (let i = 0; i < 10; i++) {
+              await new Promise(r => setTimeout(r, 3000));
+              const statusResp = await fetch(`https://graph.instagram.com/v25.0/${createData.id}?fields=status&access_token=${conn.accessToken}`);
+              const statusData = await statusResp.json();
+              if (statusData.status === 'FINISHED') { mediaReady = true; break; }
+              if (statusData.status === 'ERROR') return { error: 'Instagram media processing failed' };
+            }
+            if (!mediaReady) return { error: 'Instagram media processing timed out' };
+
+            const publishResp = await fetch(`https://graph.instagram.com/v25.0/${userData.id}/media_publish`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ creation_id: createData.id, access_token: conn.accessToken }),
+            });
+            const publishData = await publishResp.json();
+            if (publishData.error) return { error: publishData.error.message };
+            return { success: true, media_id: publishData.id };
+          } catch (err) {
+            return { error: err.message };
+          }
+        })();
+
+        const [fbResult, igResult] = await Promise.all([fbPromise, igPromise]);
+        results.facebook = fbResult;
+        results.instagram = igResult;
+
+        const allSuccess = fbResult.success && igResult.success;
+        return Response.json({
+          success: allSuccess,
+          results,
+          message: allSuccess
+            ? 'Published to Facebook & Instagram successfully'
+            : `Facebook: ${fbResult.success ? '✓' : '✗ ' + (fbResult.error || '')} | Instagram: ${igResult.success ? '✓' : '✗ ' + (igResult.error || '')}`,
+        });
+      }
+
       case 'get_ads': {
         const { account_id } = body;
         const conn = await base44.asServiceRole.connectors.getConnection('meta_ads');

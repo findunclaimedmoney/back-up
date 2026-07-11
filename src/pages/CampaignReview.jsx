@@ -29,8 +29,9 @@ export default function CampaignReview() {
     setPublishingId(campaign.id);
     try {
       const res = await base44.functions.invoke("marketingAction", {
-        action: "publish_facebook",
+        action: "publish_all",
         message: campaign.caption,
+        image_url: campaign.image_url || undefined,
         video_url: campaign.video_url || undefined,
       });
       if (res.data?.error) {
@@ -40,20 +41,21 @@ export default function CampaignReview() {
           description: res.data.error,
         });
       } else {
+        const fbId = res.data?.results?.facebook?.post_id || "";
         await base44.entities.MarketingCampaign.update(campaign.id, {
           status: "published",
-          fb_post_id: res.data?.post_id || "",
+          fb_post_id: fbId,
         });
         setCampaigns((prev) =>
           prev.map((c) =>
             c.id === campaign.id
-              ? { ...c, status: "published", fb_post_id: res.data?.post_id || "" }
+              ? { ...c, status: "published", fb_post_id: fbId }
               : c
           )
         );
         toast({
-          title: "Published!",
-          description: "Campaign is live on Facebook.",
+          title: res.data?.success ? "Published everywhere!" : "Partially published",
+          description: res.data?.message || "Campaign pushed to connected platforms.",
         });
       }
     } catch (err) {
@@ -180,12 +182,12 @@ export default function CampaignReview() {
                     {publishingId === camp.id ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Publishing…
+                        Publishing to all…
                       </>
                     ) : (
                       <>
                         <Check className="w-4 h-4" />
-                        Approve & Publish
+                        Publish to Facebook + Instagram
                       </>
                     )}
                   </button>
