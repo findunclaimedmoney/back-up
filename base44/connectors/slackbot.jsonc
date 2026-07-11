@@ -3,6 +3,7 @@
   "scopes": [
     "chat:write",
     "chat:write.public",
-    "chat:write.customize"
+    "chat:write.customize",
+    "channels:read"
   ]
 }
