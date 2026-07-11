@@ -3,7 +3,7 @@ import Stripe from 'npm:stripe@17.0.0';
 
 const TIER_CONFIG = {
   plus: { minutes: 80, intimacy: false, twin: false },
-  pro: { minutes: 160, intimacy: true, twin: false },
+  pro: { minutes: 80, intimacy: true, twin: false },
   vip: { minutes: 500, intimacy: true, twin: true },
 };
 

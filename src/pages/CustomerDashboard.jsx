@@ -106,6 +106,8 @@ export default function CustomerDashboard() {
             creditBalance={creditBalance}
             monthlyCredits={monthlyCredits}
             creditsUsed={creditsUsed}
+            videoMinutesLimit={sub?.video_minutes_limit || 0}
+            videoMinutesUsed={sub?.video_minutes_used || 0}
           />
 
           {/* Feature access */}

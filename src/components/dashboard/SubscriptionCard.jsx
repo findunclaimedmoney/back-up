@@ -9,7 +9,7 @@ const ACTION_ICONS = {
   voice_reply: Mic,
 };
 
-export default function SubscriptionCard({ tier, creditBalance, monthlyCredits, creditsUsed }) {
+export default function SubscriptionCard({ tier, creditBalance, monthlyCredits, creditsUsed, videoMinutesLimit = 0, videoMinutesUsed = 0 }) {
   return (
     <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/5 to-card p-5">
       <div className="flex items-center justify-between mb-4">
@@ -63,7 +63,9 @@ export default function SubscriptionCard({ tier, creditBalance, monthlyCredits, 
         <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Your {creditBalance.toFixed(0)} credits get you</p>
         {CONSUMPTION_ITEMS.map((item) => {
           const Icon = ACTION_ICONS[item.key] || Coins;
-          const canAfford = Math.floor(creditBalance / item.cost);
+          const canAfford = item.key === "video_minute" && videoMinutesLimit > 0
+            ? Math.max(0, videoMinutesLimit - videoMinutesUsed)
+            : Math.floor(creditBalance / item.cost);
           const unit = item.key === "video_minute" ? "min" : item.key === "voice_reply" ? "replies" : "messages";
           return (
             <div key={item.key} className="flex items-center justify-between py-2.5 px-3 rounded-lg bg-background/50 border border-border">
