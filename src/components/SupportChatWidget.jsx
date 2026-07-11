@@ -242,7 +242,7 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground shadow-2xl hover:opacity-90 transition-all"
+          className="fixed bottom-20 right-4 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground shadow-2xl hover:opacity-90 transition-all"
         >
           <div className="relative flex items-center">
             <MessageCircle className="w-5 h-5" />
