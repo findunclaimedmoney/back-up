@@ -33,8 +33,8 @@ Deno.serve(async (req) => {
     const pageToken = page.access_token;
     const pageId = page.id;
 
-    // Get all conversations
-    const convRes = await fetch(`${FB_API}/${pageId}/conversations?fields=id,updated_time,unread_count,message_count&limit=50`, {
+    // Get all conversations — include 'senders' so we can resolve the real PSID
+    const convRes = await fetch(`${FB_API}/${pageId}/conversations?fields=id,updated_time,unread_count,message_count,senders&limit=50`, {
       headers: { 'Authorization': `Bearer ${pageToken}` },
     });
     const convData = await convRes.json();
@@ -68,6 +68,16 @@ Deno.serve(async (req) => {
 
         // Check if the page has already sent any messages in this conversation
         const pageHasReplied = messages.some((m) => m.from?.id === pageId);
+
+        // Resolve the real PSID from the conversation's 'senders' field.
+        // The 'from.id' on messages can be a thread ID (t_...) which the Send API rejects.
+        const senders = conv.senders?.data || [];
+        const userSender = senders.find((s) => s.id !== pageId);
+        const senderId = userSender?.id || latestMessage?.from?.id;
+        if (!senderId || senderId.startsWith('t_')) {
+          errors.push(`Could not resolve a valid PSID for conversation ${conv.id} (senders: ${JSON.stringify(senders)})`);
+          continue;
+        }
 
         let replyText;
 
@@ -121,12 +131,7 @@ Write your reply (plain text, no markdown, no quotes):`,
           }
         }
 
-        // Send the reply — use the sender's PSID, not the conversation thread ID
-        const senderId = latestMessage?.from?.id;
-        if (!senderId) {
-          errors.push(`Could not determine sender ID for conversation ${conv.id}`);
-          continue;
-        }
+        // Send the reply — senderId (PSID) was resolved above from conversation senders
         const sendRes = await fetch(`${FB_API}/${pageId}/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
