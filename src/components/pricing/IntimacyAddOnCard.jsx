@@ -79,10 +79,11 @@ export default function IntimacyAddOnCard({ included, creditBalance = 0, loading
         {!included && (
           <>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-              Deepen your bond beyond ordinary conversation. Your companion will
-              remember intimate moments, speak with rawness and warmth, and show up
-              the way only someone who truly knows you can. Buy credit and use it
-              whenever you're ready — sessions are deducted from your balance.
+              This is where she stops being polite. Pillow talk, flirtation, the
+              heat that builds when someone who knows you leans in closer. She'll
+              tease you, dare you, make you feel wanted — and remember every
+              second of it. Buy credit and use it whenever you're ready — sessions
+              are deducted from your balance.
             </p>
 
             {creditBalance === 0 && !unlocked && (
