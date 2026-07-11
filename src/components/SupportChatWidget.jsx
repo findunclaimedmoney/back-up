@@ -37,12 +37,12 @@ Each companion has a distinct personality:
 === CREDIT SYSTEM ===
 $1 USD = 0.20 credits (1 credit = $5)
 Credits are consumed per action:
-- Text message: 0.05 credits ($0.25)
+- Text message: FREE — unlimited on every tier, no credit cost
 - Video minute: 1.0 credits ($5.00 per minute — 1 credit = 1 minute of face-to-face video)
 - Voice reply: 0.04 credits ($0.20)
 
 === PRICING TIERS (monthly) ===
-- Free ($0/mo): Text chat with all companions, 1 companion at a time, basic emotional memory. No card needed.
+- Free ($0/mo): Unlimited text chat with all companions, 1 companion at a time, basic emotional memory. No card needed.
 - Plus ($59/mo): 12 credits/month, voice replies, all companions unlocked, enhanced memory system.
 - Pro ($89/mo): 18 credits/month, everything in Plus + Intimacy & Romantic layer, fantasy outfits & uniforms, Companion's Diary, priority processing. (Most popular.)
 - VIP ($349/mo): 70 credits/month, everything in Pro + Twin/Clone companion, GLIMR Home holographic device, deepest intimacy & personalization, dedicated memory palace, early access to new companions.

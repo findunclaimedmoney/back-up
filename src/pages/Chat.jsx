@@ -5,8 +5,7 @@ import { getCompanion } from "@/lib/companions";
 import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
 import PullToRefresh from "@/components/PullToRefresh";
-import { ArrowLeft, Video, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, Video } from "lucide-react";
 import LiveAvatarView from "@/components/companion/LiveAvatarView";
 import { decidePhotoAction, generateCompanionPhoto } from "@/lib/companionPhotos";
 import { getDeviceFingerprint } from "@/lib/deviceFingerprint";
@@ -333,8 +332,7 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
   };
 
   const handleSend = async (text, photoFile) => {
-    // Free tier daily message limit
-    if (dailyLimit > 0 && dailyRemaining !== null && dailyRemaining <= 0) return;
+
 
     // Show the user message instantly — local object URL for attached photos
     const localImageUrl = photoFile ? URL.createObjectURL(photoFile) : null;
@@ -587,11 +585,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
                 {memories.length} {memories.length === 1 ? "memory" : "memories"}
               </span>
             )}
-            {dailyLimit > 0 && dailyRemaining !== null && dailyRemaining > 0 && (
-              <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-muted" title={`${dailyRemaining} messages left this month`}>
-                {dailyRemaining} left
-              </span>
-            )}
+
             {hasMessages && (
               <button
                 onClick={handleClear}
@@ -667,28 +661,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
         </PullToRefresh>
       </div>
 
-      {/* Input */}
-      {dailyLimit > 0 && dailyRemaining !== null && dailyRemaining <= 0 ? (
-        <div className="flex-shrink-0 border-t border-border bg-card px-4 py-6" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
-          <div className="max-w-2xl mx-auto flex flex-col items-center text-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center">
-              <Lock className="w-5 h-5 text-primary" />
-            </div>
-            <p className="font-heading text-base font-semibold">That's all 10 free messages for this month</p>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              You've used your free monthly messages. Upgrade for unlimited chat.
-            </p>
-            <Link
-              to="/pricing"
-              className="inline-flex items-center gap-2 min-h-[44px] px-6 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              View Plans
-            </Link>
-          </div>
-        </div>
-      ) : (
-        <ChatInput onSend={handleSend} disabled={thinking || loading} />
-      )}
+      <ChatInput onSend={handleSend} disabled={thinking || loading} />
 
       {/* Face-to-face video */}
       {videoMode && (

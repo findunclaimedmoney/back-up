@@ -28,7 +28,7 @@ export const TIERS = [
     description: "Start your journey with GLIMR",
     ctaLabel: "Get Started",
     features: [
-      "Text chat with all companions",
+      "Unlimited text chat with all companions",
       "1 companion at a time",
       "Basic emotional memory",
       "Community support",
@@ -103,7 +103,7 @@ export const TIER_LABELS = {
 
 /** Credit cost per action */
 export const CREDIT_COSTS = {
-  text_message: 0.05,
+  text_message: 0,
   video_minute: 1.0,
   voice_reply: 0.04,
 };
@@ -113,7 +113,7 @@ export const CONSUMPTION_ITEMS = [
     key: "text_message",
     label: "Text message",
     cost: CREDIT_COSTS.text_message,
-    description: "Each message you send to a companion",
+    description: "Unlimited — no credit cost",
   },
   {
     key: "video_minute",

@@ -1,7 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
+// Text messages are unlimited on all tiers
 const MONTHLY_MESSAGE_LIMITS = {
-  free: 10,
+  free: 0,
   plus: 0,
   pro: 0,
   vip: 0,
