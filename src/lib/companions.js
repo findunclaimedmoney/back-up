@@ -5,7 +5,6 @@ import { SOFIA_SYSTEM_PROMPT } from "@/lib/sofiaBrain";
 import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
 import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
 import { JESSICA_SYSTEM_PROMPT } from "@/lib/jessicaBrain";
-import { MONICA_SYSTEM_PROMPT } from "@/lib/monicaBrain";
 import { base44 } from "@/api/base44Client";
 
 
@@ -116,20 +115,6 @@ export const COMPANIONS = [
     personality: withEmotions(JESSICA_SYSTEM_PROMPT),
     avatar_id: "d91026fdbdcb4cbfade6da36a42cf833",
     voice_id: "UZstMCXeJLMLeXyuZIuR",
-  },
-  {
-    id: "monica",
-    name: "Monica",
-    tagline: "She commands",
-    subtitle: "Bold, magnetic, and impossible to ignore",
-    description:
-      "Monica walks into a room and everything shifts. Confident, playful, and dangerously easy to talk to — she makes you feel alive.",
-    image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/526327c1e_generated_image.png",
-    accent: "from-rose-500/20 to-amber-500/10",
-    personality: withEmotions(MONICA_SYSTEM_PROMPT),
-    avatar_id: null,
-    voice_id: null,
   },
 ];
 
