@@ -5,8 +5,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
-const JESSICA_IMAGE =
-  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/22caf2b40_photo_2026-07-03_17-00-35.jpg";
+const JESSICA_VIDEO =
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/89bfb45a4_avatar-shot-20260705-a960260f.mp4";
 
 const TRAITS = [
   { icon: MessageCircle, label: "Text chat" },
@@ -45,10 +45,13 @@ export default function JessicaLanding() {
 
       {/* Hero */}
       <section className="relative h-screen min-h-[700px] w-full overflow-hidden">
-        <img
-          src={JESSICA_IMAGE}
-          alt="Jessica"
-          className="absolute inset-0 w-full h-full object-cover object-top"
+        <video
+          src={JESSICA_VIDEO}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover object-top sm:object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-background/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent" />
