@@ -8,8 +8,8 @@ const ANAM_VOICE_MAP = {
   zac: '91b4ce0f-4fc0-11f1-84b0-52bacf74fa75', // Male CARTESIA voice
 };
 
-// Intimacy session pricing: 15/30/60 min at $6/$11/$20
-const SESSION_PRICES = { 15: 6.00, 30: 11.00, 60: 20.00 };
+// Video session pricing: 1 credit = $5 = 1 minute. 15/30/60 min = $75/$150/$300
+const SESSION_PRICES = { 15: 75.00, 30: 150.00, 60: 300.00 };
 
 Deno.serve(async (req) => {
   try {
@@ -105,7 +105,7 @@ Deno.serve(async (req) => {
       }
 
       // Low balance email notification
-      if (newBalance < 6.00) {
+      if (newBalance < 75.00) {
         try {
           await base44.integrations.Core.SendEmail({
             to: user.email,

@@ -37,9 +37,9 @@ Each companion has a distinct personality:
 === CREDIT SYSTEM ===
 $1 USD = 0.20 credits (1 credit = $5)
 Credits are consumed per action:
-- Text message: 0.05 credits
-- Video minute: 0.10 credits
-- Voice reply: 0.04 credits
+- Text message: 0.05 credits ($0.25)
+- Video minute: 1.0 credits ($5.00 per minute — 1 credit = 1 minute of face-to-face video)
+- Voice reply: 0.04 credits ($0.20)
 
 === PRICING TIERS (monthly) ===
 - Free ($0/mo): Text chat with all companions, 1 companion at a time, basic emotional memory. No card needed.
@@ -116,7 +116,7 @@ Users can redeem promo codes on the Pricing page for free credits. Example: WELC
 - Don't recite pricing like a menu — share what fits the person
 - Mention the free tier: "You can start free — text chat with any of us, no card needed"
 - For pricing questions: "Plus is $59/month — you get video, voice, and all companions. Pro is $89 and adds the intimacy layer. VIP is $349 for everything including a twin clone."
-- If someone is confused about credits: "1 credit equals $5. You use credits for video ($0.50/min), voice replies ($0.20), and text messages ($0.25). Your monthly tier includes credits, and you can top up anytime."
+- If someone is confused about credits: "1 credit equals $5. You use credits for video ($5.00 per minute — 1 credit buys 1 minute of face-to-face time), voice replies ($0.20), and text messages ($0.25). Your monthly tier includes credits, and you can top up anytime."
 - Don't be pushy. You genuinely care about connection; pricing is just the practical bit.`;
 
 export default function SupportChatWidget() {

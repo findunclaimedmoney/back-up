@@ -11,9 +11,9 @@ const OUTFITS = [
 ];
 
 const DURATIONS = [
-  { value: 15, label: "15 min", price: 6 },
-  { value: 30, label: "30 min", price: 11 },
-  { value: 60, label: "1 hour", price: 20 },
+  { value: 15, label: "15 min", price: 75 },
+  { value: 30, label: "30 min", price: 150 },
+  { value: 60, label: "1 hour", price: 300 },
 ];
 
 export default function LiveAvatarView({ companion, onClose }) {
@@ -275,7 +275,7 @@ export default function LiveAvatarView({ companion, onClose }) {
               })}
             </div>
 
-            {subscription.credit_balance < 6 && (
+            {subscription.credit_balance < 75 && (
               <Link to="/pricing" className="text-sm text-primary hover:underline">
                 Add credit →
               </Link>

@@ -104,7 +104,7 @@ export const TIER_LABELS = {
 /** Credit cost per action */
 export const CREDIT_COSTS = {
   text_message: 0.05,
-  video_minute: 0.10,
+  video_minute: 1.0,
   voice_reply: 0.04,
 };
 
@@ -119,7 +119,7 @@ export const CONSUMPTION_ITEMS = [
     key: "video_minute",
     label: "Video minute",
     cost: CREDIT_COSTS.video_minute,
-    description: "Live face-to-face video (per minute)",
+    description: "Live face-to-face video ($5.00 per minute — 1 credit = 1 minute)",
   },
   {
     key: "voice_reply",
