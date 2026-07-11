@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import CustomerDashboard from "@/pages/CustomerDashboard";
+import Landing from "@/pages/Landing";
 
 export default function Home() {
   const [authChecked, setAuthChecked] = useState(false);
@@ -22,5 +22,9 @@ export default function Home() {
     );
   }
 
-  return <Navigate to="/jessica" replace />;
+  if (authed) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Landing />;
 }
