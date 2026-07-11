@@ -8,26 +8,58 @@ Deno.serve(async (req) => {
     if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const stripeKey = Deno.env.get('STRIPE_API_KEY');
-    const res = await fetch('https://api.stripe.com/v1/account', {
+
+    // Get payment links
+    const linksRes = await fetch('https://api.stripe.com/v1/payment_links?limit=50', {
       headers: { 'Authorization': `Bearer ${stripeKey}` },
     });
-    const data = await res.json();
+    const linksData = await linksRes.json();
 
-    if (data.error) return Response.json({ error: data.error }, { status: 400 });
+    // Get products
+    const productsRes = await fetch('https://api.stripe.com/v1/products?limit=50', {
+      headers: { 'Authorization': `Bearer ${stripeKey}` },
+    });
+    const productsData = await productsRes.json();
+
+    // Get prices
+    const pricesRes = await fetch('https://api.stripe.com/v1/prices?limit=50', {
+      headers: { 'Authorization': `Bearer ${stripeKey}` },
+    });
+    const pricesData = await pricesRes.json();
 
     return Response.json({
-      account_id: data.id,
-      business_name: data.business_profile?.name || data.display_name || '(not set)',
-      display_name: data.display_name,
-      email: data.email,
-      country: data.country,
-      default_currency: data.default_currency,
-      business_type: data.business_type,
-      payouts_enabled: data.payouts_enabled,
-      charges_enabled: data.charges_enabled,
-      details_submitted: data.details_submitted,
-      mode: data.livemode ? 'live' : 'test',
-      statement_descriptor: data.settings?.payments?.statement_descriptor,
+      payment_links: (linksData.data || []).map(pl => ({
+        id: pl.id,
+        url: pl.url,
+        active: pl.active,
+        description: pl.description,
+        line_items: pl.line_items?.data?.map(li => ({
+          product: li.price?.product,
+          amount: li.price?.unit_amount,
+          currency: li.price?.currency,
+          recurring: li.price?.recurring?.interval,
+        })),
+        created: pl.created ? new Date(pl.created * 1000).toISOString() : null,
+      })),
+      products: (productsData.data || []).map(p => ({
+        id: p.id,
+        name: p.name,
+        active: p.active,
+        description: p.description,
+      })),
+      prices: (pricesData.data || []).map(pr => ({
+        id: pr.id,
+        product: pr.product,
+        amount: pr.unit_amount,
+        currency: pr.currency,
+        recurring: pr.recurring?.interval,
+        type: pr.type,
+      })),
+      counts: {
+        payment_links: linksData.data?.length || 0,
+        products: productsData.data?.length || 0,
+        prices: pricesData.data?.length || 0,
+      },
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
