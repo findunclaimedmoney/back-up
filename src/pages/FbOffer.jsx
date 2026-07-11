@@ -68,7 +68,7 @@ export default function FbOffer() {
             </div>
             <h1 className="font-heading text-2xl font-semibold mb-2">$10 Free Credits</h1>
             <p className="text-sm text-muted-foreground">
-              Sign up now and get 2 free credits to start chatting with your AI companion
+              That's <span className="text-primary font-semibold">2 free credits</span> — enough for 2 minutes of live face-to-face video with Jess, or 50 voice replies. Sign up now to claim.
             </p>
           </div>
 
@@ -98,11 +98,11 @@ export default function FbOffer() {
             {/* Benefits */}
             <div className="space-y-2 mb-6 text-left">
               {[
-                "2 free credits ($10 value)",
-                "Chat with Mia, Jess, Luna, Sophie, Natalie & Zac",
-                "Voice replies and selfie photos",
-                "No credit card needed to start",
-              ].map((benefit, i) => (
+                 "2 free credits = 2 min live video with your companion",
+                 "Or 50 AI voice replies — hear them speak",
+                 "Text chat is always free with all companions",
+                 "No credit card needed to start",
+               ].map((benefit, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
                   <Check className="w-4 h-4 text-primary flex-shrink-0" />
                   <span className="text-muted-foreground">{benefit}</span>
