@@ -149,7 +149,7 @@ export default function JessOffer() {
                     1 Free Session with Jess
                   </h3>
                   <p className="text-xs text-white/60">
-                    15 minutes of face-to-face video (A$75 credit) — on us
+                    15 minutes of face-to-face video (15 credits) — on us
                   </p>
                 </div>
               </div>

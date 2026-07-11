@@ -11,9 +11,9 @@ const OUTFITS = [
 ];
 
 const DURATIONS = [
-  { value: 15, label: "15 min", price: 75, display: "A$75" },
-  { value: 30, label: "30 min", price: 150, display: "A$150" },
-  { value: 60, label: "1 hour", price: 300, display: "A$300" },
+  { value: 15, label: "15 min", credits: 15, display: "15 credits" },
+  { value: 30, label: "30 min", credits: 30, display: "30 credits" },
+  { value: 60, label: "1 hour", credits: 60, display: "60 credits" },
 ];
 
 export default function LiveAvatarView({ companion, onClose }) {
@@ -247,13 +247,13 @@ export default function LiveAvatarView({ companion, onClose }) {
             {subscription.credit_balance > 0 && (
               <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/10 border border-primary/20">
                 <DollarSign className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">A${subscription.credit_balance.toFixed(2)} credit</span>
+                <span className="text-sm font-medium">{subscription.credit_balance.toFixed(1)} credits</span>
               </div>
             )}
 
             <div className="grid grid-cols-1 gap-3 w-full">
               {DURATIONS.map((d) => {
-                const affordable = subscription.credit_balance >= d.price;
+                const affordable = subscription.credit_balance >= d.credits;
                 return (
                   <button
                     key={d.value}
@@ -275,7 +275,7 @@ export default function LiveAvatarView({ companion, onClose }) {
               })}
             </div>
 
-            {subscription.credit_balance < 75 && (
+            {subscription.credit_balance < 15 && (
               <Link to="/pricing" className="text-sm text-primary hover:underline">
                 Add credit →
               </Link>
