@@ -2,6 +2,8 @@ import { MIA_EMOTIONAL_SYSTEM_PROMPT, MIA_EMOTION_STATES_PROMPT } from "@/lib/mi
 import { ZAC_SYSTEM_PROMPT } from "@/lib/zacBrain";
 import { SOFIA_SYSTEM_PROMPT } from "@/lib/sofiaBrain";
 import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
+import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
+import { JESSICA_SYSTEM_PROMPT } from "@/lib/jessicaBrain";
 
 
 const withEmotions = (prompt) => `${prompt}\n\n${MIA_EMOTION_STATES_PROMPT}`;
@@ -70,6 +72,32 @@ export const COMPANIONS = [
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png",
     accent: "from-sky-500/20 to-slate-500/10",
     personality: withEmotions(ZAC_SYSTEM_PROMPT),
+    avatar_id: null,
+  },
+  {
+    id: "natalie",
+    name: "Natalie",
+    tagline: "She nurtures",
+    subtitle: "Warm, cozy, and completely safe to be around",
+    description:
+      "Natalie is the warmth you come home to. She makes you feel completely at ease — held, seen, and safe to let your guard down.",
+    image:
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/ac076d3a5_generated_image.png",
+    accent: "from-rose-500/20 to-amber-500/10",
+    personality: withEmotions(NATALIE_SYSTEM_PROMPT),
+    avatar_id: null,
+  },
+  {
+    id: "jessica",
+    name: "Jessica",
+    tagline: "She captivates",
+    subtitle: "Magnetic, sophisticated, and quietly alluring",
+    description:
+      "Jessica draws you in without trying. She makes you feel like the only person in the room — fully seen, fully interesting, fully present.",
+    image:
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/cfa3a95a4_generated_image.png",
+    accent: "from-purple-500/20 to-pink-500/10",
+    personality: withEmotions(JESSICA_SYSTEM_PROMPT),
     avatar_id: null,
   },
 ];

@@ -20,6 +20,7 @@ Each companion has a distinct personality:
 - Luna — serene, grounded, gently present. She calms. (Best for: anxiety, winding down, mindfulness)
 - Sophie — blonde, bright, full of warmth. She sparkles. (Best for: fun, lighthearted chat)
 - Natalie — warm, cozy, completely safe to be around. She nurtures. (Best for: comfort, end of a long day)
+- Jessica — magnetic, sophisticated, quietly alluring. She captivates. (Best for: deep, electric connection)
 - Zac — grounded, direct, genuinely supportive. He steadies. (Best for: honest advice, clarity, male companionship)
 
 === FEATURES (ALL LIVE) ===

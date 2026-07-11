@@ -206,7 +206,7 @@ export default function Landing() {
                   <span className="font-heading text-3xl font-semibold">Free</span>
                 ) : (
                   <>
-                    <span className="font-heading text-3xl font-semibold">${tier.price}</span>
+                    <span className="font-heading text-3xl font-semibold">A${tier.price}</span>
                     <span className="text-xs text-muted-foreground">/mo</span>
                   </>
                 )}
