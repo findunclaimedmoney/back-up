@@ -192,7 +192,20 @@ export default function Pricing() {
         </div>
       ) : (
         <>
-          <section className="px-6 pt-12 pb-8 text-center">
+          <section className="relative px-6 pt-16 pb-8 text-center overflow-hidden">
+            <div className="absolute inset-0 z-0">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover opacity-20"
+              >
+                <source src="https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/31bb45ba2_Romantic_hero_video.mp4" type="video/mp4" />
+              </video>
+              <div className="absolute inset-0 bg-gradient-to-b from-background/70 to-background" />
+            </div>
+            <div className="relative z-10">
             <h1 className="font-heading text-4xl sm:text-5xl font-semibold tracking-tight mb-4">
               Choose your experience
             </h1>
@@ -216,6 +229,7 @@ export default function Pricing() {
                 {billingLoading ? "Loading…" : "Manage or cancel subscription"}
               </button>
             )}
+            </div>
           </section>
 
           <section className="px-6 pb-24">

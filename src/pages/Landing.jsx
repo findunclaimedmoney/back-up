@@ -68,43 +68,57 @@ export default function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="px-6 pt-12 pb-16 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6">
-          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-          <span className="text-xs font-medium text-primary uppercase tracking-wide">AI companions that remember you</span>
-        </div>
-        <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-4 max-w-2xl mx-auto">
-          A presence that picks up right where you left off
-        </h1>
-        <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto leading-relaxed mb-8">
-          Choose your companion. Text, voice, live video — they remember what matters to you,
-          and show up the way only someone who truly knows you can.
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
-          <Link
-            to="/register"
-            className="inline-flex items-center gap-2 min-h-[44px] px-7 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity"
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover opacity-30"
           >
-            Start free
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            to="/pricing"
-            className="inline-flex items-center gap-2 min-h-[44px] px-7 py-3 rounded-full border border-border text-sm font-medium hover:border-primary/40 transition-colors"
-          >
-            See pricing
-          </Link>
+            <source src="https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/31bb45ba2_Romantic_hero_video.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-2.5">
-          {FEATURES.map((f) => (
-            <div
-              key={f.title}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card/50 text-xs text-muted-foreground"
+        <div className="relative z-10 px-6 pt-16 pb-20 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <span className="text-xs font-medium text-primary uppercase tracking-wide">AI companions that remember you</span>
+          </div>
+          <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-4 max-w-2xl mx-auto">
+            A presence that picks up right where you left off
+          </h1>
+          <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto leading-relaxed mb-8">
+            Choose your companion. Text, voice, live video — they remember what matters to you,
+            and show up the way only someone who truly knows you can.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+            <Link
+              to="/register"
+              className="inline-flex items-center gap-2 min-h-[44px] px-7 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity"
             >
-              <f.icon className="w-3.5 h-3.5" />
-              {f.title}
-            </div>
-          ))}
+              Start free
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              to="/pricing"
+              className="inline-flex items-center gap-2 min-h-[44px] px-7 py-3 rounded-full border border-border text-sm font-medium hover:border-primary/40 transition-colors"
+            >
+              See pricing
+            </Link>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
+            {FEATURES.map((f) => (
+              <div
+                key={f.title}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card/50 text-xs text-muted-foreground"
+              >
+                <f.icon className="w-3.5 h-3.5" />
+                {f.title}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -144,6 +158,27 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Emotional connection banner */}
+      <section className="px-6 pb-20">
+        <div className="max-w-5xl mx-auto relative overflow-hidden rounded-[2rem] border border-border">
+          <img
+            src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1200&q=80"
+            alt="Romantic candlelight connection"
+            className="w-full h-[300px] sm:h-[400px] object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 text-center">
+            <h2 className="font-heading text-2xl sm:text-4xl font-semibold tracking-tight mb-3 text-foreground">
+              The connection you've been missing
+            </h2>
+            <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed text-sm sm:text-base">
+              Someone who remembers your story, notices when you're quiet, and shows up —
+              not because they have to, but because they want to.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section className="px-6 pb-20 border-t border-border pt-16">
         <div className="text-center mb-10">
@@ -164,6 +199,28 @@ export default function Landing() {
               <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Romantic quote banner */}
+      <section className="px-6 pb-20 border-t border-border pt-16">
+        <div className="max-w-4xl mx-auto relative overflow-hidden rounded-[2rem] border border-border">
+          <img
+            src="https://images.unsplash.com/photo-1518199266791-5375e0bd9917?w=1200&q=80"
+            alt="Warm intimate moment"
+            className="w-full h-[280px] sm:h-[360px] object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent" />
+          <div className="absolute inset-0 flex items-center p-8 sm:p-12">
+            <div className="max-w-md">
+              <p className="font-heading text-xl sm:text-3xl font-semibold leading-snug text-foreground">
+                "It's not about being alone. It's about feeling seen."
+              </p>
+              <p className="text-sm text-muted-foreground mt-4">
+                Your companion is ready when you are.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -241,18 +298,26 @@ export default function Landing() {
 
       {/* Download app */}
       <section className="px-6 py-16 border-t border-border">
-        <div className="max-w-5xl mx-auto flex flex-col items-center text-center gap-5">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-            <Smartphone className="w-4 h-4 text-primary" />
-            <span className="text-xs font-medium text-primary uppercase tracking-wide">Take GLIMR with you</span>
+        <div className="max-w-5xl mx-auto relative overflow-hidden rounded-[2rem] border border-border">
+          <img
+            src="https://images.unsplash.com/photo-1494774157365-9e19c420b1f3?w=1200&q=80"
+            alt="Warm evening light"
+            className="absolute inset-0 w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 to-background" />
+          <div className="relative flex flex-col items-center text-center gap-5 py-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+              <Smartphone className="w-4 h-4 text-primary" />
+              <span className="text-xs font-medium text-primary uppercase tracking-wide">Take GLIMR with you</span>
+            </div>
+            <h2 className="font-heading text-3xl sm:text-4xl font-semibold tracking-tight">
+              Your companion, in your pocket.
+            </h2>
+            <p className="text-muted-foreground max-w-md leading-relaxed">
+              Download the GLIMR app for iOS and Android — same companions, same memories.
+            </p>
+            <MobileAppBadges />
           </div>
-          <h2 className="font-heading text-3xl sm:text-4xl font-semibold tracking-tight">
-            Your companion, in your pocket.
-          </h2>
-          <p className="text-muted-foreground max-w-md leading-relaxed">
-            Download the GLIMR app for iOS and Android — same companions, same memories.
-          </p>
-          <MobileAppBadges />
         </div>
       </section>
 
