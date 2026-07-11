@@ -118,6 +118,7 @@ export default function Register() {
       const jessOffer = sessionStorage.getItem("glimr_jess_offer");
       if (jessOffer) {
         sessionStorage.removeItem("glimr_jess_offer");
+        sessionStorage.setItem("glimr_jess_auto_claim", "1");
         sessionStorage.setItem("glimr_signup_handled", "1");
         sessionStorage.setItem("glimr_new_signup_welcome", "1");
         sessionStorage.setItem("glimr_new_signup_name", fullName.split(" ")[0] || "there");
