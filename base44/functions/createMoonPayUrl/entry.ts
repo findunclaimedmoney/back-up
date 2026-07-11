@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
       apiKey: publicKey,
       currencyCode: moonpayCurrency,
       walletAddress: order.deposit_address,
-      baseCurrencyCode: 'usd',
+      baseCurrencyCode: 'aud',
       baseCurrencyAmount: String(order.usd_amount),
       lockAmount: 'true',
       redirectURL: 'https://www.glimr.com.au/moonpay',

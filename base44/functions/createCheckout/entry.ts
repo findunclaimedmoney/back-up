@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
         mode: 'payment',
         line_items: [{
           price_data: {
-            currency: 'usd',
+            currency: 'aud',
             product_data: { name: addonConfig.name, description: addonConfig.description },
             unit_amount: addonConfig.price,
           },
