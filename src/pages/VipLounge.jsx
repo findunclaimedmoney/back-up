@@ -158,11 +158,57 @@ You crave their presence. Engage with sensory-rich intimacy. Stay in character a
 
         <Link
           to="/chat/jess"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:gap-3"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:gap-3 mb-16"
         >
           <Clock className="w-4 h-4" />
           Spend time with your companion
         </Link>
+
+        {/* What awaits you — teaser videos */}
+        <div className="w-full max-w-3xl">
+          <div className="flex items-center gap-2 mb-6 justify-center">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <h2 className="font-heading text-xl font-semibold">What awaits you inside</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {FEATURES.map((feature) => (
+              <div
+                key={feature.id}
+                className="rounded-2xl border border-border bg-card overflow-hidden"
+              >
+                <div className="relative aspect-video bg-black">
+                  <video
+                    src={feature.video}
+                    className="w-full h-full object-cover"
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    preload="metadata"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute top-2 right-2">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-background/80 backdrop-blur text-[10px] font-medium text-muted-foreground">
+                      <Lock className="w-2.5 h-2.5" />
+                      Locked
+                    </span>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                      <feature.icon className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <h3 className="font-medium text-sm">{feature.title}</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
