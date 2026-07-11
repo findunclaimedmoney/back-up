@@ -18,7 +18,7 @@ export const COMPANIONS = [
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png",
     accent: "from-amber-500/20 to-rose-500/10",
     personality: withEmotions(MIA_EMOTIONAL_SYSTEM_PROMPT),
-    avatar_id: null,
+    avatar_id: "3559b3f9-29e3-48eb-a4ff-7a7dc5b47ca9",
   },
   {
     id: "mia",
