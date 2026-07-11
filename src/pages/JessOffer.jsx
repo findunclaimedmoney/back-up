@@ -64,6 +64,15 @@ export default function JessOffer() {
     }
   };
 
+  // Auto-claim for users who just registered through the Jess Offer flow
+  useEffect(() => {
+    const autoClaim = sessionStorage.getItem("glimr_jess_auto_claim");
+    if (autoClaim) {
+      sessionStorage.removeItem("glimr_jess_auto_claim");
+      handleClaim();
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
