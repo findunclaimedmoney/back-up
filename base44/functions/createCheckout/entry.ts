@@ -3,7 +3,7 @@ import Stripe from 'npm:stripe@17.0.0';
 
 const TIER_CONFIG = {
   plus: { price: 5900, name: 'GLIMR Plus', description: '80 min HD video, voice replies, all companions' },
-  pro: { price: 8900, name: 'GLIMR Pro', description: '160 min HD video, intimacy & romantic layer, fantasy outfits, diary' },
+  pro: { price: 9900, name: 'GLIMR Pro', description: '20 credits HD video, intimacy & romantic layer, fantasy outfits, diary' },
   vip: { price: 34900, name: 'GLIMR VIP', description: '500 min HD video, twin companion, GLIMR Home device, deepest intimacy' },
 };
 

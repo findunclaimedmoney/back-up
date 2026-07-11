@@ -52,15 +52,15 @@ export const TIERS = [
   {
     id: "pro",
     name: "Pro",
-    price: 89,
-    credits: 18,
+    price: 99,
+    credits: 20,
     description: "Deep connection & romance",
     ctaLabel: "Upgrade to Pro",
     highlighted: true,
     badge: "popular",
     features: [
       "Everything in Plus",
-      "18 credits / month",
+      "20 credits / month",
       "Intimacy & Romantic layer",
       "Fantasy outfits & uniforms",
       "Companion's Diary",
@@ -90,7 +90,7 @@ export const TIERS = [
 export const TIER_CREDITS = {
   free: 0,
   plus: 12,
-  pro: 18,
+  pro: 20,
   vip: 70,
 };
 

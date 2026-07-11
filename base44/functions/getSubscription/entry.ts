@@ -11,7 +11,7 @@ const MONTHLY_MESSAGE_LIMITS = {
 const TIER_MONTHLY_CREDITS = {
   free: 0,
   plus: 12,
-  pro: 18,
+  pro: 20,
   vip: 70,
 };
 

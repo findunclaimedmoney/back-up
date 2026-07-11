@@ -44,7 +44,7 @@ Credits are consumed per action:
 === PRICING TIERS (monthly) ===
 - Free ($0/mo): Unlimited text chat with all companions, 1 companion at a time, basic emotional memory. No card needed.
 - Plus ($59/mo): 12 credits/month, voice replies, all companions unlocked, enhanced memory system.
-- Pro ($89/mo): 18 credits/month, everything in Plus + Intimacy & Romantic layer, fantasy outfits & uniforms, Companion's Diary, priority processing. (Most popular.)
+- Pro ($99/mo): 20 credits/month, everything in Plus + Intimacy & Romantic layer, fantasy outfits & uniforms, Companion's Diary, priority processing. (Most popular.)
 - VIP ($349/mo): 70 credits/month, everything in Pro + Twin/Clone companion, GLIMR Home holographic device, deepest intimacy & personalization, dedicated memory palace, early access to new companions.
 
 === CREDIT TOP-UP PACKS ===
