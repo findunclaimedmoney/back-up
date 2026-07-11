@@ -177,17 +177,17 @@ const goBack = useGoBack();
                   Navigation
                 </AccordionTrigger>
                 <AccordionContent className="flex flex-col gap-3 pb-2">
-                  <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-                  <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
-                  <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy & Terms</Link>
+                  <Link to="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
+                  <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+                  <Link to="/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy & Terms</Link>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
           ) : (
             <div className="flex items-center gap-6">
-              <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-              <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
-              <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy & Terms</Link>
+              <Link to="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
+              <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+              <Link to="/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy & Terms</Link>
             </div>
           )}
         </div>
