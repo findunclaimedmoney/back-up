@@ -43,8 +43,46 @@ export default function VipLounge() {
   const [loading, setLoading] = useState(true);
   const [activeSession, setActiveSession] = useState(null);
   const [selectedCompanionId, setSelectedCompanionId] = useState("jess");
+  const [generating, setGenerating] = useState(false);
+  const [avatarIds, setAvatarIds] = useState(() => {
+    try {
+      const cached = localStorage.getItem("vip_avatar_ids");
+      return cached ? JSON.parse(cached) : {};
+    } catch {
+      return {};
+    }
+  });
 
   const isMaleCompanion = selectedCompanionId === "zac" || selectedCompanionId === "zac2";
+
+  const selectedAvatarId = avatarIds[selectedCompanionId] || companion?.avatar_id || null;
+
+  const handleGenerateAvatar = async () => {
+    if (!companion || selectedAvatarId) return;
+    setGenerating(true);
+    try {
+      // 1. Generate a photo with AI (returns media.base44.com URL)
+      const genderHint = isMaleCompanion ? "a handsome man" : "a beautiful woman";
+      const prompt = `Professional cinematic portrait photo of ${genderHint} named ${companion.name}. ${companion.description}. Clear face, looking directly at camera, well-lit, photorealistic, high detail, 16:9 landscape composition. Suitable for AI avatar creation.`;
+      const genRes = await base44.integrations.Core.GenerateImage({ prompt });
+      if (!genRes?.url) throw new Error("Image generation failed");
+
+      // 2. Submit the generated photo to LiveAvatar for approval
+      const res = await base44.functions.invoke("createLiveAvatar", {
+        companion_name: companion.name,
+        image_url: genRes.url,
+      });
+      if (res.data?.avatar_id) {
+        const updated = { ...avatarIds, [selectedCompanionId]: res.data.avatar_id };
+        setAvatarIds(updated);
+        localStorage.setItem("vip_avatar_ids", JSON.stringify(updated));
+      }
+    } catch (e) {
+      // best-effort
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   useEffect(() => {
     base44.functions
@@ -70,6 +108,7 @@ export default function VipLounge() {
   const intimacyCompanion = companion
     ? {
         ...companion,
+        avatar_id: selectedAvatarId,
         personality: `${companion.personality}
 
 --- INTIMACY & ROMANTIC LAYER (VIP UNLOCKED) ---
@@ -285,17 +324,59 @@ This is the moment everything was building toward. The trust, the time, the slow
             {["jess", "zac", "zac2"].map((id) => {
               const c = getCompanion(id);
               if (!c) return null;
+              const isSelected = id === selectedCompanionId;
+              const hasAvatar = (avatarIds[id] || c.avatar_id) != null;
               return (
-                <div
+                <button
                   key={id}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary bg-primary/10 text-sm text-primary"
+                  onClick={() => setSelectedCompanionId(id)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm transition-all ${
+                    isSelected
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:text-foreground hover:border-primary/40"
+                  }`}
                 >
                   <img src={c.image} alt={c.name} className="w-5 h-5 rounded-full object-cover" />
                   {c.name}
-                </div>
+                  {!hasAvatar && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
+                  )}
+                </button>
               );
             })}
           </div>
+
+          {/* Generate avatar for companions without one */}
+          {!selectedAvatarId && companion && (
+            <div className="mt-4 flex flex-col items-center gap-2">
+              <p className="text-xs text-muted-foreground text-center max-w-sm">
+                {companion.name} doesn't have a face-to-face avatar yet. Generate one — we'll create a photo and submit it for approval.
+              </p>
+              <button
+                onClick={handleGenerateAvatar}
+                disabled={generating}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:opacity-90 disabled:opacity-50"
+              >
+                {generating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Generating photo…
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Generate {companion.name}'s Avatar
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
+          {selectedAvatarId && companion && (
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              {companion.name}'s avatar is ready for video sessions.
+            </p>
+          )}
         </div>
       </section>
 
@@ -355,10 +436,10 @@ This is the moment everything was building toward. The trust, the time, the slow
         <AnamView companion={intimacyCompanion} onClose={handleCloseSession} />
       )}
       {activeSession === "outfits" && companion && (
-        <AnamView companion={companion} onClose={handleCloseSession} />
+        <AnamView companion={{ ...companion, avatar_id: selectedAvatarId }} onClose={handleCloseSession} />
       )}
       {activeSession === "twin" && companion && (
-        <AnamView companion={companion} onClose={handleCloseSession} />
+        <AnamView companion={{ ...companion, avatar_id: selectedAvatarId }} onClose={handleCloseSession} />
       )}
     </div>
   );
