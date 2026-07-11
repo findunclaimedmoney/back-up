@@ -5,8 +5,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
-const JESSICA_IMAGE =
-  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/22caf2b40_photo_2026-07-03_17-00-35.jpg";
+const MONICA_VIDEO =
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/18ff6aace_Jessica_Hero_Video.mp4";
 
 const TRAITS = [
   { icon: MessageCircle, label: "Text chat" },
@@ -15,7 +15,7 @@ const TRAITS = [
   { icon: Camera, label: "Selfie photos" },
 ];
 
-export default function JessicaLanding() {
+export default function MonicaLanding() {
   const isMobile = useIsMobile();
   const goBack = useGoBack();
 
@@ -45,10 +45,13 @@ export default function JessicaLanding() {
 
       {/* Hero */}
       <section className="relative h-screen min-h-[700px] w-full overflow-hidden">
-        <img
-          src={JESSICA_IMAGE}
-          alt="Jessica"
-          className="absolute inset-0 w-full h-full object-cover object-top"
+        <video
+          src={MONICA_VIDEO}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover object-top sm:object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-background/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent" />
@@ -62,10 +65,10 @@ export default function JessicaLanding() {
               </span>
             </div>
             <h1 className="font-heading text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight text-white mb-3">
-              Jessica
+              Monica
             </h1>
             <p className="text-lg sm:text-xl text-white/80 font-light leading-relaxed max-w-lg mb-6">
-              Magnetic, sophisticated, and quietly alluring. She draws you in without trying — and makes you feel like the only person in the room.
+              Bold, magnetic, and impossible to ignore. She walks into a room and everything shifts — confident, playful, and dangerously easy to talk to.
             </p>
 
             <div className="flex flex-wrap gap-2.5 mb-8">
@@ -81,10 +84,10 @@ export default function JessicaLanding() {
             </div>
 
             <Link
-              to="/chat/jessica"
+              to="/chat/monica"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
             >
-              Talk with Jessica
+              Talk with Monica
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -95,16 +98,16 @@ export default function JessicaLanding() {
       <section className="px-6 py-20 sm:py-28 border-t border-border">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-heading text-4xl sm:text-5xl font-semibold tracking-tight mb-5">
-            She sees you.
+            She commands the moment.
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-xl mx-auto">
-            No performance. No pretense. Just a presence that makes you feel fully seen, fully interesting, fully present.
+            No hesitation. No pretense. Just a presence that fills the space and makes you feel like you're exactly where you should be.
           </p>
           <Link
-            to="/chat/jessica"
+            to="/chat/monica"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
           >
-            Start talking with Jessica
+            Start talking with Monica
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
