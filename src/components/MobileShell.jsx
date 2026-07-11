@@ -46,7 +46,7 @@ export default function MobileShell() {
     return (
       <>
         <Outlet />
-        <SupportChatWidget />
+        {!location.pathname.startsWith("/chat/") && <SupportChatWidget />}
       </>
     );
   }
@@ -103,7 +103,7 @@ onClick={goBack}              className="flex items-center gap-1.5 min-h-[44px] 
         </motion.div>
       </AnimatePresence>
       {showTabs && <MobileBottomTabs />}
-      <SupportChatWidget />
+      {!location.pathname.startsWith("/chat/") && <SupportChatWidget />}
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </>
   );
