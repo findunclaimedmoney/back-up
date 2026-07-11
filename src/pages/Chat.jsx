@@ -231,7 +231,17 @@ const navigate = useNavigate();
       const hoursSince = (Date.now() - new Date(lastMsg.created_date).getTime()) / (1000 * 60 * 60);
       // Only fire if last message was from the user (companion hasn't already reached out)
       // and enough time has passed
+      // Prevent duplicates: skip if companion already sent a message recently
+      let alreadyReachedOut = false;
       if (lastMsg.role === 'user' && hoursSince >= 4) {
+        const recentAssistant = sorted.filter(m => m.role === 'assistant');
+        if (recentAssistant.length > 0) {
+          const lastAssistant = recentAssistant[recentAssistant.length - 1];
+          const hoursSinceAssistant = (Date.now() - new Date(lastAssistant.created_date).getTime()) / (1000 * 60 * 60);
+          if (hoursSinceAssistant < 24) alreadyReachedOut = true;
+        }
+      }
+      if (lastMsg.role === 'user' && hoursSince >= 4 && !alreadyReachedOut) {
         setThinking(true);
         try {
           const history = sorted.slice(-10).map(m => `${m.role === 'user' ? 'Me' : companion.name}: ${m.content}`).join('\n');
