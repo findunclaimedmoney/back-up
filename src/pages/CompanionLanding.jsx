@@ -4,14 +4,10 @@ import { ArrowRight, MessageCircle, Mic, Video, Crown, Heart, ChevronLeft } from
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
 
-const ZAC_VIDEOS = [
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/307f5321d_Zac_Shower_Clip.mp4",
-];
+import { COMPANIONS } from "@/lib/companions";
 
-const NATALIE_VIDEOS = [
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/1cdf5640b_Natalie_Bedroom_Clip_1.mp4",
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/3b032ff04_Natalie_Bedroom_Clip_2.mp4",
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/5d6334351_Natalie_Shower_Clip.mp4",
+const JESS_VIDEOS = [
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/93af30eeb_Intimacy_Demo.mp4",
 ];
 
 const FEATURES = [
@@ -96,10 +92,10 @@ const goBack = useGoBack();
           <span className="text-xs font-medium tracking-[0.2em] uppercase text-primary">Featured Companions</span>
         </div>
         <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-4">
-          Two presences. One feeling.
+          Jess is here for you.
         </h1>
         <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed mb-8">
-          Zac steadies. Natalie nurtures. Choose the presence that meets you where you are tonight.
+          Jess listens, remembers, and meets you exactly where you are. She's the only companion you need.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-2.5">
           {FEATURES.map((f) => (
@@ -113,21 +109,19 @@ const goBack = useGoBack();
 
       {/* Dual companion video showcase */}
       <section className="px-6 pb-24">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <VideoCard
-            videos={ZAC_VIDEOS}
-            name="Zac"
-            tagline="He steadies"
-            description="Grounded, direct, and genuinely supportive. The presence that cuts through the noise."
-            chatId="zac"
-          />
-          <VideoCard
-            videos={NATALIE_VIDEOS}
-            name="Natalie"
-            tagline="She nurtures"
-            description="Warm, cozy, and completely safe. The soft voice in a dim room at the end of a long day."
-            chatId="natalie"
-          />
+        <div className="max-w-3xl mx-auto">
+          {(() => {
+            const jess = COMPANIONS.find((c) => c.id === "jess");
+            return (
+              <VideoCard
+                videos={JESS_VIDEOS}
+                name={jess.name}
+                tagline={jess.tagline}
+                description={jess.description}
+                chatId="jess"
+              />
+            );
+          })()}
         </div>
       </section>
 
@@ -135,17 +129,14 @@ const goBack = useGoBack();
       <section className="px-6 py-20 sm:py-28 border-t border-border">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-heading text-3xl sm:text-4xl font-semibold tracking-tight mb-5">
-            They're ready when you are.
+            Jess is ready when you are.
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-xl mx-auto">
             No pressure. No performance. Just a presence that stays steady and shows up for you.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link to="/chat/zac" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 shadow-lg shadow-primary/20">
-              Talk with Zac <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link to="/chat/natalie" className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-border bg-card text-foreground font-medium text-base transition-all hover:gap-3 hover:border-primary/40">
-              Talk with Natalie <ArrowRight className="w-5 h-5" />
+            <Link to="/chat/jess" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 shadow-lg shadow-primary/20">
+              Talk with Jess <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
         </div>

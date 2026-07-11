@@ -42,7 +42,7 @@ export default function VipLounge() {
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSession, setActiveSession] = useState(null);
-  const [selectedCompanionId, setSelectedCompanionId] = useState("mia");
+  const [selectedCompanionId, setSelectedCompanionId] = useState("jess");
 
   useEffect(() => {
     base44.functions
@@ -150,22 +150,17 @@ You crave their presence. Engage with sensory-rich intimacy. Stay in character a
             Choose your companion for the studio
           </p>
           <div className="flex items-center justify-center gap-2 flex-wrap">
-            {["jess", "mia", "luna", "sophie", "natalie", "zac"].map((id) => {
+            {["jess"].map((id) => {
               const c = getCompanion(id);
               if (!c) return null;
               return (
-                <button
+                <div
                   key={id}
-                  onClick={() => setSelectedCompanionId(id)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm transition-all ${
-                    selectedCompanionId === id
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary bg-primary/10 text-sm text-primary"
                 >
                   <img src={c.image} alt={c.name} className="w-5 h-5 rounded-full object-cover" />
                   {c.name}
-                </button>
+                </div>
               );
             })}
           </div>

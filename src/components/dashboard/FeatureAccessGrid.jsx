@@ -16,7 +16,7 @@ const FEATURES = [
     title: "Live text chat",
     cost: "0.05 credits / message",
     desc: "Real conversations that remember everything",
-    to: "/companions",
+    to: "/chat/jess",
     cta: "Start chatting",
   },
   {
@@ -24,7 +24,7 @@ const FEATURES = [
     title: "Voice replies",
     cost: "0.04 credits / reply",
     desc: "Hear your companion speak to you",
-    to: "/companions",
+    to: "/chat/jess",
     cta: "Listen",
   },
   {
