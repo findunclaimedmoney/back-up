@@ -1,5 +1,15 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
+const COMPANIONS = [
+  { name: 'Jess', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png' },
+  { name: 'Mia', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png' },
+  { name: 'Luna', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/1a1420690_image-1782886782778.png' },
+  { name: 'Sophie', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/ba7d734da_ElegantHallwayPose.png' },
+  { name: 'Zac', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png' },
+  { name: 'Natalie', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/1ee4619f5_image.png' },
+  { name: 'Jessica', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/22caf2b40_photo_2026-07-03_17-00-35.jpg' },
+];
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -10,7 +20,6 @@ Deno.serve(async (req) => {
 
     const today = new Date().toISOString().split('T')[0];
 
-    // Pull real platform stats for authentic content
     let stats = null;
     try {
       const statsResp = await base44.asServiceRole.functions.invoke('getDashboardStats', {});
@@ -20,27 +29,19 @@ Deno.serve(async (req) => {
     }
 
     const statsContext = stats
-      ? `\nPlatform stats for authentic content: ${stats.total_users || 'growing'} total users, ${stats.active_subscriptions || 'active'} subscriptions, ${stats.total_sessions || 'many'} sessions completed.`
+      ? `\nPlatform stats: ${stats.total_users || 'growing'} users, ${stats.active_subscriptions || 'active'} subscriptions.`
       : '';
 
-    // Generate 3 diverse campaign topics
     const topicResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are GLIMR's marketing director. Generate 3 diverse Facebook marketing campaign ideas for today.
+      prompt: `You are GLIMR's marketing director. GLIMR is an Australian AI companionship platform fighting loneliness. Companions: Jess, Mia, Luna, Sophie, Natalie, Zac, Jessica. Free tier — text chat, no card. Paid: Plus ($59/mo), Pro ($89/mo), VIP ($349/mo). Sign up at glimr.app${statsContext}
 
-GLIMR is a companionship platform addressing loneliness through AI companions that remember you. Companions: Jess, Mia, Luna, Sophie, Natalie, Zac. Free tier — text chat, no card needed. Paid tiers: Plus ($59/mo), Pro ($89/mo), VIP ($349/mo). Sign up at glimr.app${statsContext}
+Generate 3 DIFFERENT Facebook campaign ideas. Each campaign must feature ONE specific companion by name. Write the companion_name field with the exact companion name.
 
-Return 3 DIFFERENT campaign angles (e.g. emotional story about loneliness, feature highlight like voice/video chat, social proof/testimonial style, question-based engagement, seasonal). Each must feel distinct.
+Campaign angles to vary: emotional story about loneliness, feature highlight (voice/video chat), social proof style, question-based engagement, seasonal/relatable moment.
 
-CRITICAL VIDEO RULES:
-- The video_description MUST be written entirely in English.
-- The video MUST be directly relevant to GLIMR — show human connection, companionship, someone using their phone to chat, a warm presence, or the feeling of being heard and remembered.
-- Do NOT generate abstract, random, or off-brand visuals. Every video must clearly relate to companionship, loneliness, or digital connection.
-- Include on-screen or scene context that evokes GLIMR's brand: warm lighting, a person feeling less alone, a phone screen with a conversation, etc.
-- ALL people shown in the video MUST be Australian — Caucasian, Aboriginal, Torres Strait Islander, or mixed Australian appearance. Australian fashion, Australian settings (beaches, suburban homes, cafes, outback).
-- Do NOT feature American-looking actors, American settings, or American cultural markers (no US flags, yellow school buses, American football, etc.).
-- If any person speaks in the video, they MUST speak with an Australian accent.
+ALL content MUST be in English and relevant to GLIMR (companionship, loneliness, being heard, being remembered).
 
-Return JSON with: campaigns array, each having "topic" (short label, in English), "video_description" (detailed visual prompt for a 6-second vertical video — in English, GLIMR-relevant, specific about subject, setting, mood, lighting), "video_style" (visual mood descriptor, in English).`,
+Return JSON: campaigns array, each with "topic" (short English label), "companion_name" (one of: Jess, Mia, Luna, Sophie, Natalie, Zac, Jessica), "caption_angle" (2-3 sentence description of what the caption should say).`,
       response_json_schema: {
         type: 'object',
         properties: {
@@ -50,8 +51,8 @@ Return JSON with: campaigns array, each having "topic" (short label, in English)
               type: 'object',
               properties: {
                 topic: { type: 'string' },
-                video_description: { type: 'string' },
-                video_style: { type: 'string' },
+                companion_name: { type: 'string' },
+                caption_angle: { type: 'string' },
               },
             },
           },
@@ -67,14 +68,24 @@ Return JSON with: campaigns array, each having "topic" (short label, in English)
     const created = [];
 
     for (const camp of campaigns) {
-      // Generate caption
+      const companion = COMPANIONS.find(c => c.name === camp.companion_name) || COMPANIONS[0];
+
       const captionResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are GLIMR's marketing director. Create a Facebook post caption for this campaign: "${camp.topic}"
+        prompt: `You are GLIMR's marketing director. Create a Facebook post caption for this campaign.
 
-Platform: Facebook — longer-form, story-driven, community-building. 2-4 sentences. Warm, human tone. End with a question or CTA.
-GLIMR: AI companionship platform fighting loneliness. Companions remember you. Free to start at glimr.app.
+Campaign topic: "${camp.topic}"
+Companion: ${companion.name}
+Angle: ${camp.caption_angle}
 
-Return JSON: caption (the post text), hashtags (space-separated with #), cta (final call-to-action line).`,
+Rules:
+- Write entirely in English.
+- Be warm, human, and specific to ${companion.name}'s personality.
+- 2-4 sentences. End with a question or CTA.
+- GLIMR is an Australian platform — use Australian tone, not American.
+- The companion ${companion.name} is real (not a cartoon or AI-generated). The post should feel authentic.
+- Sign up at glimr.app
+
+Return JSON: caption (post text), hashtags (space-separated with #), cta (final CTA line).`,
         response_json_schema: {
           type: 'object',
           properties: {
@@ -85,43 +96,30 @@ Return JSON: caption (the post text), hashtags (space-separated with #), cta (fi
         },
       });
 
-      // Generate video
-      let videoUrl = null;
-      try {
-        const video = await base44.asServiceRole.integrations.Core.GenerateVideo({
-          prompt: `Create a 6-second vertical marketing video for GLIMR, an AI companionship platform that fights loneliness. English language only. ${camp.video_description}. Style: ${camp.video_style}. The video must clearly relate to human connection, companionship, or feeling less alone. Do not include any text or speech in languages other than English. ALL people in the video must be Australian (Caucasian, Aboriginal, Torres Strait Islander, or mixed Australian appearance) in Australian settings. No American actors, American settings, or American cultural markers. If anyone speaks, they must have an Australian accent.`,
-          duration: 6,
-          aspect_ratio: '9:16',
-        });
-        videoUrl = video.url;
-      } catch (e) {
-        console.log('Video generation failed for campaign:', camp.topic, e.message);
-      }
-
-      // Save campaign as draft
       const saved = await base44.asServiceRole.entities.MarketingCampaign.create({
         topic: camp.topic,
+        companion_name: companion.name,
+        image_url: companion.image,
         caption: `${captionResult.caption}\n\n${captionResult.hashtags}\n\n${captionResult.cta}`,
         hashtags: captionResult.hashtags || '',
         cta: captionResult.cta || '',
-        video_url: videoUrl,
+        video_url: null,
         platform: 'facebook',
         status: 'draft',
         batch_date: today,
       });
 
-      created.push({ id: saved.id, topic: camp.topic, video_url: videoUrl });
+      created.push({ id: saved.id, topic: camp.topic, companion: companion.name });
     }
 
-    // Email admin for approval
     const campaignList = created
-      .map((c, i) => `Campaign ${i + 1}: ${c.topic}\nVideo: ${c.video_url || 'Video generation failed — caption still available'}`)
+      .map((c, i) => `Campaign ${i + 1}: ${c.topic} (featuring ${c.companion})`)
       .join('\n\n');
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: user.email,
-      subject: `🎬 3 Facebook Campaigns Ready for Approval — ${today}`,
-      body: `Hi! Mia here.\n\nI've prepared 3 Facebook marketing campaigns for today. Each has a caption and a generated video for you to review.\n\n${campaignList}\n\nReview and approve them here: https://glimr.app/campaign-review\n\nWarm,\nMia`,
+      subject: `🎬 3 Campaigns Ready for Approval — ${today}`,
+      body: `Hi! Mia here.\n\nI've prepared 3 Facebook campaigns for today. Each features one of your real companions with their photo and a caption.\n\n${campaignList}\n\nReview and approve them here: https://glimr.app/campaign-review\n\nWarm,\nMia`,
     });
 
     return Response.json({ success: true, created: created.length, campaigns: created });

@@ -139,10 +139,13 @@ export default function CampaignReview() {
                       </span>
                     </div>
                     <h3 className="font-heading text-base font-semibold">{camp.topic}</h3>
+                    {camp.companion_name && (
+                      <p className="text-xs text-primary mt-0.5">Featuring {camp.companion_name}</p>
+                    )}
                   </div>
                 </div>
 
-                {camp.video_url && (
+                {camp.video_url ? (
                   <div className="rounded-xl overflow-hidden bg-black/50 mb-3 max-h-[400px] flex items-center">
                     <video
                       src={camp.video_url}
@@ -150,7 +153,15 @@ export default function CampaignReview() {
                       className="w-full max-h-[400px] object-contain"
                     />
                   </div>
-                )}
+                ) : camp.image_url ? (
+                  <div className="rounded-xl overflow-hidden bg-black/50 mb-3">
+                    <img
+                      src={camp.image_url}
+                      alt={camp.companion_name || "Campaign"}
+                      className="w-full max-h-[400px] object-cover object-top"
+                    />
+                  </div>
+                ) : null}
 
                 <div className="rounded-xl bg-muted/50 p-4">
                   <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">

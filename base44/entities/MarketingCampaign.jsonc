@@ -20,7 +20,15 @@
     },
     "video_url": {
       "type": "string",
-      "description": "Generated video URL for approval"
+      "description": "Uploaded video clip URL for approval (real companion footage, not AI-generated)"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Companion image used as the campaign visual"
+    },
+    "companion_name": {
+      "type": "string",
+      "description": "Which companion this campaign features"
     },
     "platform": {
       "type": "string",
