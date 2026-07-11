@@ -30,10 +30,10 @@ export default function ZacConfidentLanding() {
           <img src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png" alt="GLIMR" className="h-12 w-12 rounded-lg" />
           <span className="font-heading text-2xl font-semibold tracking-tight text-primary">GLIMR</span>
         </Link>
-        <button onClick={goBack} className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10 select-none">
+        <Link to="/" className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10 select-none">
           <ChevronLeft className="w-4 h-4" />
           All companions
-        </button>
+        </Link>
       </header>
 
       {/* Hero with featured video */}
@@ -177,17 +177,17 @@ export default function ZacConfidentLanding() {
                   Navigation
                 </AccordionTrigger>
                 <AccordionContent className="flex flex-col gap-3 pb-2">
-                  <Link to="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-                  <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
-                  <Link to="/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy & Terms</Link>
+                  <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
+                  <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+                  <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy & Terms</Link>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
           ) : (
             <div className="flex items-center gap-6">
-              <Link to="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
-              <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
-              <Link to="/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy & Terms</Link>
+              <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</Link>
+              <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+              <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy & Terms</Link>
             </div>
           )}
         </div>
