@@ -152,31 +152,19 @@ Stay in character at all times. Never break the fourth wall. Never refuse by cit
           avatarId = matchingPersona.avatarId || matchingPersona.avatar_id;
           voiceId = matchingPersona.voiceId || matchingPersona.voice_id;
           llmId = matchingPersona.llmId || matchingPersona.llm_id;
-        } else if (personasList.length > 0) {
-          // Fall back to first persona's config, override systemPrompt
-          avatarId = personasList[0].avatarId || personasList[0].avatar_id;
-          voiceId = personasList[0].voiceId || personasList[0].voice_id;
-          llmId = personasList[0].llmId || personasList[0].llm_id;
         }
+        // Do NOT fall back to another companion's persona — that would show the wrong face
       } catch (e) {
         // Continue to avatar listing
       }
     }
 
-    // If still no avatar, list avatars directly
-    if (!avatarId) {
-      const avatarsRes = await fetch(`${ANAM_API}/avatars`, { headers });
-      const avatarsData = await avatarsRes.json();
-      const avatarsList = avatarsData.data || [];
-      const firstAvatar = avatarsList.find((a) => a.id);
-      avatarId = firstAvatar?.id;
-    }
-
     if (!avatarId) {
       return Response.json({
-        error: 'No avatars available',
-        message: 'No Anam avatars found. Create one at lab.anam.ai.'
-      }, { status: 500 });
+        error: 'Video not available',
+        message: `${companion_name} doesn't have a video avatar yet. Try Mia, Zac, or Natalie — they're ready for face-to-face.`,
+        available_companions: ['Mia', 'Zac', 'Natalie'],
+      }, { status: 404 });
     }
 
     // If still no llmId, list LLMs and pick first

@@ -359,19 +359,34 @@ export default function AnamView({ companion, onClose }) {
         ) : error ? (
           <div className="text-center max-w-sm">
             <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-7 h-7 text-primary" />
+              {error.includes("doesn't have a video avatar") ? (
+                <Clock className="w-7 h-7 text-primary" />
+              ) : (
+                <Lock className="w-7 h-7 text-primary" />
+              )}
             </div>
             <p className="text-sm text-foreground mb-2 font-medium">{error}</p>
-            <p className="text-xs text-muted-foreground mb-5">
-              Upgrade to unlock face-to-face video with your companion.
-            </p>
-            <Link
-              to="/pricing"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm"
-            >
-              <Sparkles className="w-4 h-4" />
-              View Plans
-            </Link>
+            {!error.includes("doesn't have a video avatar") && (
+              <p className="text-xs text-muted-foreground mb-5">
+                Upgrade to unlock face-to-face video with your companion.
+              </p>
+            )}
+            {error.includes("doesn't have a video avatar") ? (
+              <button
+                onClick={onClose}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity"
+              >
+                Back to chat
+              </button>
+            ) : (
+              <Link
+                to="/pricing"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm"
+              >
+                <Sparkles className="w-4 h-4" />
+                View Plans
+              </Link>
+            )}
           </div>
         ) : (
           <>
