@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { getCompanion } from "@/lib/companions";
@@ -134,22 +134,24 @@ const navigate = useNavigate();
     return () => { cancelled = true; };
   }, [companionId]);
 
-  const companion = isCustom
-    ? customCompanion
-      ? {
-          id: companionId,
-          name: customCompanion.name,
-          tagline: customCompanion.tagline || "Custom companion",
-          subtitle: customCompanion.tagline || "Custom companion",
-          description: customCompanion.description || "",
-          image: customCompanion.image_url,
-          personality: customCompanion.personality,
-          voice_id: customCompanion.voice_id || null,
-          avatar_id: customCompanion.avatar_id || null,
-          avatar_status: customCompanion.avatar_status || null,
-        }
-      : null
-    : staticCompanion;
+  const companion = useMemo(() => {
+    if (isCustom) {
+      if (!customCompanion) return null;
+      return {
+        id: companionId,
+        name: customCompanion.name,
+        tagline: customCompanion.tagline || "Custom companion",
+        subtitle: customCompanion.tagline || "Custom companion",
+        description: customCompanion.description || "",
+        image: customCompanion.image_url,
+        personality: customCompanion.personality,
+        voice_id: customCompanion.voice_id || null,
+        avatar_id: customCompanion.avatar_id || null,
+        avatar_status: customCompanion.avatar_status || null,
+      };
+    }
+    return staticCompanion;
+  }, [isCustom, customCompanion, companionId, staticCompanion]);
 
   const [messages, setMessages] = useState([]);
   const [memories, setMemories] = useState([]);
@@ -165,8 +167,6 @@ const navigate = useNavigate();
   const loadData = useCallback(async () => {
     if (!companion) { if (!(isCustom && customLoading)) setLoading(false); return; }
 
-    // Reset messages when switching companions
-    setMessages([]);
     setLoading(true);
 
     // Fetch subscription for intimacy layer + daily message limit
