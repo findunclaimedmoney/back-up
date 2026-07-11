@@ -53,21 +53,23 @@ export default function SubscriptionCard({ tier, creditBalance, monthlyCredits, 
         )}
       </div>
 
-      {/* Credit costs per action */}
+      {/* What your credits get you — plain English */}
       <div className="space-y-2 mb-4">
-        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Credits per action</p>
+        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Your {creditBalance.toFixed(0)} credits get you</p>
         {CONSUMPTION_ITEMS.map((item) => {
           const Icon = ACTION_ICONS[item.key] || Coins;
           const canAfford = Math.floor(creditBalance / item.cost);
+          const unit = item.key === "video_minute" ? "min" : item.key === "voice_reply" ? "replies" : "messages";
           return (
-            <div key={item.key} className="flex items-center justify-between py-2 px-3 rounded-lg bg-background/50 border border-border">
+            <div key={item.key} className="flex items-center justify-between py-2.5 px-3 rounded-lg bg-background/50 border border-border">
               <div className="flex items-center gap-2.5">
                 <Icon className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm">{item.label}</span>
               </div>
               <div className="text-right">
-                <span className="text-sm font-medium text-primary">{item.cost}</span>
-                <span className="text-xs text-muted-foreground ml-1">· {canAfford} left</span>
+                <span className="text-base font-bold text-primary">{canAfford}</span>
+                <span className="text-xs text-muted-foreground ml-1">{unit}</span>
+                <p className="text-[10px] text-muted-foreground">{item.cost} credits each</p>
               </div>
             </div>
           );
