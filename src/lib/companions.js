@@ -99,6 +99,7 @@ export const COMPANIONS = [
     accent: "from-purple-500/20 to-pink-500/10",
     personality: withEmotions(JESSICA_SYSTEM_PROMPT),
     avatar_id: "d91026fdbdcb4cbfade6da36a42cf833",
+    voice_id: "UZstMCXeJLMLeXyuZIuR",
   },
 ];
 
