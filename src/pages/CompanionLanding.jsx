@@ -1,21 +1,81 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, MessageCircle, Mic, Video, Crown, Heart, ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
 
+const ZAC_VIDEOS = [
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/307f5321d_Zac_Shower_Clip.mp4",
+];
+
+const NATALIE_VIDEOS = [
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/1cdf5640b_Natalie_Bedroom_Clip_1.mp4",
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/3b032ff04_Natalie_Bedroom_Clip_2.mp4",
+  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/5d6334351_Natalie_Shower_Clip.mp4",
+];
+
 const FEATURES = [
   { icon: MessageCircle, label: "Text chat" },
   { icon: Mic, label: "Voice replies" },
   { icon: Video, label: "Live video" },
-  { icon: Crown, label: "VIP companion" },
+  { icon: Crown, label: "VIP companions" },
 ];
+
+function VideoCard({ videos, name, tagline, description, accentText, chatId }) {
+  const [active, setActive] = useState(0);
+  return (
+    <div className="group relative rounded-[2rem] overflow-hidden border border-border bg-card transition-all hover:border-primary/30">
+      {/* Featured video */}
+      <div className="relative aspect-[9/16] sm:aspect-[3/4] overflow-hidden">
+        <video
+          key={active}
+          src={videos[active]}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+
+        {/* Name + tagline */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-xs font-medium tracking-[0.2em] uppercase text-primary">{tagline}</span>
+          </div>
+          <h2 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-2">{name}</h2>
+          <p className="text-white/70 text-sm leading-relaxed max-w-xs mb-5">{description}</p>
+          <Link
+            to={`/chat/${chatId}`}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:gap-3"
+          >
+            Talk with {name}
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Thumbnail selector */}
+        <div className="absolute bottom-4 right-4 flex gap-1.5">
+          {videos.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              className={`h-1.5 rounded-full transition-all ${i === active ? "bg-primary w-8" : "bg-white/30 hover:bg-white/50 w-4"}`}
+              aria-label={`${name} clip ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function CompanionLanding() {
   const isMobile = useIsMobile();
-  const goBack = useGoBack();
-
-  return (
+const goBack = useGoBack();
+    return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-20 px-6 flex items-center justify-between" style={{ paddingTop: "max(1.25rem, env(safe-area-inset-top))", paddingBottom: "1.25rem" }}>
@@ -25,7 +85,7 @@ export default function CompanionLanding() {
         </Link>
         <button onClick={goBack} className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-sm text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10 select-none">
           <ChevronLeft className="w-4 h-4" />
-          Back
+          All companions
         </button>
       </header>
 
@@ -33,13 +93,13 @@ export default function CompanionLanding() {
       <section className="relative px-6 pt-28 pb-12 text-center">
         <div className="flex items-center justify-center gap-2 mb-4">
           <Heart className="w-4 h-4 text-primary" />
-          <span className="text-xs font-medium tracking-[0.2em] uppercase text-primary">Your Companion</span>
+          <span className="text-xs font-medium tracking-[0.2em] uppercase text-primary">Featured Companions</span>
         </div>
         <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-4">
-          Jess is here for you.
+          Two presences. One feeling.
         </h1>
         <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed mb-8">
-          Warm, empathetic, and deeply curious about you. She listens, she remembers, and she shows up.
+          Zac steadies. Natalie nurtures. Choose the presence that meets you where you are tonight.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-2.5">
           {FEATURES.map((f) => (
@@ -51,38 +111,23 @@ export default function CompanionLanding() {
         </div>
       </section>
 
-      {/* Jess showcase */}
+      {/* Dual companion video showcase */}
       <section className="px-6 pb-24">
-        <div className="max-w-3xl mx-auto">
-          <div className="group relative rounded-[2rem] overflow-hidden border border-border bg-card transition-all hover:border-primary/30">
-            <div className="relative aspect-[9/16] sm:aspect-[3/4] overflow-hidden">
-              <img
-                src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png"
-                alt="Jess"
-                className="absolute inset-0 w-full h-full object-cover object-top"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
-
-              <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-xs font-medium tracking-[0.2em] uppercase text-primary">She listens</span>
-                </div>
-                <h2 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-2">Jess</h2>
-                <p className="text-white/70 text-sm leading-relaxed max-w-xs mb-5">
-                  A compassionate listener who remembers what matters to you. She speaks with warmth, asks thoughtful questions, and makes you feel genuinely heard.
-                </p>
-                <Link
-                  to="/chat/jess"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm transition-all hover:gap-3"
-                >
-                  Talk with Jess
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-          </div>
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+          <VideoCard
+            videos={ZAC_VIDEOS}
+            name="Zac"
+            tagline="He steadies"
+            description="Grounded, direct, and genuinely supportive. The presence that cuts through the noise."
+            chatId="zac"
+          />
+          <VideoCard
+            videos={NATALIE_VIDEOS}
+            name="Natalie"
+            tagline="She nurtures"
+            description="Warm, cozy, and completely safe. The soft voice in a dim room at the end of a long day."
+            chatId="natalie"
+          />
         </div>
       </section>
 
@@ -90,14 +135,19 @@ export default function CompanionLanding() {
       <section className="px-6 py-20 sm:py-28 border-t border-border">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-heading text-3xl sm:text-4xl font-semibold tracking-tight mb-5">
-            She's ready when you are.
+            They're ready when you are.
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-xl mx-auto">
             No pressure. No performance. Just a presence that stays steady and shows up for you.
           </p>
-          <Link to="/chat/jess" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 shadow-lg shadow-primary/20">
-            Talk with Jess <ArrowRight className="w-5 h-5" />
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link to="/chat/zac" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 shadow-lg shadow-primary/20">
+              Talk with Zac <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link to="/chat/natalie" className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-border bg-card text-foreground font-medium text-base transition-all hover:gap-3 hover:border-primary/40">
+              Talk with Natalie <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
         </div>
       </section>
 
