@@ -10,6 +10,7 @@ import TopUpCard from "@/components/pricing/TopUpCard";
 import CreditUsageCard from "@/components/pricing/CreditUsageCard";
 import CryptoPaymentModal from "@/components/pricing/CryptoPaymentModal";
 import PromoCodeRedeemer from "@/components/pricing/PromoCodeRedeemer";
+import VipShowcase from "@/components/pricing/VipShowcase";
 import PullToRefresh from "@/components/PullToRefresh";
 
 export default function Pricing() {
@@ -229,6 +230,13 @@ export default function Pricing() {
                   onUpgrade={() => handleUpgrade(tier.id)}
                 />
               ))}
+            </div>
+          </section>
+
+          {/* VIP visual showcase */}
+          <section className="px-6 pb-12">
+            <div className="max-w-3xl mx-auto">
+              <VipShowcase />
             </div>
           </section>
 
