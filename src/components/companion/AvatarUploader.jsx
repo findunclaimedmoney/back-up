@@ -12,15 +12,32 @@ export default function AvatarUploader({ imageUrl, avatarId, avatarStatus, compa
   const [checking, setChecking] = useState(false);
 
   const handleUpload = async (file) => {
-    setUploading(true);
-    try {
-      const result = await base44.integrations.Core.UploadFile({ file });
-      if (result?.file_url) onChange("image_url", result.file_url);
-    } catch (err) {
-      toast({ variant: "destructive", title: "Upload failed", description: err.message });
-    } finally {
-      setUploading(false);
-    }
+    const img = new Image();
+    img.onload = async () => {
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      if (w < 1920 || h < 1080) {
+        toast({
+          variant: "destructive",
+          title: "Image too small",
+          description: `Image is ${w}×${h}. Minimum required: 1920×1080.`,
+        });
+        return;
+      }
+      setUploading(true);
+      try {
+        const result = await base44.integrations.Core.UploadFile({ file });
+        if (result?.file_url) onChange("image_url", result.file_url);
+      } catch (err) {
+        toast({ variant: "destructive", title: "Upload failed", description: err.message });
+      } finally {
+        setUploading(false);
+      }
+    };
+    img.onerror = () => {
+      toast({ variant: "destructive", title: "Could not read image file" });
+    };
+    img.src = URL.createObjectURL(file);
   };
 
   const createAvatar = async () => {
@@ -71,6 +88,7 @@ export default function AvatarUploader({ imageUrl, avatarId, avatarStatus, compa
           <>
             <Upload className="w-6 h-6 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Click to upload photo</span>
+            <span className="text-xs text-muted-foreground/70">Minimum 1920×1080</span>
           </>
         )}
         <input

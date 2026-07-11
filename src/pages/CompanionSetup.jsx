@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, Loader2, CreditCard, Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import BrainGenerator from "@/components/companion/BrainGenerator";
 import VoicePicker from "@/components/companion/VoicePicker";
 import AvatarUploader from "@/components/companion/AvatarUploader";
+import VideoUploader from "@/components/companion/VideoUploader";
+import PublishChecklist from "@/components/companion/PublishChecklist";
 
 const slugify = (name) => name.toLowerCase().trim().replace(/[^a-z0-9]/g, "");
 
@@ -18,6 +20,7 @@ const EMPTY = {
   personality_description: "", brain: "",
   image_url: "", voice_id: "", voice_name: "",
   avatar_id: "", avatar_status: "pending",
+  video_url: "", stripe_price_id: "", price_usd: 9.99,
 };
 
 export default function CompanionSetup() {
@@ -26,6 +29,8 @@ export default function CompanionSetup() {
   const [authChecked, setAuthChecked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [creatingStripe, setCreatingStripe] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [data, setData] = useState(EMPTY);
 
   const update = (field, value) => setData((prev) => ({ ...prev, [field]: value }));
@@ -55,10 +60,50 @@ export default function CompanionSetup() {
       });
       setSaved(true);
       toast({ title: "Companion created!", description: `${data.name} is now live.` });
+      // Auto-export to Google Sheet
+      exportToSheet(slug);
     } catch (err) {
       toast({ variant: "destructive", title: "Save failed", description: err.message });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const exportToSheet = async (companionId) => {
+    setExporting(true);
+    try {
+      const res = await base44.functions.invoke("exportCompanionToSheet", { companion_id: companionId });
+      if (res.data?.success) {
+        toast({ title: "Exported to Google Sheet", description: `${res.data.companion} — ${res.data.memories_count} memories, ${res.data.messages_count} messages` });
+      } else if (res.data?.error) {
+        toast({ variant: "destructive", title: "Export failed", description: res.data.error });
+      }
+    } catch (err) {
+      toast({ variant: "destructive", title: "Export failed", description: err.message });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const createStripeProduct = async () => {
+    setCreatingStripe(true);
+    try {
+      const slug = data.companion_id || slugify(data.name);
+      const res = await base44.functions.invoke("createCompanionProduct", {
+        name: data.name,
+        price_usd: data.price_usd,
+        companion_id: slug,
+      });
+      if (res.data?.price_id) {
+        update("stripe_price_id", res.data.price_id);
+        toast({ title: "Stripe product created", description: `$${data.price_usd}/mo recurring` });
+      } else if (res.data?.error) {
+        toast({ variant: "destructive", title: "Stripe failed", description: res.data.error });
+      }
+    } catch (err) {
+      toast({ variant: "destructive", title: "Stripe failed", description: err.message });
+    } finally {
+      setCreatingStripe(false);
     }
   };
 
@@ -88,7 +133,9 @@ export default function CompanionSetup() {
           </div>
           <h1 className="font-heading text-3xl font-semibold mb-2">{data.name} is live!</h1>
           <p className="text-muted-foreground mb-8">
-            Users can chat at <code className="text-primary">/chat/{slug}</code>
+            Landing page: <a href={`/companion/${slug}`} className="text-primary underline">/companion/{slug}</a>
+            <br />
+            Chat: <code className="text-primary">/chat/{slug}</code>
           </p>
           <div className="flex flex-col gap-3">
             <a
@@ -97,6 +144,14 @@ export default function CompanionSetup() {
             >
               Open chat
             </a>
+            <button
+              onClick={() => exportToSheet(slug)}
+              disabled={exporting}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-border text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50"
+            >
+              {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              Export to Google Sheet
+            </button>
             <button
               onClick={() => { setSaved(false); setData(EMPTY); }}
               className="text-sm text-muted-foreground hover:text-foreground"
@@ -109,7 +164,15 @@ export default function CompanionSetup() {
     );
   }
 
-  const canSave = data.name && data.tagline && data.bio && data.brain && data.image_url;
+  const checklist = [
+    { label: "High-quality image (1920×1080+)", passed: !!data.image_url, detail: data.image_url ? "Uploaded" : "Not uploaded" },
+    { label: "Voice selected", passed: !!data.voice_id, detail: data.voice_name || "Not selected" },
+    { label: "15-second hero video", passed: !!data.video_url, detail: data.video_url ? "Uploaded" : "Not uploaded" },
+    { label: "Landing page ready", passed: !!(data.name && data.tagline && data.bio && data.image_url), detail: "Auto-generated on publish" },
+    { label: "Stripe payment connected", passed: !!data.stripe_price_id, detail: data.stripe_price_id ? "Connected" : "Not connected" },
+  ];
+  const allChecksPassed = checklist.every((c) => c.passed);
+  const canSave = allChecksPassed;
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-24">
@@ -188,17 +251,64 @@ export default function CompanionSetup() {
           />
         </section>
 
+        <section className="space-y-4">
+          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Hero Video</h2>
+          <VideoUploader
+            videoUrl={data.video_url}
+            onChange={update}
+          />
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Stripe Payment</h2>
+          <div className="flex items-end gap-3">
+            <div className="flex-1">
+              <Label htmlFor="price">Monthly price (USD)</Label>
+              <Input
+                id="price"
+                type="number"
+                step="0.01"
+                value={data.price_usd}
+                onChange={(e) => update("price_usd", parseFloat(e.target.value) || 0)}
+                className="mt-1.5 h-12"
+                disabled={!!data.stripe_price_id}
+              />
+            </div>
+            <Button
+              onClick={createStripeProduct}
+              disabled={!data.name || creatingStripe || !!data.stripe_price_id}
+              className="h-12"
+            >
+              {creatingStripe ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating...</>
+              ) : data.stripe_price_id ? (
+                <><Check className="w-4 h-4 mr-2" /> Connected</>
+              ) : (
+                <><CreditCard className="w-4 h-4 mr-2" /> Create product</>
+              )}
+            </Button>
+          </div>
+          {data.stripe_price_id && (
+            <p className="text-xs text-primary">Stripe Price ID: {data.stripe_price_id}</p>
+          )}
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Publish Checklist</h2>
+          <PublishChecklist items={checklist} />
+        </section>
+
         <div className="space-y-2">
           <Button onClick={handleSave} disabled={!canSave || saving} className="w-full h-12">
             {saving ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Publishing...</>
             ) : (
-              <><Check className="w-4 h-4 mr-2" /> Create companion</>
+              <><Check className="w-4 h-4 mr-2" /> Publish companion</>
             )}
           </Button>
           {!canSave && (
             <p className="text-xs text-center text-muted-foreground">
-              Fill in name, tagline, bio, personality, and photo to save.
+              Complete all checklist items above to publish.
             </p>
           )}
         </div>

@@ -134,6 +134,8 @@ export async function getCompanionAsync(id) {
         subtitle: c.subtitle || c.tagline,
         description: c.bio || "",
         image: c.image_url,
+        video_url: c.video_url || null,
+        stripe_price_id: c.stripe_price_id || null,
         accent: c.accent || "from-amber-500/20 to-rose-500/10",
         personality: c.personality,
         voice_id: c.voice_id || null,

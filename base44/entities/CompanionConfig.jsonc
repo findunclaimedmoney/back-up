@@ -24,7 +24,11 @@
     },
     "image_url": {
       "type": "string",
-      "description": "Profile photo URL"
+      "description": "Profile photo URL (minimum 1920\u00d71080)"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "15-second hero video for the landing page"
     },
     "accent": {
       "type": "string",
@@ -57,6 +61,10 @@
       ],
       "default": "pending",
       "description": "Avatar processing status: pending (not submitted), processing (up to 24hrs), active (ready), failed"
+    },
+    "stripe_price_id": {
+      "type": "string",
+      "description": "Stripe Price ID for the companion's recurring subscription"
     },
     "status": {
       "type": "string",
