@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { MIA_PERSONALITY, MIA_GREETING, MIA_QUICK_QUESTIONS } from "@/lib/miaConsciousness";
 import SupportVoiceButton from "@/components/SupportVoiceButton";
 import VoiceRecorderButton from "@/components/VoiceRecorderButton";
-import { MessageCircle, X, Send } from "lucide-react";
+import { MessageCircle, X, Send, GripVertical } from "lucide-react";
 
 const MIA_IMAGE =
   "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png";
@@ -125,6 +125,43 @@ export default function SupportChatWidget() {
   const [open, setOpen] = useState(false);
   const [showProactive, setShowProactive] = useState(false);
   const STORAGE_KEY = "glimr_mia_support_chat";
+
+  // Floating drag state — lets the user move the open panel around the screen
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const dragging = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const panelRef = useRef(null);
+
+  const onPointerDown = useCallback((e) => {
+    dragging.current = true;
+    const rect = panelRef.current?.getBoundingClientRect();
+    if (rect) {
+      dragOffset.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+    }
+    e.target.setPointerCapture?.(e.pointerId);
+  }, []);
+
+  const onPointerMove = useCallback((e) => {
+    if (!dragging.current) return;
+    const newX = e.clientX - dragOffset.current.x;
+    const newY = e.clientY - dragOffset.current.y;
+    const maxX = window.innerWidth - 48;
+    const maxY = window.innerHeight - 48;
+    setPos({
+      x: Math.max(0, Math.min(newX, maxX)),
+      y: Math.max(0, Math.min(newY, maxY)),
+    });
+  }, []);
+
+  const onPointerUp = useCallback((e) => {
+    dragging.current = false;
+    e.target.releasePointerCapture?.(e.pointerId);
+  }, []);
+
+  const resetPos = () => setPos({ x: 0, y: 0 });
 
   const [messages, setMessages] = useState(() => {
     try {
@@ -264,15 +301,29 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
         </div>
       )}
 
-      {/* Chat panel */}
+      {/* Chat panel — draggable via header */}
       {open && (
         <div
-          className="fixed bottom-6 right-6 z-50 w-[calc(100vw-2rem)] max-w-sm rounded-3xl bg-card border border-border shadow-2xl overflow-hidden flex flex-col"
-          style={{ height: "min(560px, calc(100vh - 3rem))" }}
+          ref={panelRef}
+          className="fixed z-50 w-[calc(100vw-2rem)] max-w-sm rounded-3xl bg-card border border-border shadow-2xl overflow-hidden flex flex-col"
+          style={{
+            height: "min(560px, calc(100vh - 3rem))",
+            left: pos.x || undefined,
+            top: pos.y || undefined,
+            right: pos.x === 0 ? "1.5rem" : undefined,
+            bottom: pos.y === 0 ? "1.5rem" : undefined,
+            touchAction: "none",
+          }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground">
+          {/* Header — drag handle */}
+          <div
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground cursor-grab active:cursor-grabbing select-none"
+          >
             <div className="flex items-center gap-2.5">
+              <GripVertical className="w-4 h-4 opacity-40" />
               <div className="relative">
                 <img
                   src={MIA_IMAGE}
@@ -290,8 +341,8 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
               </div>
             </div>
             <button
-              onClick={() => setOpen(false)}
-              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
+              onClick={() => { setOpen(false); resetPos(); }}
+              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors flex-shrink-0"
             >
               <X className="w-4 h-4" />
             </button>
