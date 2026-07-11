@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
         const channelsData = await channelsResp.json();
         const channels = channelsData.channels || [];
         if (channels.length > 0) {
-          const channel = channels.find(c => c.name === 'general') || channels[0];
+          const channel = channels.find(c => c.name === 'all-glimr') || channels[0];
           const remaining = promo.max_uses > 0 ? promo.max_uses - (promo.used_count + 1) : 'unlimited';
           const message = `🎉 New Jess Offer signup!\n\n*Name:* ${user.full_name || 'Unknown'}\n*Email:* ${user.email}\n*Time:* ${new Date().toLocaleString('en-AU', { timeZone: 'Australia/Perth' })} (Perth time)\n*Credits granted:* ${promo.credit_amount}\n*Remaining spots:* ${remaining}`;
           await fetch('https://slack.com/api/chat.postMessage', {
