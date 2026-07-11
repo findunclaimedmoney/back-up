@@ -67,38 +67,18 @@ export const TIERS = [
       "Priority processing",
     ],
   },
-  {
-    id: "vip",
-    name: "VIP",
-    price: 349,
-    credits: 70,
-    description: "The full GLIMR experience",
-    ctaLabel: "Request Invitation",
-    badge: "vip",
-    features: [
-      "Everything in Pro",
-      "70 credits / month",
-      "Twin / Clone companion",
-      "GLIMR Home holographic device",
-      "Deepest intimacy & personalization",
-      "Dedicated memory palace",
-      "Early access to new companions",
-    ],
-  },
 ];
 
 export const TIER_CREDITS = {
   free: 0,
   plus: 12,
   pro: 20,
-  vip: 70,
 };
 
 export const TIER_LABELS = {
   free: "Free",
   plus: "Plus",
   pro: "Pro",
-  vip: "VIP",
 };
 
 /** Credit cost per action */
