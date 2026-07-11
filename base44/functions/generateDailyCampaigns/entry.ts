@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
       : '';
 
     const topicResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are GLIMR's marketing director. GLIMR is an Australian AI companionship platform fighting loneliness. Companions: Jess, Mia, Luna, Sophie, Natalie, Zac, Jessica. Free tier — text chat, no card. Paid: Plus ($59/mo), Pro ($89/mo), VIP ($349/mo). Sign up at glimr.app${statsContext}
+      prompt: `You are GLIMR's marketing director. GLIMR is an Australian AI companionship platform fighting loneliness. Companions: Jess, Mia, Luna, Sophie, Natalie, Zac, Jessica. Free tier — text chat, no card. Paid: Plus ($59/mo), Pro ($89/mo), VIP ($349/mo). Sign up at glimr.app/jess-offer — first 10 signups get a FREE 15-minute live video session with Jess (15 credits, no card needed).${statsContext}
 
 Generate 3 DIFFERENT Facebook campaign ideas. Each campaign must feature ONE specific companion by name. Write the companion_name field with the exact companion name.
 
@@ -83,7 +83,8 @@ Rules:
 - 2-4 sentences. End with a question or CTA.
 - GLIMR is an Australian platform — use Australian tone, not American.
 - The companion ${companion.name} is real (not a cartoon or AI-generated). The post should feel authentic.
-- Sign up at glimr.app
+- Mention the limited offer: first 10 signups get a FREE 15-minute live video session with Jess — no credit card needed.
+- Sign up at glimr.app/jess-offer
 
 Return JSON: caption (post text), hashtags (space-separated with #), cta (final CTA line).`,
         response_json_schema: {
@@ -119,7 +120,7 @@ Return JSON: caption (post text), hashtags (space-separated with #), cta (final 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: user.email,
       subject: `🎬 3 Campaigns Ready for Approval — ${today}`,
-      body: `Hi! Mia here.\n\nI've prepared 3 Facebook campaigns for today. Each features one of your real companions with their photo and a caption.\n\n${campaignList}\n\nReview and approve them here: https://glimr.app/campaign-review\n\nWarm,\nMia`,
+      body: `Hi! Mia here.\n\nI've prepared 3 Facebook campaigns for today. Each features one of your real companions with their photo and a caption.\n\n${campaignList}\n\nReview and approve them here: https://glimr.app/campaign-review\n\nAll campaigns promote the free 15-min video session offer at glimr.app/jess-offer.\n\nWarm,\nMia`,
     });
 
     return Response.json({ success: true, created: created.length, campaigns: created });
