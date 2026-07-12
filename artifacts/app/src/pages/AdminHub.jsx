@@ -611,6 +611,78 @@ function Marketing() {
         )}
       </div>
 
+      {/* ── Marketing Videos ───────────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <Wand2 className="w-4 h-4 text-primary" />
+          <h2 className="font-heading text-base font-semibold">Marketing Videos</h2>
+        </div>
+        <p className="text-xs text-muted-foreground -mt-2">
+          AI-generated clips ready to post. Right-click → Save or tap Download to get the file. Use the Post Kit above to pair a caption + trackable link with each video.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            {
+              file: "glimr-late-night.mp4",
+              title: "Late Night Reach",
+              desc: "Bedside phone glow — perfect for late-night Story or Reel",
+              format: "9:16 · Story / Reel",
+              platform: "Instagram · TikTok",
+            },
+            {
+              file: "glimr-companion-moment.mp4",
+              title: "Companion Moment",
+              desc: "Woman smiling at her phone by a rain window — warmth and connection",
+              format: "9:16 · Story / Reel",
+              platform: "Instagram · TikTok",
+            },
+            {
+              file: "glimr-lifestyle-wide.mp4",
+              title: "Cosy Lifestyle",
+              desc: "Candles, tea, soft light — no faces, brand-safe for any platform",
+              format: "16:9 · Feed / YouTube",
+              platform: "Facebook · YouTube",
+            },
+            {
+              file: "glimr-connection-hope.mp4",
+              title: "Connection & Hope",
+              desc: "Man on rooftop at golden hour — relief, hope, not alone",
+              format: "9:16 · Story / Reel",
+              platform: "Instagram · TikTok",
+            },
+          ].map(({ file, title, desc, format, platform }) => (
+            <div key={file} className="rounded-xl border border-border bg-background overflow-hidden flex flex-col">
+              <video
+                src={`/marketing-videos/${file}`}
+                className="w-full aspect-video object-cover bg-black"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+              <div className="p-3 flex flex-col gap-2 flex-1">
+                <div>
+                  <p className="text-sm font-semibold leading-tight">{title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{desc}</p>
+                </div>
+                <div className="flex flex-wrap gap-1.5 mt-auto">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{format}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{platform}</span>
+                </div>
+                <a
+                  href={`/marketing-videos/${file}`}
+                  download={file}
+                  className="flex items-center justify-center gap-1.5 py-2 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors mt-1"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download MP4
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* ── Companion landing pages ─────────────────────────────────────────── */}
       <div className="rounded-2xl border border-border bg-card p-5">
         <h2 className="font-heading text-base font-semibold mb-1">Companion Landing Pages</h2>
