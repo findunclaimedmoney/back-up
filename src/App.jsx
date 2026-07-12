@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
@@ -60,6 +60,7 @@ const PageLoader = () => (
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
+  const location = useLocation();
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -72,11 +73,17 @@ const AuthenticatedApp = () => {
 
   // Handle authentication errors — any auth failure redirects to login
   // (user_not_registered shows a dedicated error screen instead)
+  // BUT: if already on an auth page (login, register, etc.), let it render
+  // so the user can re-authenticate — otherwise we loop endlessly redirecting
+  // to /login without ever rendering the login page.
+  const isAuthRoute = ['/login', '/register', '/forgot-password', '/reset-password'].includes(location.pathname);
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     }
-    return <Navigate to="/login" replace />;
+    if (!isAuthRoute) {
+      return <Navigate to="/login" replace />;
+    }
   }
 
   // Render the main app
