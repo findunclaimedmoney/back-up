@@ -191,7 +191,9 @@ export const COMPANIONS = [
     voice_id: "nPczCjzI2devNBz1zQrb",
     voice_name: "Brian - Strong, Deep, British male",
     voice_locked: true,
+    video_url: "/videos/oliver_hero.mp4",
     stripe_price_id: "price_1TsNBNEHzw6rVQI2yLSpDoOR",
+    locked: true,
     category: "male",
   },
   {
