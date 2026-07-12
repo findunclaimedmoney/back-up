@@ -5,9 +5,17 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import VideoMessages from "@/components/landing/VideoMessages";
+import FlashSaleBanner from "@/components/landing/FlashSaleBanner";
 
 const JESS_VIDEO =
   "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/14f0062f2_Jesss_Engaging_Greeting.mp4";
+
+const JESS_VIDEOS = [
+  { url: JESS_VIDEO, title: "Jess says hello", description: "A warm welcome from Jess" },
+  { url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/a9b4e5195_Jess_Video_2.mp4", title: "Jess listens", description: "She's genuinely curious about you" },
+  { url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/4b5ea5031_generated_video.mp4", title: "Jess can't wait", description: "Ready when you are" },
+];
 
 const TRAITS = [
   { icon: MessageCircle, label: "Text chat" },
@@ -79,6 +87,9 @@ export default function JessLanding() {
           </div>
         </div>
       </section>
+
+      <FlashSaleBanner companionName="Jess" />
+      <VideoMessages videos={JESS_VIDEOS} />
 
       {/* CTA band */}
       <section className="px-6 py-20 sm:py-28 border-t border-border">

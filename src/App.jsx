@@ -28,6 +28,7 @@ const ZacConfidentLanding = React.lazy(() => import('./pages/ZacConfidentLanding
 const JessLanding = React.lazy(() => import('./pages/JessLanding'));
 const JessicaLanding = React.lazy(() => import('./pages/JessicaLanding'));
 const MonicaLanding = React.lazy(() => import('./pages/MonicaLanding'));
+const MiaLanding = React.lazy(() => import('./pages/MiaLanding'));
 const CompanionProfile = React.lazy(() => import('./pages/CompanionProfile'));
 const MarketingHub = React.lazy(() => import('./pages/MarketingHub'));
 const CryptoPayment = React.lazy(() => import('./pages/CryptoPayment'));
@@ -112,6 +113,7 @@ const AuthenticatedApp = () => {
         <Route path="/jess" element={<JessLanding />} />
       <Route path="/jessica" element={<JessicaLanding />} />
       <Route path="/monica" element={<MonicaLanding />} />
+      <Route path="/mia" element={<MiaLanding />} />
       <Route path="/companion/:slug" element={<CompanionProfile />} />
         <Route path="/marketing" element={<CampaignReview />} />
         <Route path="/mia-marketing" element={<MarketingHub />} />
