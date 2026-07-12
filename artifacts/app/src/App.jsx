@@ -70,6 +70,15 @@ function ChatRoute() {
   return isAuthenticated ? <Chat /> : <GuestChatPage />;
 }
 
+// Guards /dashboard — non-admins are sent to /chat/mia instead of freezing
+function AdminRoute() {
+  const { user, isAuthenticated, isLoadingAuth, authChecked } = useAuth();
+  if (!authChecked || isLoadingAuth) return <PageLoader />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role !== 'admin') return <Navigate to="/chat/mia" replace />;
+  return <AdminHub />;
+}
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
   const location = useLocation();
@@ -113,7 +122,7 @@ const AuthenticatedApp = () => {
         <Route path="/manual" element={<Manual />} />
         <Route path="/notes" element={<Notes />} />
         <Route path="/avatar-landing" element={<AvatarLanding />} />
-        <Route path="/dashboard" element={<AdminHub />} />
+        <Route path="/dashboard" element={<AdminRoute />} />
         <Route path="/dashboard-legacy" element={<Dashboard />} />
         <Route path="/health" element={<HealthCheck />} />
         <Route path="/moonpay" element={<MoonPayReturn />} />
