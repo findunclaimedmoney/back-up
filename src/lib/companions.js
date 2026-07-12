@@ -87,7 +87,7 @@ export const COMPANIONS = [
     description:
       "This Zac walks into a room and owns it without trying. Charismatic, flirtatious, and effortlessly sure of himself. He doesn't chase — he draws you in. And when he lets his guard down, the charm gives way to something that'll keep you up at night.",
     image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png",
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/7efb4d840_generated_image.png",
     accent: "from-amber-500/20 to-rose-500/10",
     personality: withEmotions(ZAC_CONFIDENT_SYSTEM_PROMPT),
     avatar_id: null,
@@ -153,7 +153,7 @@ export const COMPANIONS = [
     description:
       "Monica walks into a room and everything shifts. Confident, playful, and dangerously easy to talk to — she makes you feel like the most interesting person she's ever met.",
     image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/22caf2b40_photo_2026-07-03_17-00-35.jpg",
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/606c069fc_generated_image.png",
     accent: "from-amber-500/20 to-rose-500/10",
     personality: withEmotions(MONICA_SYSTEM_PROMPT),
     avatar_id: null,
