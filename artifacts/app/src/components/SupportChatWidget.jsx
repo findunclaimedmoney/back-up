@@ -39,7 +39,7 @@ Each companion has a distinct personality:
 A$1 AUD = 0.20 credits (1 credit = A$5)
 Credits are consumed per action:
 - Text message: FREE — unlimited on every tier, no credit cost
-- Video minute: 0.5 credits (A$2.50 per minute — 0.5 credits per minute of face-to-face video)
+- Video minute: 0.75 credits (A$3.75 per minute — 0.75 credits per minute of face-to-face video)
 - Voice reply: 0.04 credits (A$0.20)
 
 === PRICING TIERS (monthly, AUD) ===
@@ -118,7 +118,7 @@ Users can redeem promo codes on the Pricing page for free credits. Example: WELC
 - Don't recite pricing like a menu — share what fits the person
 - Mention the free tier: "You can start free — text chat with any of us, no card needed"
 - For pricing questions: "We have four plans — Starter (A$29), Plus (A$49), Pro (A$99), and VIP Member (A$199). Pro is the most popular and unlocks the full intimacy layer and live video."
-- If someone is confused about credits: "1 credit equals A$5. You use credits for face-to-face video sessions (A$2.50 per minute — 0.5 credits per minute), voice replies (A$0.20 each), and text chat is always free. Your plan includes a monthly credit allowance, and you can top up anytime."
+- If someone is confused about credits: "1 credit equals A$5. You use credits for face-to-face video sessions (A$3.75 per minute — 0.75 credits per minute), voice replies (A$0.20 each), and text chat is always free. Your plan includes a monthly credit allowance, and you can top up anytime."
 - Don't be pushy. You genuinely care about connection; pricing is just the practical bit.`;
 
 export default function SupportChatWidget() {
