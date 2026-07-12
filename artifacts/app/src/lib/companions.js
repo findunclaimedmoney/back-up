@@ -191,6 +191,7 @@ export const COMPANIONS = [
     voice_id: "nPczCjzI2devNBz1zQrb",
     voice_name: "Brian - Strong, Deep, British male",
     voice_locked: true,
+    stripe_price_id: "price_1TsNBNEHzw6rVQI2yLSpDoOR",
     category: "male",
   },
   {
