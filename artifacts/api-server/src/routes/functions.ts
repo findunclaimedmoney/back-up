@@ -90,6 +90,7 @@ router.post("/:name", async (req, res) => {
       case "getSubscription": {
         const sub = await getSubEntity(userId);
         const d: Record<string, any> = (sub?.data as any) ?? {};
+        const isPro = (d.tier ?? "free") === "pro";
         return res.json({
           data: {
             tier:                        d.tier                   ?? "free",
@@ -98,8 +99,9 @@ router.post("/:name", async (req, res) => {
             monthly_credits:             d.monthlyCredits         ?? 0,
             credits_used:                d.creditsUsed            ?? 0,
             video_minutes_used:          d.videoMinutesUsed       ?? 0,
-            intimacy_package:            d.intimacyPackage        ?? false,
-            twin_enabled:                d.twinEnabled            ?? false,
+            // Pro includes face-to-face (Anam) — treated as intimacy_package
+            intimacy_package:            isPro || (d.intimacyPackage ?? false),
+            twin_enabled:                isPro || (d.twinEnabled    ?? false),
             intimacy_sessions_completed: d.intimacySessions       ?? 0,
             plan:                        d.tier                   ?? "free",
             credits:                     d.monthlyCredits         ?? 0,
@@ -274,56 +276,48 @@ router.post("/:name", async (req, res) => {
       // ── Live avatar (LiveAvatar.com iframe embed) ─────────────────────────
 
       // ── Anam.ai streaming avatar ──────────────────────────────────────────
+      //
+      // Face-to-face is a Pro-plan feature. When a customer subscribes to Pro,
+      // the team creates a custom Anam persona for them and stores the persona ID
+      // in their Subscription entity (data.anamPersonaId). This function:
+      //   1. Checks the user is on the Pro tier.
+      //   2. Reads their persona ID from the subscription entity.
+      //   3. Creates an Anam streaming session and returns the token.
 
       case "anamSession": {
         const anamKey = process.env["ANAM_API_KEY"];
         if (!anamKey) {
-          return res.json({ data: { upgrade_required: true, message: "Live avatar not configured" } });
+          return res.json({ data: { upgrade_required: true, message: "Live avatar not configured on this server." } });
         }
 
-        const companionName = ((params.companion_name ?? "") as string).toLowerCase();
-        const passedAvatarId = (params.avatar_id ?? "") as string;
+        // ── 1. Subscription gate ─────────────────────────────────────────────
+        const sub = await getSubEntity(userId);
+        const subData = (sub?.data ?? {}) as any;
 
-        // ── 1. Resolve persona ID from Anam ─────────────────────────────────
-        let personaId: string | null = null;
-
-        try {
-          const pRes = await fetch("https://api.anam.ai/v1/personas", {
-            headers: { "Authorization": `Bearer ${anamKey}` },
-          });
-
-          if (pRes.ok) {
-            const pData = await pRes.json() as any;
-            const personas: any[] = pData.personas ?? pData.data ?? (Array.isArray(pData) ? pData : []);
-
-            // Exact id match → name contains match → first persona
-            const match =
-              personas.find((p: any) => (p.id ?? p.persona_id) === passedAvatarId) ??
-              personas.find((p: any) =>
-                (p.name ?? "").toLowerCase().includes(companionName.split(" ")[0]) ||
-                companionName.includes((p.name ?? "").toLowerCase())
-              ) ??
-              personas[0] ??
-              null;
-
-            if (match) personaId = match.id ?? match.persona_id ?? null;
-          } else {
-            req.log.warn({ status: pRes.status }, "Anam personas fetch non-ok");
-          }
-        } catch (err) {
-          req.log.error({ err }, "Anam personas fetch failed");
-        }
-
-        if (!personaId) {
+        if ((subData.tier ?? "free") !== "pro") {
           return res.json({
             data: {
               upgrade_required: true,
-              message: "No live avatar persona configured for this companion yet.",
+              message: "Face-to-face sessions are included in the GLIMR Pro plan ($99/mo). Upgrade to unlock your custom live avatar.",
             },
           });
         }
 
-        // ── 2. Create session ────────────────────────────────────────────────
+        // ── 2. Resolve Anam persona ID ───────────────────────────────────────
+        const personaId: string | null = subData.anamPersonaId ?? null;
+
+        if (!personaId) {
+          // Pro subscriber but persona not yet created by team
+          return res.json({
+            data: {
+              upgrade_required: false,
+              avatar_status: "processing",
+              message: "Your custom live avatar is being created by our team. We'll let you know when it's ready — usually within 24 hours.",
+            },
+          });
+        }
+
+        // ── 3. Create Anam session ───────────────────────────────────────────
         try {
           const sRes = await fetch("https://api.anam.ai/v1/sessions", {
             method: "POST",
@@ -343,15 +337,13 @@ router.post("/:name", async (req, res) => {
 
           const sessionToken: string = sData.sessionToken ?? sData.session_token ?? sData.token;
           if (!sessionToken) {
-            return res.json({ data: { error: "Anam returned no session token" } });
+            return res.json({ data: { error: "Anam returned no session token — check your Anam API key and persona ID." } });
           }
 
           return res.json({
             data: {
               sessionToken,
-              session_duration_seconds: params.duration
-                ? (params.duration as number) * 60
-                : null,
+              session_duration_seconds: null, // Pro = unlimited; timer not enforced server-side
             },
           });
         } catch (err: any) {
@@ -360,8 +352,23 @@ router.post("/:name", async (req, res) => {
         }
       }
 
-      case "liveavatarEmbed":
+      // ── createLiveAvatar: status check for custom persona ────────────────
+
       case "createLiveAvatar": {
+        if ((params.action as string) === "check") {
+          const sub = await getSubEntity(userId);
+          const subData = (sub?.data ?? {}) as any;
+          const personaId = subData.anamPersonaId ?? null;
+          if (personaId) {
+            return res.json({ data: { avatar_status: "active", avatar_id: personaId } });
+          }
+          return res.json({ data: { avatar_status: "processing" } });
+        }
+        // fall through to liveavatarEmbed for other actions
+      }
+
+      // eslint-disable-next-line no-fallthrough
+      case "liveavatarEmbed": {
         // Map companion IDs → LiveAvatar avatar IDs via env vars
         const liveAvatarMap: Record<string, string | undefined> = {
           jess:    process.env["JESS_LIVE_AVATAR_ID"],

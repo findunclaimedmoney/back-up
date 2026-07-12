@@ -52,6 +52,9 @@ export default function AnamView({ companion, onClose }) {
     if (res.data?.upgrade_required) {
       return { upgradeRequired: true, message: res.data.message };
     }
+    if (res.data?.avatar_status === "processing") {
+      return { avatarProcessing: true, message: res.data.message };
+    }
     if (res.data?.error) throw new Error(res.data.error);
     return {
       sessionToken: res.data?.sessionToken,
@@ -135,6 +138,8 @@ export default function AnamView({ companion, onClose }) {
         if (cancelled) return;
         if (result.upgradeRequired) {
           setError(result.message || "Upgrade required");
+        } else if (result.avatarProcessing) {
+          setAvatarProcessing(true);
         } else if (result.sessionToken) {
           setSessionToken(result.sessionToken);
           if (result.sessionDurationSeconds) setTimeLeft(result.sessionDurationSeconds);
@@ -217,6 +222,8 @@ export default function AnamView({ companion, onClose }) {
       const result = await fetchSession(null, false, dur);
       if (result.upgradeRequired) {
         setError(result.message);
+      } else if (result.avatarProcessing) {
+        setAvatarProcessing(true);
       } else if (result.sessionToken) {
         setSessionToken(result.sessionToken);
         if (result.sessionDurationSeconds) setTimeLeft(result.sessionDurationSeconds);
