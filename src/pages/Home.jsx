@@ -23,7 +23,7 @@ export default function Home() {
   }
 
   if (authed) {
-    return <Navigate to="/customerdashboard" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Landing />;
