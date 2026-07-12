@@ -84,7 +84,7 @@ export default function MiaLanding() {
         </div>
       </section>
 
-      <FlashSaleBanner companionName="Mia" />
+      <FlashSaleBanner companionName="Mia" promoCode="MIA15" creditAmount={15} />
       <VideoMessages videos={MIA_VIDEOS} />
 
       <section className="px-6 py-20 sm:py-28 border-t border-border">

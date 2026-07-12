@@ -104,7 +104,7 @@ export default function JessicaLanding() {
         </div>
       </section>
 
-      <FlashSaleBanner companionName="Jessica" />
+      <FlashSaleBanner companionName="Jessica" promoCode="JESSICA15" creditAmount={15} />
       <VideoMessages videos={JESSICA_VIDEOS} />
 
       {/* CTA band */}

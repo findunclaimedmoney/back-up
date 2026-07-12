@@ -2,7 +2,7 @@ import React from "react";
 import { Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function FlashSaleBanner({ companionName }) {
+export default function FlashSaleBanner({ companionName, promoCode = "VOICE10", creditAmount = 10 }) {
   return (
     <section className="px-6 py-6 bg-primary/5 border-y border-primary/20">
       <div className="max-w-3xl mx-auto text-center space-y-3">
@@ -14,8 +14,8 @@ export default function FlashSaleBanner({ companionName }) {
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
           50% off all packages with {companionName} before midnight tonight.
-          First 10 signups also get 10 free voice messages — use code{" "}
-          <span className="font-semibold text-foreground">VOICE10</span>.
+          First 10 signups also get {creditAmount} free credits — use code{" "}
+          <span className="font-semibold text-foreground">{promoCode}</span>.
         </p>
         <Link
           to="/pricing"
