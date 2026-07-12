@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { COMPANIONS } from "@/lib/companions";
-import { ArrowLeft, Gamepad2, Lightbulb, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Gamepad2, Lightbulb, Check, Loader2, Camera } from "lucide-react";
 import TicTacToe from "@/components/games/TicTacToe";
 import TriviaGame from "@/components/games/TriviaGame";
+import ChessGame from "@/components/games/ChessGame";
+import PhotoBooth from "@/components/games/PhotoBooth";
 
 const GAMES = [
   { id: "tic_tac_toe", name: "Tic-Tac-Toe", icon: Gamepad2, description: "Classic 3-in-a-row. You versus a companion.", maxCompanions: 1 },
   { id: "trivia", name: "Trivia Night", icon: Lightbulb, description: "Test your knowledge. Everyone answers in character.", maxCompanions: 2 },
+  { id: "chess", name: "Chess", icon: Gamepad2, description: "Play chess against your companion — they trash-talk the whole time.", maxCompanions: 1 },
+  { id: "photo_booth", name: "Photo Booth", icon: Camera, description: "Take photos together with your companion in the same frame.", maxCompanions: 1 },
 ];
 
 export default function Games() {
@@ -70,6 +74,19 @@ export default function Games() {
         <div className="px-6 py-8">
           {selectedGame.id === "tic_tac_toe" && <TicTacToe players={players} />}
           {selectedGame.id === "trivia" && <TriviaGame players={players} />}
+          {selectedGame.id === "chess" && (
+            <ChessGame
+              companionName={companionPlayers[0]?.name || "Companion"}
+              onBack={exitGame}
+            />
+          )}
+          {selectedGame.id === "photo_booth" && (
+            <PhotoBooth
+              companionPortrait={companionPlayers[0]?.image || ""}
+              companionName={companionPlayers[0]?.name || "Companion"}
+              onBack={exitGame}
+            />
+          )}
         </div>
       </div>
     );

@@ -5,12 +5,14 @@ import { getCompanion, getCompanionAsync } from "@/lib/companions";
 import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
 import PullToRefresh from "@/components/PullToRefresh";
-import { ArrowLeft, ArrowRight, Video, Lock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Video, Lock, Shirt } from "lucide-react";
 import LiveAvatarView from "@/components/companion/LiveAvatarView";
 import { decidePhotoAction, generateCompanionPhoto } from "@/lib/companionPhotos";
 import { getDeviceFingerprint } from "@/lib/deviceFingerprint";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useToast } from "@/components/ui/use-toast";
+import BirthdayCard from "@/components/companion/BirthdayCard";
+import OutfitPicker from "@/components/companion/OutfitPicker";
 
 const SUGGESTIONS = [
   "Hey, how's your day going?",
@@ -175,6 +177,10 @@ const navigate = useNavigate();
   const bottomRef = useRef(null);
   const [dailyRemaining, setDailyRemaining] = useState(null);
   const [dailyLimit, setDailyLimit] = useState(null);
+  const [showWardrobe, setShowWardrobe] = useState(false);
+  const [outfitPortrait, setOutfitPortrait] = useState(null);
+  const [showBirthdayCard, setShowBirthdayCard] = useState(false);
+  const [birthdayInfo, setBirthdayInfo] = useState(null);
 
   const loadData = useCallback(async () => {
     if (!companion) { if (!(isCustom && customLoading) && !entityLoading) setLoading(false); return; }
@@ -581,6 +587,27 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
     }
   };
 
+  // Birthday check — fires once per companion
+  useEffect(() => {
+    if (!companion) return;
+    fetch(`/api/companion/birthday-check/${companion.id}`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.isBirthday) {
+          setBirthdayInfo({ name: d.name, email: d.email });
+          setShowBirthdayCard(true);
+        }
+      })
+      .catch(() => {});
+  }, [companion?.id]);
+
+  const companionDisplayImage = outfitPortrait || companion?.image;
+
+  const handleOutfitSelect = (outfitId, portraitBase64) => {
+    setOutfitPortrait(portraitBase64 ? `data:image/png;base64,${portraitBase64}` : null);
+    setShowWardrobe(false);
+  };
+
   const hasMessages = messages.length > 0;
 
   return (
@@ -598,7 +625,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
             <div className="flex items-center gap-2.5">
               <div className="relative">
                 <img
-                  src={companion.image}
+                  src={companionDisplayImage}
                   alt={companion.name}
                   className="w-9 h-9 rounded-full object-cover object-top"
                 />
@@ -621,6 +648,13 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
             >
               <Video className="w-3.5 h-3.5" />
               Face to face
+            </button>
+            <button
+              onClick={() => setShowWardrobe(true)}
+              className="flex items-center gap-1.5 min-h-[44px] text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted select-none"
+            >
+              <Shirt className="w-3.5 h-3.5" />
+              Wardrobe
             </button>
             {memories.length > 0 && (
               <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-muted" title={memories.map(m => `${m.key}: ${m.value}`).join('\n')}>
@@ -651,7 +685,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
           ) : !hasMessages ? (
             <div className="flex flex-col items-center justify-center text-center py-16 px-4">
               <img
-                src={companion.image}
+                src={companionDisplayImage}
                 alt={companion.name}
                 className="w-20 h-20 rounded-full object-cover object-top mb-5 shadow-lg"
               />
@@ -683,7 +717,7 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
               {thinking && (
                 <div className="flex justify-start gap-2.5">
                   <img
-                    src={companion.image}
+                    src={companionDisplayImage}
                     alt={companion.name}
                     className="flex-shrink-0 w-9 h-9 rounded-full object-cover object-top mt-0.5"
                   />
@@ -731,6 +765,34 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
       {/* Face-to-face video */}
       {videoMode && (
         <LiveAvatarView companion={companion} onClose={() => setVideoMode(false)} />
+      )}
+
+      {/* Wardrobe */}
+      {showWardrobe && companion && (
+        <OutfitPicker
+          companionId={companion.id}
+          companionName={companion.name}
+          companionImage={companion.image}
+          activeOutfitId={outfitPortrait ? "custom" : "default"}
+          onSelect={handleOutfitSelect}
+          onBack={() => setShowWardrobe(false)}
+        />
+      )}
+
+      {/* Birthday card */}
+      {showBirthdayCard && birthdayInfo && companion && (
+        <BirthdayCard
+          name={birthdayInfo.name}
+          email={birthdayInfo.email}
+          companionId={companion.id}
+          companionName={companion.name}
+          companionImage={companion.image}
+          onDismiss={() => setShowBirthdayCard(false)}
+          onBirthdayChat={() => {
+            setShowBirthdayCard(false);
+            handleSend("It's my birthday today! 🎉");
+          }}
+        />
       )}
     </div>
   );
