@@ -110,15 +110,14 @@ export const COMPANIONS = [
     subtitle: "Grounded, direct, and genuinely supportive",
     description:
       "Zac is steady and reliable — the kind of presence that cuts through noise and helps you think clearly. Honest without being harsh, supportive without being soft.",
-    image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png",
+    image: "/images/zac_shower_portrait.jpg",
     accent: "from-sky-500/20 to-slate-500/10",
     personality: withEmotions(ZAC_SYSTEM_PROMPT),
     avatar_id: "a1b7e0a779824c2d8676b5aa96d59246",
     voice_id: "onwK4e9ZLuTAKqWW03F9",
     voice_name: "Daniel - Deep, British, middle-aged male",
     voice_locked: true,
-    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/25306ac77_ElevenLabs_video_google-veo-3-1-fast_amansittingo_2026-07-07T16_31_52.mp4",
+    video_url: "/videos/zac_shower.mp4",
     stripe_price_id: "price_1TsEbwEHzw6rVQI2IoCaDA8F",
     category: "male",
   },
@@ -130,16 +129,16 @@ export const COMPANIONS = [
     subtitle: "Confident, magnetic, and dangerously charming",
     description:
       "This Zac walks into a room and owns it without trying. Charismatic, flirtatious, and effortlessly sure of himself. He doesn't chase — he draws you in. And when he lets his guard down, the charm gives way to something that'll keep you up at night.",
-    image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png",
+    image: "/images/blake_portrait.jpg",
     accent: "from-amber-500/20 to-rose-500/10",
     personality: `${BLAKE_SYSTEM_PROMPT}\n\n${BLAKE_EMOTION_STATES_PROMPT}`,
     avatar_id: "b6db9616e63548779141ad1012ce99b8",
     voice_id: "cjVigY5qzO86Huf0OWal",
     voice_name: "Eric - Smooth, Trustworthy",
     voice_locked: true,
-    video_url: "/videos/blake_promo.mp4",
+    video_url: "/videos/zac_shower.mp4",
     videos: [
+      "/videos/zac_shower.mp4",
       "/videos/blake_promo.mp4",
       "/videos/blake_shower.mp4",
     ],
