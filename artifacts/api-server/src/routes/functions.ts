@@ -554,12 +554,165 @@ router.post("/:name", async (req, res) => {
       case "exportCompanionToSheet":
         return res.json({ data: { url: null, message: "Google Sheets export not configured." } });
 
-      // ── Crypto (stub) ─────────────────────────────────────────────────────
+      // ── Crypto — Kraken manual deposit ────────────────────────────────────
 
-      case "createCryptoCheckout":
-      case "checkCryptoPayment":
-      case "createMoonPayUrl":
-        return res.json({ data: { url: null, message: "Crypto payments not configured." } });
+      case "createCryptoCheckout": {
+        const { type, reference, asset, custom_amount } = params as {
+          type: string; reference: string; asset: string; custom_amount?: string;
+        };
+
+        // ── Resolve USD amount ──────────────────────────────────────────────
+        const TIER_USD: Record<string, number>     = { starter: 29, plus: 49, pro: 99, vip: 199 };
+        const TOPUP_USD: Record<string, number>    = { pack_5: 5, pack_10: 10, pack_25: 25, pack_50: 50 };
+        const INTIMACY_USD: Record<string, number> = { "15min": 6, "30min": 11, "60min": 20 };
+
+        let usdAmount = 0;
+        if (type === "tier")     usdAmount = TIER_USD[reference]     ?? 0;
+        if (type === "topup")    usdAmount = reference === "custom"
+          ? Math.max(5, parseFloat(custom_amount ?? "0") || 0)
+          : (TOPUP_USD[reference] ?? 0);
+        if (type === "intimacy") usdAmount = INTIMACY_USD[reference] ?? 0;
+
+        if (usdAmount <= 0) return res.status(400).json({ data: { error: true, message: "Invalid amount." } });
+
+        // ── Kraken deposit addresses from env ──────────────────────────────
+        const ADDRESSES: Record<string, string | undefined> = {
+          BTC:  process.env["KRAKEN_BTC_ADDRESS"],
+          ETH:  process.env["KRAKEN_ETH_ADDRESS"],
+          USDC: process.env["KRAKEN_USDC_ADDRESS"],
+        };
+        const address = ADDRESSES[asset];
+        if (!address) {
+          return res.json({ data: { error: true, message: `${asset} deposit address not yet configured. Contact support at hello@glimr.com.au.` } });
+        }
+
+        // ── Live price from CoinGecko (free, no key) ───────────────────────
+        const COIN_IDS: Record<string, string> = { BTC: "bitcoin", ETH: "ethereum", USDC: "usd-coin" };
+        let cryptoAmount: number;
+        try {
+          if (asset === "USDC") {
+            cryptoAmount = usdAmount; // stable — 1:1
+          } else {
+            const priceRes = await fetch(
+              `https://api.coingecko.com/api/v3/simple/price?ids=${COIN_IDS[asset]}&vs_currencies=usd`,
+              { signal: AbortSignal.timeout(6000) }
+            );
+            if (!priceRes.ok) throw new Error("price fetch failed");
+            const priceData = await priceRes.json() as Record<string, { usd: number }>;
+            const spotPrice = priceData[COIN_IDS[asset]]?.usd;
+            if (!spotPrice) throw new Error("no price returned");
+            cryptoAmount = usdAmount / spotPrice;
+          }
+        } catch {
+          return res.json({ data: { error: true, message: "Could not fetch live crypto price — try again in a moment." } });
+        }
+
+        // ── Create order in DB ─────────────────────────────────────────────
+        const [order] = await db
+          .insert(entitiesTable)
+          .values({
+            model: "CryptoOrder",
+            userId: userId as any,
+            data: {
+              asset,
+              usd_amount:    usdAmount,
+              crypto_amount: cryptoAmount,
+              address,
+              status:    "pending",
+              type,
+              reference,
+              created_at: new Date().toISOString(),
+            },
+          })
+          .returning({ id: entitiesTable.id });
+
+        req.log.info({ asset, usdAmount, cryptoAmount, orderId: order.id }, "Crypto checkout created");
+        return res.json({
+          data: {
+            order_id:     order.id,
+            address,
+            asset,
+            crypto_amount: cryptoAmount,
+            usd_amount:    usdAmount,
+          },
+        });
+      }
+
+      case "checkCryptoPayment": {
+        const { order_id } = params as { order_id: string };
+        if (!order_id) return res.status(400).json({ data: { status: "not_found" } });
+
+        const [order] = await db
+          .select()
+          .from(entitiesTable)
+          .where(and(eq(entitiesTable.id, order_id as any), eq(entitiesTable.model, "CryptoOrder")))
+          .limit(1);
+
+        if (!order) return res.json({ data: { status: "not_found" } });
+
+        const d = order.data as Record<string, any>;
+
+        // Auto-expire after 24 hours if still pending
+        if (d.status === "pending") {
+          const ageMs = Date.now() - new Date(d.created_at).getTime();
+          if (ageMs > 24 * 60 * 60 * 1000) {
+            await db
+              .update(entitiesTable)
+              .set({ data: { ...d, status: "expired" }, updatedDate: new Date() })
+              .where(eq(entitiesTable.id, order_id as any));
+            return res.json({ data: { status: "expired" } });
+          }
+        }
+
+        // If paid — apply the subscription/credit upgrade
+        if (d.status === "paid" && !d.applied) {
+          const sub = await getSubEntity(userId);
+          if (d.type === "tier") {
+            const TIER_CREDITS_MAP: Record<string, number> = { starter: 5, plus: 10, pro: 20, vip: 50 };
+            await upsertSubEntity(userId, sub, {
+              tier: d.reference,
+              credit_balance: ((sub?.data as any)?.credit_balance ?? 0) + (TIER_CREDITS_MAP[d.reference] ?? 0),
+              monthly_credits: TIER_CREDITS_MAP[d.reference] ?? 0,
+            });
+          } else if (d.type === "topup") {
+            const TOPUP_CREDITS: Record<string, number> = { pack_5: 1, pack_10: 2, pack_25: 5, pack_50: 10 };
+            const credits = d.reference === "custom"
+              ? Math.floor((d.usd_amount ?? 0) / 5)
+              : (TOPUP_CREDITS[d.reference] ?? 0);
+            await upsertSubEntity(userId, sub, {
+              credit_balance: ((sub?.data as any)?.credit_balance ?? 0) + credits,
+            });
+          }
+          await db.update(entitiesTable)
+            .set({ data: { ...d, applied: true }, updatedDate: new Date() })
+            .where(eq(entitiesTable.id, order_id as any));
+        }
+
+        return res.json({ data: { status: d.status } });
+      }
+
+      case "createMoonPayUrl": {
+        const { order_id } = params as { order_id: string };
+        const [order] = await db
+          .select()
+          .from(entitiesTable)
+          .where(and(eq(entitiesTable.id, order_id as any), eq(entitiesTable.model, "CryptoOrder")))
+          .limit(1);
+
+        const d = (order?.data ?? {}) as Record<string, any>;
+        const currencyMap: Record<string, string> = { USDC: "usdc_polygon", BTC: "btc", ETH: "eth" };
+        const currency = currencyMap[d.asset ?? "USDC"] ?? "usdc_polygon";
+        const moonpayKey = process.env["MOONPAY_API_KEY"];
+
+        let url: string;
+        if (moonpayKey && d.address) {
+          url = `https://buy.moonpay.com?apiKey=${moonpayKey}&currencyCode=${currency}&baseCurrencyAmount=${d.usd_amount ?? ""}&walletAddress=${encodeURIComponent(d.address ?? "")}`;
+        } else {
+          // Fallback — takes user to MoonPay buy page pre-selected on the asset
+          url = `https://www.moonpay.com/buy/${d.asset?.toLowerCase() ?? "usdc"}`;
+        }
+        return res.json({ data: { url } });
+      }
 
       // ── Admin signup notification ──────────────────────────────────────────
 

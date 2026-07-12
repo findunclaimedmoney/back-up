@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import Landing from "@/pages/Landing";
+import UserDashboard from "@/pages/UserDashboard";
 
 export default function Home() {
   const { isAuthenticated, user, isLoadingAuth, isLoadingPublicSettings } = useAuth();
@@ -14,10 +15,16 @@ export default function Home() {
     );
   }
 
-  // Only admins go to the admin dashboard; everyone else sees the landing page
-  if (isAuthenticated && user?.role === 'admin') {
+  // Admins → admin dashboard
+  if (isAuthenticated && user?.role === "admin") {
     return <Navigate to="/dashboard" replace />;
   }
 
+  // Logged-in regular users → personalised home
+  if (isAuthenticated) {
+    return <UserDashboard />;
+  }
+
+  // Guests → marketing landing page
   return <Landing />;
 }
