@@ -10,11 +10,9 @@ export default function ChatInput({ onSend, disabled, messagesRemaining }) {
   const fileInputRef = useRef(null);
 
   const handleVoiceTranscribed = (transcribedText) => {
-    setText((prev) => {
-      const combined = prev ? `${prev} ${transcribedText}` : transcribedText;
-      return combined;
-    });
-    setTimeout(() => textareaRef.current?.focus(), 0);
+    if (transcribedText.trim() && !disabled) {
+      onSend(transcribedText.trim(), null);
+    }
   };
 
   const handleSend = () => {
