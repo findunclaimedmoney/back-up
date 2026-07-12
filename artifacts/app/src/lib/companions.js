@@ -9,6 +9,7 @@ import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
 import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
 import { JESSICA_SYSTEM_PROMPT } from "@/lib/jessicaBrain";
 import { MONICA_SYSTEM_PROMPT } from "@/lib/monicaBrain";
+import { OLIVER_SYSTEM_PROMPT } from "@/lib/oliverBrain";
 import { base44 } from "@/api/base44Client";
 
 
@@ -53,7 +54,7 @@ export const COMPANIONS = [
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/19ce39eea_Womaninsilkrobe.png",
     accent: "from-emerald-500/20 to-green-500/10",
     personality: withEmotions(SOFIA_SYSTEM_PROMPT),
-    avatar_id: "585391970fcc475ea62a63ad8908698e",
+    avatar_id: "014dc21750ef42a6a967bd1533bb0d11",
     voice_id: "Xb7hH8MSUJpSbSDYk0k2",
     voice_name: "Alice - Confident, British female",
     voice_locked: true,
@@ -88,7 +89,7 @@ export const COMPANIONS = [
     image: "/images/sophie.png",
     accent: "from-amber-500/20 to-orange-500/10",
     personality: withEmotions(SOFIA_SYSTEM_PROMPT),
-    avatar_id: null,
+    avatar_id: "267832a040cd46998928c37498777215",
     voice_id: "XB0fDUnXU5powFXDhCwa",
     voice_name: "Charlotte - Warm, English-Swedish female",
     voice_locked: true,
@@ -106,7 +107,7 @@ export const COMPANIONS = [
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png",
     accent: "from-sky-500/20 to-slate-500/10",
     personality: withEmotions(ZAC_SYSTEM_PROMPT),
-    avatar_id: "599407b0d8a44f3fae75abcb1523dfb2",
+    avatar_id: "a1b7e0a779824c2d8676b5aa96d59246",
     voice_id: "onwK4e9ZLuTAKqWW03F9",
     voice_name: "Daniel - Deep, British, middle-aged male",
     voice_locked: true,
@@ -174,6 +175,22 @@ export const COMPANIONS = [
     voice_locked: true,
     video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/1d1d0c747_Marcus_Hero_Video.mp4",
     stripe_price_id: "price_1TsDczEHzw6rVQI2MVK7wtMV",
+    category: "male",
+  },
+  {
+    id: "oliver",
+    name: "Oliver",
+    tagline: "He centers",
+    subtitle: "Distinguished, measured, and quietly magnetic",
+    description:
+      "Oliver has built a life of quiet consequence. He listens before he speaks — and when he does, you lean in. Assured, warm, and completely present.",
+    image: "/images/oliver.png",
+    accent: "from-slate-500/20 to-blue-500/10",
+    personality: withEmotions(OLIVER_SYSTEM_PROMPT),
+    avatar_id: "072d3a64f1884dedaaca04d6ac6e7be7",
+    voice_id: "nPczCjzI2devNBz1zQrb",
+    voice_name: "Brian - Strong, Deep, British male",
+    voice_locked: true,
     category: "male",
   },
   {

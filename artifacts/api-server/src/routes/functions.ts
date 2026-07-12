@@ -322,6 +322,7 @@ router.post("/:name", async (req, res) => {
           aria:    "A digital art portrait of a stylized female character with striking teal-blue hair, confident expression, bright eyes. Futuristic neon-lit background. 3D rendered, vibrant, high quality.",
           kai:     "A digital art selfie in anime illustration style. A young man with dark tousled hair, calm focused eyes. Urban dusk background. Anime style, cool atmospheric tones.",
           ren:     "A digital art portrait of a stylized male character with warm brown hair, charming smile. City at night background with warm ambient lights. 3D rendered, cinematic lighting.",
+          oliver:  "A candid phone selfie of a distinguished man in his mid-forties with silver-streaked hair, blue eyes, and a short well-groomed beard. He has an authoritative yet warm presence. Modern office or upscale setting, confident relaxed expression. Real phone selfie — natural, composed, magnetic.",
         };
 
         const visualPrompt = COMPANION_VISUALS[companionId]
