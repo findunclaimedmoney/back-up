@@ -1,6 +1,8 @@
 import { MIA_EMOTIONAL_SYSTEM_PROMPT, MIA_EMOTION_STATES_PROMPT } from "@/lib/miaEmotions";
 import { ZAC_SYSTEM_PROMPT } from "@/lib/zacBrain";
 import { ZAC_CONFIDENT_SYSTEM_PROMPT } from "@/lib/zacConfidentBrain";
+import { LEO_SYSTEM_PROMPT } from "@/lib/leoBrain";
+import { MARCUS_SYSTEM_PROMPT } from "@/lib/marcusBrain";
 import { SOFIA_SYSTEM_PROMPT } from "@/lib/sofiaBrain";
 import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
 import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
@@ -88,6 +90,32 @@ export const COMPANIONS = [
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png",
     accent: "from-amber-500/20 to-rose-500/10",
     personality: withEmotions(ZAC_CONFIDENT_SYSTEM_PROMPT),
+    avatar_id: null,
+  },
+  {
+    id: "leo",
+    name: "Leo",
+    tagline: "He feels",
+    subtitle: "Creative, soulful, and romantically honest",
+    description:
+      "Leo lives in color and sound. He's an artist who feels everything deeply and says it before he thinks about whether he should. Warm, spontaneous, and genuine — he'll make you feel like you're part of the art.",
+    image:
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/de484828a_generated_image.png",
+    accent: "from-amber-500/20 to-orange-500/10",
+    personality: withEmotions(LEO_SYSTEM_PROMPT),
+    avatar_id: null,
+  },
+  {
+    id: "marcus",
+    name: "Marcus",
+    tagline: "He adventures",
+    subtitle: "Worldly, witty, and quietly wise",
+    description:
+      "Marcus has been everywhere and collected stories from every corner. Sharp, playful, and competitive — he'll banter with you until you laugh and then drop a truth bomb disguised as an anecdote. He makes you want to book a flight.",
+    image:
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/1ff6ae123_generated_image.png",
+    accent: "from-emerald-500/20 to-teal-500/10",
+    personality: withEmotions(MARCUS_SYSTEM_PROMPT),
     avatar_id: null,
   },
   {
