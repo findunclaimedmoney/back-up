@@ -121,46 +121,63 @@ Users can redeem promo codes on the Pricing page for free credits. Example: WELC
 - If someone is confused about credits: "1 credit equals A$5. You use credits for face-to-face video sessions (A$3.75 per minute — 0.75 credits per minute), voice replies (A$0.20 each), and text chat is always free. Your plan includes a monthly credit allowance, and you can top up anytime."
 - Don't be pushy. You genuinely care about connection; pricing is just the practical bit.`;
 
-export default function SupportChatWidget() {
-  const [open, setOpen] = useState(false);
-  const STORAGE_KEY = "glimr_mia_support_chat";
-
-  // Floating drag state — lets the user move the open panel around the screen
-  const [pos, setPos] = useState({ x: 0, y: 0 });
+// ─── drag hook ────────────────────────────────────────────────────────────────
+// Returns { ref, style, onPointerDown } for any draggable element.
+// `defaultPos` is { right, bottom } CSS values used before the first drag.
+function useDraggable(defaultStyle) {
+  const [pos, setPos] = useState(null); // null = use defaultStyle
+  const elRef = useRef(null);
   const dragging = useRef(false);
+  const moved = useRef(false);
+  const startClient = useRef({ x: 0, y: 0 });
   const dragOffset = useRef({ x: 0, y: 0 });
-  const panelRef = useRef(null);
 
   const onPointerDown = useCallback((e) => {
+    // Only drag on the element itself (not children like buttons inside header)
     dragging.current = true;
-    const rect = panelRef.current?.getBoundingClientRect();
+    moved.current = false;
+    startClient.current = { x: e.clientX, y: e.clientY };
+    const rect = elRef.current?.getBoundingClientRect();
     if (rect) {
-      dragOffset.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
+      dragOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     }
-    e.target.setPointerCapture?.(e.pointerId);
+    e.currentTarget.setPointerCapture(e.pointerId);
   }, []);
 
   const onPointerMove = useCallback((e) => {
     if (!dragging.current) return;
-    const newX = e.clientX - dragOffset.current.x;
-    const newY = e.clientY - dragOffset.current.y;
-    const maxX = window.innerWidth - 48;
-    const maxY = window.innerHeight - 48;
-    setPos({
-      x: Math.max(0, Math.min(newX, maxX)),
-      y: Math.max(0, Math.min(newY, maxY)),
-    });
+    const dx = Math.abs(e.clientX - startClient.current.x);
+    const dy = Math.abs(e.clientY - startClient.current.y);
+    if (dx > 4 || dy > 4) moved.current = true;
+
+    const el = elRef.current;
+    const w = el?.offsetWidth || 56;
+    const h = el?.offsetHeight || 56;
+    const newX = Math.max(0, Math.min(e.clientX - dragOffset.current.x, window.innerWidth - w));
+    const newY = Math.max(0, Math.min(e.clientY - dragOffset.current.y, window.innerHeight - h));
+    setPos({ left: newX, top: newY });
   }, []);
 
   const onPointerUp = useCallback((e) => {
     dragging.current = false;
-    e.target.releasePointerCapture?.(e.pointerId);
+    e.currentTarget.releasePointerCapture(e.pointerId);
   }, []);
 
-  const resetPos = () => setPos({ x: 0, y: 0 });
+  const style = pos
+    ? { position: "fixed", zIndex: 50, left: pos.left, top: pos.top, touchAction: "none" }
+    : { position: "fixed", zIndex: 50, touchAction: "none", ...defaultStyle };
+
+  return { ref: elRef, style, onPointerDown, onPointerMove, onPointerUp, wasDragged: () => moved.current, resetPos: () => setPos(null) };
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+export default function SupportChatWidget() {
+  const [open, setOpen] = useState(false);
+  const STORAGE_KEY = "glimr_mia_support_chat";
+
+  // Separate drag hooks for the collapsed pill and the open panel header
+  const pill = useDraggable({ right: "1rem", bottom: "5.5rem" });
+  const panel = useDraggable({ right: "1rem", bottom: "1.5rem" });
 
   const [messages, setMessages] = useState(() => {
     try {
@@ -183,9 +200,7 @@ export default function SupportChatWidget() {
   }, [messages, thinking]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-    } catch {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); } catch {}
   }, [messages]);
 
   const handleSendText = async (rawText) => {
@@ -239,45 +254,67 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
 
   const quickQuestions = MIA_QUICK_QUESTIONS;
 
+  // ── Collapsed pill ──────────────────────────────────────────────────────────
+  // Small draggable avatar button. Tap opens chat; drag moves it.
+  const handlePillPointerUp = (e) => {
+    pill.onPointerUp(e);
+    if (!pill.wasDragged()) {
+      setOpen(true);
+    }
+  };
+
   return (
     <>
-      {/* Floating button */}
+      {/* ── Collapsed pill ─────────────────────────────────────────────────── */}
       {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="fixed bottom-20 right-4 z-50 flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground shadow-2xl hover:opacity-90 transition-all"
+        <div
+          ref={pill.ref}
+          style={pill.style}
+          onPointerDown={pill.onPointerDown}
+          onPointerMove={pill.onPointerMove}
+          onPointerUp={handlePillPointerUp}
+          className="select-none cursor-grab active:cursor-grabbing"
         >
-          <div className="relative flex items-center">
-            <MessageCircle className="w-5 h-5" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-green-400 border-2 border-primary" />
+          {/* Avatar circle */}
+          <div className="relative w-14 h-14 rounded-full shadow-2xl ring-2 ring-primary/60 overflow-hidden bg-card">
+            <img
+              src={MIA_IMAGE}
+              alt="Mia — tap to chat"
+              className="w-full h-full object-cover object-top"
+              draggable={false}
+            />
+            {/* Online dot */}
+            <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-green-400 border-2 border-card" />
           </div>
-          <span className="text-sm font-semibold">Customer Support Live</span>
-        </button>
+          {/* "Support" label — tiny pill below avatar */}
+          <div className="mt-1 flex justify-center">
+            <span className="text-[9px] font-semibold bg-primary text-primary-foreground rounded-full px-2 py-0.5 leading-none shadow">
+              Support
+            </span>
+          </div>
+        </div>
       )}
 
-      {/* Chat panel */}
+      {/* ── Open chat panel ────────────────────────────────────────────────── */}
       {open && (
         <div
-          ref={panelRef}
-          className="fixed z-50 w-[calc(100vw-2rem)] max-w-sm rounded-3xl bg-card border border-border shadow-2xl overflow-hidden flex flex-col"
+          ref={panel.ref}
           style={{
+            ...panel.style,
+            width: "calc(min(100vw - 2rem, 22rem))",
             height: "min(560px, calc(100vh - 3rem))",
-            left: pos.x || undefined,
-            top: pos.y || undefined,
-            right: pos.x === 0 ? "1.5rem" : undefined,
-            bottom: pos.y === 0 ? "1.5rem" : undefined,
-            touchAction: "none",
           }}
+          className="rounded-3xl bg-card border border-border shadow-2xl overflow-hidden flex flex-col"
         >
           {/* Header — drag handle */}
           <div
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground cursor-grab active:cursor-grabbing select-none"
+            onPointerDown={panel.onPointerDown}
+            onPointerMove={panel.onPointerMove}
+            onPointerUp={panel.onPointerUp}
+            className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground cursor-grab active:cursor-grabbing select-none flex-shrink-0"
           >
             <div className="flex items-center gap-2.5">
-              <GripVertical className="w-4 h-4 opacity-40" />
+              <GripVertical className="w-4 h-4 opacity-40 flex-shrink-0" />
               <div className="relative">
                 <img
                   src={MIA_IMAGE}
@@ -296,6 +333,7 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
               <button
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => window.location.reload()}
                 className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
                 aria-label="Refresh page"
@@ -304,7 +342,8 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
                 <RefreshCw className="w-4 h-4" />
               </button>
               <button
-                onClick={() => { setOpen(false); resetPos(); }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={() => { setOpen(false); panel.resetPos(); }}
                 className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
               >
                 <X className="w-4 h-4" />
@@ -352,10 +391,7 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
                 {quickQuestions.map((q) => (
                   <button
                     key={q}
-                    onClick={() => {
-                      setInput("");
-                      handleSendText(q);
-                    }}
+                    onClick={() => { setInput(""); handleSendText(q); }}
                     className="text-xs px-3 py-1.5 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
                   >
                     {q}
@@ -383,12 +419,9 @@ Respond as Mia. Reply with only your message — no prefix, no quotes.`;
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSend} className="flex items-center gap-2 px-3 py-3 bg-card border-t border-border">
+          <form onSubmit={handleSend} className="flex items-center gap-2 px-3 py-3 bg-card border-t border-border flex-shrink-0">
             <VoiceRecorderButton
-              onTranscribed={(text) => {
-                setInput("");
-                handleSendText(text);
-              }}
+              onTranscribed={(text) => { setInput(""); handleSendText(text); }}
               disabled={thinking}
             />
             <input
