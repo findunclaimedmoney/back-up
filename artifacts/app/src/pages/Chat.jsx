@@ -182,6 +182,8 @@ const navigate = useNavigate();
   const [outfitPortrait, setOutfitPortrait] = useState(null);
   const [showBirthdayCard, setShowBirthdayCard] = useState(false);
   const [birthdayInfo, setBirthdayInfo] = useState(null);
+  const [photoCredits, setPhotoCredits] = useState(0);
+  const [requestingPhoto, setRequestingPhoto] = useState(false);
 
   const loadData = useCallback(async () => {
     if (!companion) { if (!(isCustom && customLoading) && !entityLoading) setLoading(false); return; }
@@ -195,6 +197,7 @@ const navigate = useNavigate();
         setDailyRemaining(res.data.messages_remaining);
         setDailyLimit(res.data.messages_limit);
       }
+      if (res.data?.photoCredits !== undefined) setPhotoCredits(res.data.photoCredits ?? 0);
     }).catch(() => {});
 
     let sorted = [];
@@ -365,6 +368,36 @@ It's been a while since you last talked. You're thinking about this person. Reac
 ${history}
 
 Respond as ${companion.name}. Reply with only your message — no prefix, no quotes.`;
+  };
+
+  const handleRequestPhoto = async () => {
+    if (requestingPhoto) return;
+    setRequestingPhoto(true);
+    try {
+      const res = await base44.functions.invoke("requestCompanionPhoto", { companion_id: companion.id });
+      if (res.data?.image_url) {
+        const photoTempId = generateTempId();
+        const photoMsg = {
+          _tempId: photoTempId,
+          role: "assistant",
+          content: "",
+          companion_id: companion.id,
+          image_url: res.data.image_url,
+          status: "sending",
+        };
+        setMessages((prev) => [...prev, photoMsg]);
+        if (res.data.photo_credits_remaining !== undefined) setPhotoCredits(res.data.photo_credits_remaining);
+        base44.entities.Message.create({ role: "assistant", content: "", companion_id: companion.id, image_url: res.data.image_url })
+          .then((saved) => setMessages((prev) => prev.map((m) => m._tempId === photoTempId ? { ...saved } : m)))
+          .catch(() => setMessages((prev) => prev.map((m) => m._tempId === photoTempId ? { ...m, status: "error" } : m)));
+      } else if (res.data?.error === "no_credits") {
+        toast({ title: "No photo credits", description: "Buy a photo pack on the pricing page to get selfies from your companion." });
+      }
+    } catch (err) {
+      console.error("Photo request failed:", err);
+    } finally {
+      setRequestingPhoto(false);
+    }
   };
 
   const handleSend = async (text, photoFile) => {
@@ -760,6 +793,9 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
           onSend={handleSend}
           disabled={thinking || loading}
           messagesRemaining={dailyLimit > 0 ? dailyRemaining : null}
+          onRequestPhoto={handleRequestPhoto}
+          photoCredits={photoCredits}
+          requestingPhoto={requestingPhoto}
         />
       )}
 

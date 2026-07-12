@@ -7,6 +7,7 @@ import { TIERS } from "@/lib/creditSystem";
 import TierCard from "@/components/pricing/TierCard";
 import IntimacyAddOnCard from "@/components/pricing/IntimacyAddOnCard";
 import BedtimeTalkCard from "@/components/pricing/BedtimeTalkCard";
+import PhotoPackCard from "@/components/pricing/PhotoPackCard";
 import TopUpCard from "@/components/pricing/TopUpCard";
 import CreditUsageCard from "@/components/pricing/CreditUsageCard";
 import CryptoPaymentModal from "@/components/pricing/CryptoPaymentModal";
@@ -27,6 +28,8 @@ export default function Pricing() {
   const [addonLoading, setAddonLoading] = useState(null);
   const [topupLoading, setTopupLoading] = useState(null);
   const [bedtimeLoading, setBedtimeLoading] = useState(null);
+  const [photoPackLoading, setPhotoPackLoading] = useState(null);
+  const [photoCredits, setPhotoCredits] = useState(0);
   const [billingLoading, setBillingLoading] = useState(false);
   const [cryptoOpen, setCryptoOpen] = useState(false);
   const [promoCode, setPromoCode] = useState("");
@@ -54,6 +57,7 @@ export default function Pricing() {
       setCreditsUsed(res.data?.credits_used || 0);
       setMinutesUsed(res.data?.video_minutes_used || 0);
       setSessionsCompleted(res.data?.intimacy_sessions_completed || 0);
+      setPhotoCredits(res.data?.photoCredits ?? 0);
     } catch (err) {
       console.error(err);
     }
@@ -137,6 +141,22 @@ export default function Pricing() {
     } catch (err) {
       console.error(err);
       setBedtimeLoading(null);
+    }
+  };
+
+  const handlePurchasePhotoPack = async (packId) => {
+    const authed = await base44.auth.isAuthenticated();
+    if (!authed) { window.location.href = "/login"; return; }
+    setPhotoPackLoading(packId);
+    try {
+      const res = await base44.functions.invoke("createCheckout", {
+        addon: "photos",
+        pack_id: packId,
+      });
+      if (res.data?.url) window.location.href = res.data.url;
+    } catch (err) {
+      console.error(err);
+      setPhotoPackLoading(null);
     }
   };
 
@@ -358,11 +378,21 @@ export default function Pricing() {
             </div>
           </section>
 
-          <section className="px-6 pb-24">
+          <section className="px-6 pb-12">
             <div className="max-w-3xl mx-auto">
               <BedtimeTalkCard
                 loading={bedtimeLoading}
                 onPurchase={handlePurchaseBedtime}
+              />
+            </div>
+          </section>
+
+          <section className="px-6 pb-24">
+            <div className="max-w-3xl mx-auto">
+              <PhotoPackCard
+                photoCredits={photoCredits}
+                loading={photoPackLoading}
+                onPurchase={handlePurchasePhotoPack}
               />
             </div>
           </section>

@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Camera, X } from "lucide-react";
+import { Send, Camera, X, Loader2 } from "lucide-react";
 import VoiceRecorderButton from "@/components/VoiceRecorderButton";
 
-export default function ChatInput({ onSend, disabled, messagesRemaining }) {
+export default function ChatInput({ onSend, disabled, messagesRemaining, onRequestPhoto, photoCredits = 0, requestingPhoto = false }) {
   const [text, setText] = useState("");
   const [pendingPhoto, setPendingPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -68,6 +68,22 @@ export default function ChatInput({ onSend, disabled, messagesRemaining }) {
               aria-label="Remove photo"
             >
               <X className="w-3 h-3" />
+            </button>
+          </div>
+        )}
+        {onRequestPhoto && photoCredits > 0 && (
+          <div className="mb-2">
+            <button
+              onClick={onRequestPhoto}
+              disabled={requestingPhoto || disabled}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-border bg-card hover:border-primary/40 hover:bg-muted transition-all disabled:opacity-50"
+            >
+              {requestingPhoto
+                ? <Loader2 className="w-3 h-3 animate-spin" />
+                : <Camera className="w-3 h-3" />
+              }
+              <span>Send me a photo</span>
+              <span className="text-muted-foreground">· {photoCredits} left</span>
             </button>
           </div>
         )}

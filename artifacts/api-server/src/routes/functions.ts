@@ -33,6 +33,12 @@ const BEDTIME_PRICES: Record<string, { name: string; amountCents: number; credit
   "30min": { name: "Bedtime Talk with Jess — 30 Minutes", amountCents:  9900, credits: 20 },
 };
 
+// Companion photo packs — one-time purchases, grant photoCredits on the subscription
+const PHOTO_PRICES: Record<string, { name: string; amountCents: number; photoCredits: number }> = {
+  photos_5:  { name: "5 Companion Photos",  amountCents: 1500, photoCredits: 5  },
+  photos_10: { name: "10 Companion Photos", amountCents: 2500, photoCredits: 10 },
+};
+
 function baseUrl(): string {
   return process.env["REPLIT_DEV_DOMAIN"]
     ? `https://${process.env["REPLIT_DEV_DOMAIN"]}`
@@ -118,6 +124,7 @@ router.post("/:name", async (req, res) => {
             intimacy_sessions_completed: d.intimacySessions       ?? 0,
             plan:                        d.tier                   ?? "free",
             credits:                     d.monthlyCredits         ?? 0,
+            photoCredits:                d.photoCredits           ?? 0,
           },
         });
       }
@@ -160,6 +167,22 @@ router.post("/:name", async (req, res) => {
         // Top-up / add-on / session package
         const addonType = (params.addon ?? "topup") as string;
         const packId = (params.duration ?? params.pack_id) as string;
+
+        // Photo packs use a separate metadata key (photo_credits, not credits)
+        if (addonType === "photos") {
+          const photoPack = PHOTO_PRICES[packId];
+          if (!photoPack) return res.json({ data: { url: null, message: "Unknown photo pack" } });
+          const photoSess = await stripe.checkout.sessions.create({
+            customer: customerId,
+            mode: "payment",
+            payment_method_types: ["card"],
+            line_items: [{ price_data: { currency: "aud", product_data: { name: `GLIMR — ${photoPack.name}` }, unit_amount: photoPack.amountCents }, quantity: 1 }],
+            metadata: { userId, addon: "photos", packId, photo_credits: String(photoPack.photoCredits) },
+            success_url: `${baseUrl()}/pricing?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url:  `${baseUrl()}/pricing`,
+          });
+          return res.json({ data: { url: photoSess.url } });
+        }
 
         const pack =
           addonType === "intimacy" ? INTIMACY_PRICES[packId] :
@@ -239,6 +262,16 @@ router.post("/:name", async (req, res) => {
           return res.json({ data: { success: true, tier: meta.tier, ...updated } });
         }
 
+        // Photo pack purchase — add photoCredits, not regular credits
+        if (meta.photo_credits) {
+          const addPhotoCredits = parseInt(meta.photo_credits, 10);
+          const currentPhotoCredits = (existing?.data as any)?.photoCredits ?? 0;
+          const updated = await upsertSubEntity(userId, existing, {
+            photoCredits: currentPhotoCredits + addPhotoCredits,
+          });
+          return res.json({ data: { success: true, photo_credits_added: addPhotoCredits, new_balance: updated.photoCredits } });
+        }
+
         if (meta.credits) {
           const addCredits = parseInt(meta.credits, 10);
           const currentBalance = (existing?.data as any)?.creditBalance ?? 0;
@@ -260,6 +293,65 @@ router.post("/:name", async (req, res) => {
         await db.delete(usersTable).where(eq(usersTable.id, userId as any));
         req.session.destroy(() => {});
         return res.json({ success: true });
+      }
+
+      case "requestCompanionPhoto": {
+        const sub = await getSubEntity(userId);
+        const d = (sub?.data ?? {}) as any;
+        const photoCredits = d.photoCredits ?? 0;
+
+        if (photoCredits <= 0) {
+          return res.json({ data: { error: "no_credits", message: "You're out of photo credits." } });
+        }
+
+        const companionId = params.companion_id as string;
+
+        const COMPANION_VISUALS: Record<string, string> = {
+          jess:    "A candid phone selfie of a beautiful young woman with long wavy brown hair, warm brown eyes, genuine warm smile. Cozy bedroom with soft warm lighting, casual clothing. Real phone selfie — slightly imperfect angle, intimate and warm.",
+          mia:     "A candid phone selfie of a beautiful young woman with golden blonde hair, bright eyes, radiant warm smile. Bright natural lighting, casual stylish clothing. Real phone selfie — bright, genuine.",
+          zac:     "A candid phone selfie of a handsome young man with short brown hair, strong jaw, warm steady eyes. Casual indoor setting, warm natural lighting. Real phone selfie — natural, warm.",
+          blake:   "A candid phone selfie of a handsome young man with short brown hair, captivating gaze, magnetic presence. Warm indoor setting. Real phone selfie — natural, intimate.",
+          leo:     "A candid phone selfie of a handsome young man with dark hair, spontaneous energetic smile. Casual lively setting. Real phone selfie — fun, natural.",
+          marcus:  "A candid phone selfie of a handsome young man with dark hair, calm sophisticated presence, warm direct expression. Elegant casual setting. Real phone selfie — composed, warm.",
+          luna:    "A candid phone selfie of a beautiful young woman with flowing dark hair, mysterious captivating eyes. Soft ethereal indoor setting. Real phone selfie — dreamy, intimate.",
+          sophie:  "A candid photo of a beautiful young woman with warm brown hair, bright adventurous smile. Beautiful natural outdoor setting. Real phone selfie — bright, warm, genuine.",
+          natalie: "A candid phone selfie of an elegant young woman, sophisticated warm presence. Stylish indoor setting. Real phone selfie — polished but natural.",
+          jessica: "A candid phone selfie of a beautiful young woman with dark hair, flirtatious playful smile. Casual fun setting. Real phone selfie — playful, spontaneous.",
+          monica:  "A candid phone selfie of a stunning young woman with long dark hair, intensely captivating expression. Sleek minimal setting. Real phone selfie — striking, intimate.",
+          yuki:    "A phone selfie in anime illustration style. A young woman with long black hair, gentle dark eyes, soft smile. Peaceful garden background with cherry blossoms. Soft anime art style, warm pastel colors.",
+          aria:    "A digital art portrait of a stylized female character with striking teal-blue hair, confident expression, bright eyes. Futuristic neon-lit background. 3D rendered, vibrant, high quality.",
+          kai:     "A digital art selfie in anime illustration style. A young man with dark tousled hair, calm focused eyes. Urban dusk background. Anime style, cool atmospheric tones.",
+          ren:     "A digital art portrait of a stylized male character with warm brown hair, charming smile. City at night background with warm ambient lights. 3D rendered, cinematic lighting.",
+        };
+
+        const visualPrompt = COMPANION_VISUALS[companionId]
+          ?? "A candid phone selfie of an attractive person. Natural lighting, casual setting, warm genuine expression. Real phone selfie feeling.";
+
+        try {
+          const openaiMod = await import("openai");
+          const OpenAI = (openaiMod as any).default ?? (openaiMod as any).OpenAI;
+          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+          const image = await openai.images.generate({
+            model: "dall-e-3",
+            prompt: visualPrompt,
+            n: 1,
+            size: "1024x1024",
+            quality: "standard",
+          });
+
+          const imageUrl = image.data?.[0]?.url;
+          if (!imageUrl) {
+            return res.json({ data: { error: "generation_failed", message: "Could not generate photo." } });
+          }
+
+          await upsertSubEntity(userId, sub, { photoCredits: photoCredits - 1 });
+
+          return res.json({ data: { image_url: imageUrl, photo_credits_remaining: photoCredits - 1 } });
+        } catch (err: any) {
+          req.log.error({ err }, "Photo generation failed");
+          return res.json({ data: { error: "generation_failed", message: err?.message ?? "Photo generation failed." } });
+        }
       }
 
       // ── Voice (ElevenLabs) ────────────────────────────────────────────────
