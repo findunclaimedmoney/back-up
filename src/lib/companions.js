@@ -29,6 +29,8 @@ export const COMPANIONS = [
     voice_id: "ThT5KcBeYPX3keUQqHPh",
     voice_name: "Dorothy - Pleasant, young, British female",
     voice_locked: true,
+    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/c9976b75b_Jess_Hero_Video.mp4",
+    stripe_price_id: "price_1TsEO4EHzw6rVQI2Tx2KTOLB",
   },
   {
     // ⚠️ LOCKED — Do NOT change this image. Mia is the face of customer service
