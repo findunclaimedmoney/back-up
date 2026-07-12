@@ -7,7 +7,7 @@ import { TIER_LABELS, TIER_CREDITS } from "@/lib/creditSystem";
 import {
   MessageCircle, Zap, ArrowRight, Crown, Star, CreditCard,
   Heart, Home, Lock, Clock, Check, Sparkles, Flame, Play,
-  Shirt, Users, Video, ChevronRight, Loader2,
+  Shirt, Users, Video, ChevronRight, Loader2, Mic, Camera, X,
 } from "lucide-react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -97,6 +97,148 @@ const TABS = [
   { id: "vip",      icon: Crown,  label: "VIP" },
 ];
 
+// ─── Companion Feature Sheet ──────────────────────────────────────────────────
+
+function CompanionFeatureSheet({ companion, onClose, onNavigate, tier, isPro, intimacyUnlocked, onUpgrade }) {
+  const features = [
+    {
+      id: "chat", icon: MessageCircle, label: "Text chat",
+      desc: "Free, unlimited conversations",
+      status: "available",
+    },
+    {
+      id: "voice", icon: Mic, label: "Voice replies",
+      desc: "Hear them speak to you",
+      status: !companion.voice_id ? "soon" : tier === "free" ? "locked" : "available",
+      lockReason: "Starter+",
+    },
+    {
+      id: "video", icon: Video, label: "Live video",
+      desc: "Face-to-face sessions",
+      status: !companion.avatar_id ? "soon" : tier === "free" ? "locked" : "available",
+      lockReason: "Starter+",
+    },
+    {
+      id: "photos", icon: Camera, label: "Selfie photos",
+      desc: "They send you candid photos",
+      status: tier === "free" ? "locked" : "available",
+      lockReason: "Starter+",
+    },
+    {
+      id: "intimacy", icon: Heart, label: "Intimacy layer",
+      desc: "Deeper connection, unlocked",
+      status: (intimacyUnlocked || isPro) ? "available" : "locked",
+      lockReason: "Pro or 160 min video",
+    },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col justify-end">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Sheet */}
+      <div className="relative bg-background rounded-t-[2rem] border-t border-border max-h-[88vh] overflow-y-auto">
+        {/* Companion portrait */}
+        <div className="relative h-60 overflow-hidden rounded-t-[2rem]">
+          <img
+            src={companion.image}
+            alt={companion.name}
+            className="w-full h-full object-cover object-top"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+          {/* Close */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur flex items-center justify-center"
+          >
+            <X className="w-4 h-4 text-white" />
+          </button>
+          {/* Name */}
+          <div className="absolute bottom-3 left-5">
+            <span className="text-[10px] font-medium tracking-widest text-primary uppercase">{companion.tagline}</span>
+            <h2 className="font-heading text-2xl font-semibold text-white leading-tight">{companion.name}</h2>
+          </div>
+        </div>
+
+        {/* Feature rows */}
+        <div className="px-5 pt-4 pb-2 space-y-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+            Available features
+          </p>
+          {features.map((f) => (
+            <div
+              key={f.id}
+              className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all ${
+                f.status === "available"
+                  ? "bg-card border-border"
+                  : "bg-card/50 border-border/60"
+              }`}
+            >
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                f.status === "available" ? "bg-primary/10" : "bg-muted"
+              }`}>
+                <f.icon className={`w-5 h-5 ${
+                  f.status === "available" ? "text-primary" : "text-muted-foreground/50"
+                }`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm font-semibold leading-none mb-0.5 ${
+                  f.status !== "available" ? "text-muted-foreground" : ""
+                }`}>{f.label}</p>
+                <p className="text-xs text-muted-foreground">{f.desc}</p>
+              </div>
+              {/* Status badge */}
+              {f.status === "available" && (
+                <div className="w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
+                  <Check className="w-3.5 h-3.5 text-primary" />
+                </div>
+              )}
+              {f.status === "soon" && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium flex-shrink-0">
+                  Soon
+                </span>
+              )}
+              {f.status === "locked" && (
+                <button
+                  onClick={() => { onClose(); onUpgrade("starter"); }}
+                  className="text-[11px] px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-medium hover:bg-primary/20 transition-colors flex-shrink-0 flex items-center gap-1"
+                >
+                  <Lock className="w-2.5 h-2.5" />
+                  {f.lockReason}
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* CTAs */}
+        <div className="px-5 pt-4 pb-8 space-y-2.5">
+          <button
+            onClick={() => onNavigate(`/chat/${companion.id}`)}
+            className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-[0.98]"
+          >
+            <MessageCircle className="w-4 h-4" />
+            Chat with {companion.name}
+          </button>
+          {companion.avatar_id && tier !== "free" && (
+            <button
+              onClick={() => onNavigate(`/chat/${companion.id}?video=1`)}
+              className="w-full py-3.5 rounded-2xl border border-border text-sm font-medium flex items-center justify-center gap-2 hover:border-primary/40 transition-colors"
+            >
+              <Video className="w-4 h-4 text-primary" />
+              Start a video call
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function UserDashboard() {
@@ -112,6 +254,7 @@ export default function UserDashboard() {
   const [creditBalance, setCreditBalance] = useState(0);
   const [loadingSub, setLoadingSub]     = useState(true);
   const [buying, setBuying]             = useState(null);
+  const [selectedCompanion, setSelectedCompanion] = useState(null);
 
   useEffect(() => {
     base44.functions.invoke("getSubscription", {})
@@ -263,13 +406,16 @@ export default function UserDashboard() {
 
             {/* Companions grid */}
             <div className="mb-6">
-              <h2 className="font-heading text-xl font-semibold tracking-tight mb-4">Your companions</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-heading text-xl font-semibold tracking-tight">Your companions</h2>
+                <span className="text-xs text-muted-foreground">Tap to explore</span>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 {readyCompanions.map((c) => (
-                  <Link
+                  <button
                     key={c.id}
-                    to={`/chat/${c.id}`}
-                    className="group relative overflow-hidden rounded-2xl border border-border bg-card hover:border-primary/40 transition-all"
+                    onClick={() => setSelectedCompanion(c)}
+                    className="group relative overflow-hidden rounded-2xl border border-border bg-card hover:border-primary/40 transition-all text-left active:scale-[0.97]"
                   >
                     <div className="relative aspect-[4/5] overflow-hidden">
                       <img src={c.image} alt={c.name} className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
@@ -278,13 +424,26 @@ export default function UserDashboard() {
                         <span className="text-[9px] font-medium tracking-widest text-primary uppercase">{c.tagline}</span>
                         <h3 className="font-heading text-base font-semibold text-white leading-none mt-0.5">{c.name}</h3>
                       </div>
+                      {/* Feature dots */}
+                      <div className="absolute top-2.5 left-2.5 flex gap-1">
+                        {c.voice_id && (
+                          <span className="w-5 h-5 rounded-full bg-black/60 backdrop-blur flex items-center justify-center">
+                            <Mic className="w-2.5 h-2.5 text-white" />
+                          </span>
+                        )}
+                        {c.avatar_id && (
+                          <span className="w-5 h-5 rounded-full bg-black/60 backdrop-blur flex items-center justify-center">
+                            <Video className="w-2.5 h-2.5 text-white" />
+                          </span>
+                        )}
+                      </div>
                       <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/60 text-white text-[10px] font-medium">
-                          <MessageCircle className="w-2.5 h-2.5" /> Chat
+                          <Sparkles className="w-2.5 h-2.5" /> View
                         </span>
                       </div>
                     </div>
-                  </Link>
+                  </button>
                 ))}
               </div>
             </div>
@@ -612,6 +771,19 @@ export default function UserDashboard() {
           })}
         </div>
       </nav>
+
+      {/* ── Companion Feature Sheet ── */}
+      {selectedCompanion && (
+        <CompanionFeatureSheet
+          companion={selectedCompanion}
+          onClose={() => setSelectedCompanion(null)}
+          onNavigate={(path) => { setSelectedCompanion(null); navigate(path); }}
+          tier={tier}
+          isPro={isPro}
+          intimacyUnlocked={intimacyUnlocked}
+          onUpgrade={handleUpgrade}
+        />
+      )}
 
     </div>
   );
