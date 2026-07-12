@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { COMPANIONS, isCompanionReady } from "@/lib/companions";
+import { COMPANIONS, isCompanionVisible } from "@/lib/companions";
 import { captureReferralCode } from "@/lib/companionStructure";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
 import { TIERS } from "@/lib/creditSystem";
@@ -159,7 +159,7 @@ export default function Landing() {
           ))}
         </div>
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-4">
-          {COMPANIONS.filter((c) => isCompanionReady(c) && (activeCategory === "all" || c.category === activeCategory)).map((c) => (
+          {COMPANIONS.filter((c) => isCompanionVisible(c) && (activeCategory === "all" || c.category === activeCategory)).map((c) => (
             <Link
               key={c.id}
               to="/register"
@@ -192,9 +192,9 @@ export default function Landing() {
           </div>
           <div className="grid grid-cols-3 gap-4">
             {CATEGORIES.filter((cat) => cat.id !== "all").map((cat) => {
-              const featured = COMPANIONS.find((c) => isCompanionReady(c) && c.category === cat.id);
+              const featured = COMPANIONS.find((c) => isCompanionVisible(c) && c.category === cat.id);
               if (!featured) return null;
-              const count = COMPANIONS.filter((c) => isCompanionReady(c) && c.category === cat.id).length;
+              const count = COMPANIONS.filter((c) => isCompanionVisible(c) && c.category === cat.id).length;
               return (
                 <button
                   key={cat.id}

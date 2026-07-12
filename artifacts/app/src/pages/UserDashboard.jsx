@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { base44 } from "@/api/base44Client";
-import { COMPANIONS, isCompanionReady } from "@/lib/companions";
+import { COMPANIONS, isCompanionVisible } from "@/lib/companions";
 import { TIER_LABELS, TIER_CREDITS } from "@/lib/creditSystem";
 import { MessageCircle, Zap, ArrowRight, Crown, Star, CreditCard } from "lucide-react";
 
@@ -43,7 +43,7 @@ export default function UserDashboard() {
       .finally(() => setLoadingSub(false));
   }, []);
 
-  const readyCompanions = COMPANIONS.filter(isCompanionReady);
+  const readyCompanions = COMPANIONS.filter(isCompanionVisible);
   const TierIcon = TIER_ICONS[tier] ?? null;
   const isUpgradeable = ["free", "starter"].includes(tier);
 

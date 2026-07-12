@@ -106,18 +106,19 @@ export const COMPANIONS = [
     id: "zac",
     name: "Zac",
     locked: true,
-    tagline: "He steadies",
-    subtitle: "Grounded, direct, and genuinely supportive",
+    tagline: "He listens",
+    subtitle: "Calm, caring, and genuinely present for you",
     description:
-      "Zac is steady and reliable — the kind of presence that cuts through noise and helps you think clearly. Honest without being harsh, supportive without being soft.",
-    image: "/images/zac_shower_portrait.jpg",
+      "Zac is the kind of man who actually listens. Warm, grounded, and quietly strong — a gentleman who makes you feel completely at ease. He doesn't need to fill the silence; he just shows up, fully there, every time.",
+    image: "/images/zac_portrait.png",
+    images: ["/images/zac_portrait.png", "/images/zac_portrait2.png"],
     accent: "from-sky-500/20 to-slate-500/10",
     personality: withEmotions(ZAC_SYSTEM_PROMPT),
     avatar_id: "a1b7e0a779824c2d8676b5aa96d59246",
     voice_id: "onwK4e9ZLuTAKqWW03F9",
     voice_name: "Daniel - Deep, British, middle-aged male",
     voice_locked: true,
-    video_url: "/videos/zac_shower.mp4",
+    video_url: "/videos/zac_hero.mp4",
     stripe_price_id: "price_1TsEbwEHzw6rVQI2IoCaDA8F",
     category: "male",
   },
@@ -376,6 +377,32 @@ export function isCompanionReady(c) {
     return !!(c.image && (c.personality || c.brain) && c.voice_id && c.name && c.tagline && (c.bio || c.description));
   }
   return getCompanionChecklist(c).every((item) => item.passed);
+}
+
+/**
+ * Looser visibility check used ONLY for the landing/home page grid.
+ * A companion shows up here as soon as it has the core visual + functional
+ * requirements. Stripe price ID is NOT required for display — it's only
+ * required before the companion can accept payments (admin publish gate).
+ * HeyGen built-in voice (voice_locked=true with voice_name set) counts as a
+ * valid voice selection even without an ElevenLabs voice_id.
+ */
+export function isCompanionVisible(c) {
+  const image       = c.image || c.image_url;
+  const personality = c.personality || c.brain;
+  const hasVoice    = !!(c.voice_id || (c.voice_name && c.voice_locked));
+  const name        = c.name;
+  const tagline     = c.tagline;
+  const bio         = c.bio || c.description;
+
+  if (c.animated) {
+    return !!(image && personality && hasVoice && name && tagline && bio);
+  }
+
+  const hasVideo  = !!c.video_url;
+  const hasAvatar = !!c.avatar_id;
+
+  return !!(image && personality && hasVoice && hasVideo && hasAvatar && name && tagline && bio);
 }
 
 export async function getCompanionAsync(id) {
