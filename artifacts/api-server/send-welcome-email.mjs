@@ -19,7 +19,7 @@ const html = `
   <p style="color:#666;margin:0 0 32px;font-size:12px;text-transform:uppercase;letter-spacing:1px;">AI Companions that remember you</p>
 
   <p style="font-size:16px;line-height:1.75;color:#e5e5e5;margin:0 0 20px;">
-    Hey — we've been meaning to reach out for a while now.
+    Hey Lee — we've been meaning to reach out for a while now.
   </p>
 
   <p style="font-size:15px;line-height:1.75;color:#ccc;margin:0 0 20px;">
