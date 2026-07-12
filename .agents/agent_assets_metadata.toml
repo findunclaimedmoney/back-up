@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "kHdu96OuLuxCMGJybTjL6"
+uri = "file://attached_assets/jess_face_crop.png"
+type = "image"
+title = "Jess — Face Crop"
