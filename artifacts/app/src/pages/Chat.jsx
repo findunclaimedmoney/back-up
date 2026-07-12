@@ -209,9 +209,9 @@ const navigate = useNavigate();
         base44.entities.Memory.filter({ companion_id: companion.id }),
         base44.entities.CompanionNote.list("-updated_date", 100),
       ]);
-      sorted = [...msgData].reverse();
-      memData = memDataResult;
-      noteData = noteDataResult.filter((n) => n.companion_id === companion.id || n.companion_id === "all");
+      sorted = [...(msgData ?? [])].reverse();
+      memData = memDataResult ?? [];
+      noteData = (noteDataResult ?? []).filter((n) => n.companion_id === companion.id || n.companion_id === "all");
       setMessages(sorted);
       setMemories(memData);
       setNotes(noteData);

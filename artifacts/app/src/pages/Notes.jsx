@@ -30,7 +30,7 @@ export default function Notes() {
   const loadNotes = async () => {
     try {
       const data = await base44.entities.CompanionNote.list("-updated_date", 200);
-      setNotes(data);
+      setNotes(data ?? []);
     } catch (err) {
       console.error(err);
     } finally {

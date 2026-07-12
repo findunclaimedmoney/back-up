@@ -34,7 +34,7 @@ export default function CustomerDashboard() {
   const loadCustomCompanions = async () => {
     try {
       const list = await base44.entities.CustomCompanion.list("-created_date", 50);
-      setCustomCompanions(list);
+      setCustomCompanions(list ?? []);
     } catch (err) {
       console.error(err);
     }
