@@ -171,6 +171,8 @@ export const COMPANIONS = [
     personality: withEmotions(JESSICA_SYSTEM_PROMPT),
     avatar_id: null,
     voice_id: "UZstMCXeJLMLeXyuZIuR",
+    voice_name: "Jessica — Custom Voice",
+    voice_locked: true,
   },
   {
     id: "monica",
