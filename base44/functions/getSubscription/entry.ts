@@ -45,6 +45,8 @@ Deno.serve(async (req) => {
         messages_used: 0,
         messages_limit: MONTHLY_MESSAGE_LIMITS.free,
         messages_remaining: MONTHLY_MESSAGE_LIMITS.free,
+        free_voice_messages: 0,
+        free_voice_messages_used: 0,
       });
     }
 
@@ -70,6 +72,8 @@ Deno.serve(async (req) => {
       messages_used: monthlyUsed,
       messages_limit: monthlyLimit,
       messages_remaining: monthlyLimit > 0 ? Math.max(0, monthlyLimit - monthlyUsed) : -1,
+      free_voice_messages: sub.free_voice_messages || 0,
+      free_voice_messages_used: sub.free_voice_messages_used || 0,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

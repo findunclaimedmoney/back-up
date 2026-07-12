@@ -4,6 +4,7 @@ import { ArrowRight, MessageCircle, Mic, Video, Crown, ChevronLeft } from "lucid
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
+import { startCompanionChat } from "@/lib/companionCTA";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 const ZAC_VIDEOS = [
@@ -79,7 +80,7 @@ export default function ZacLanding() {
 
             {/* CTA */}
             <Link
-              to="/chat/zac"
+              to="/chat/zac" onClick={() => startCompanionChat("zac")}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
             >
               Talk with Zac
@@ -157,7 +158,7 @@ export default function ZacLanding() {
             No pressure. No performance. Just a presence that stays steady and shows up for you.
           </p>
           <Link
-            to="/chat/zac"
+            to="/chat/zac" onClick={() => startCompanionChat("zac")}
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
           >
             Start talking with Zac

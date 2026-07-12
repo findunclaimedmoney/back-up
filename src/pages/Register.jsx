@@ -10,6 +10,7 @@ import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
 import { consumeReferralCode } from "@/lib/companionStructure";
+import { consumeRedirectAfterAuth } from "@/lib/companionCTA";
 
 export default function Register() {
   const [fullName, setFullName] = useState("");
@@ -133,6 +134,15 @@ export default function Register() {
         sessionStorage.setItem("glimr_new_signup_welcome", "1");
         sessionStorage.setItem("glimr_new_signup_name", fullName.split(" ")[0] || "there");
         window.location.href = "/jess-offer";
+        return;
+      }
+      // Check if they came from a companion landing page CTA — redirect there instead of Mia
+      const landingRedirect = sessionStorage.getItem("glimr_redirect_after_auth");
+      if (landingRedirect) {
+        sessionStorage.removeItem("glimr_redirect_after_auth");
+        sessionStorage.setItem("glimr_signup_handled", "1");
+        sessionStorage.setItem("glimr_new_signup_name", fullName.split(" ")[0] || "there");
+        window.location.href = landingRedirect;
         return;
       }
       // Flag so AuthContext doesn't double-fire (it handles Google signups only)

@@ -4,6 +4,7 @@ import { ArrowRight, MessageCircle, Mic, Video, Camera, ChevronLeft } from "luci
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
+import { startCompanionChat } from "@/lib/companionCTA";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import VideoMessages from "@/components/landing/VideoMessages";
 import FlashSaleBanner from "@/components/landing/FlashSaleBanner";
@@ -94,7 +95,7 @@ export default function JessicaLanding() {
             </div>
 
             <Link
-              to="/chat/jessica"
+              to="/chat/jessica" onClick={() => startCompanionChat("jessica")}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
             >
               Talk with Jessica
@@ -117,7 +118,7 @@ export default function JessicaLanding() {
             No performance. No pretense. Just a presence that makes you feel fully seen, fully interesting, fully present.
           </p>
           <Link
-            to="/chat/jessica"
+            to="/chat/jessica" onClick={() => startCompanionChat("jessica")}
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
           >
             Start talking with Jessica

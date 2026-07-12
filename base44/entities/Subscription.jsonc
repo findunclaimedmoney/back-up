@@ -106,6 +106,16 @@
       "default": [],
       "description": "Stripe checkout session IDs already processed (prevents double-crediting between webhook and client redirect)"
     },
+    "free_voice_messages": {
+      "type": "number",
+      "default": 0,
+      "description": "Free voice messages granted (e.g. 10 from landing page CTA)"
+    },
+    "free_voice_messages_used": {
+      "type": "number",
+      "default": 0,
+      "description": "Free voice messages consumed so far"
+    },
     "description": {
       "type": "string",
       "maxLength": 1000,

@@ -295,6 +295,22 @@ It's been a while since you last talked. You're thinking about this person. Reac
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  // Grant 10 free voice messages when arriving from a landing page
+  useEffect(() => {
+    const voiceGrant = sessionStorage.getItem("glimr_voice_grant");
+    if (voiceGrant && voiceGrant === companionId) {
+      sessionStorage.removeItem("glimr_voice_grant");
+      base44.functions.invoke("grantVoiceBonus", { amount: 10 })
+        .then(() => {
+          toast({
+            title: "🎁 10 free voice messages!",
+            description: "Tap \"Listen\" on any message to hear your companion's voice.",
+          });
+        })
+        .catch(() => {});
+    }
+  }, [companionId, toast]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, thinking]);

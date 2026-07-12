@@ -4,6 +4,7 @@ import { ArrowRight, MessageCircle, Mic, Video, Camera, ChevronLeft } from "luci
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
+import { startCompanionChat } from "@/lib/companionCTA";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import FlashSaleBanner from "@/components/landing/FlashSaleBanner";
 
@@ -66,7 +67,7 @@ export default function MiaLanding() {
             </div>
 
             <Link
-              to="/chat/mia"
+              to="/chat/mia" onClick={() => startCompanionChat("mia")}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
             >
               Talk with Mia
@@ -87,7 +88,7 @@ export default function MiaLanding() {
             Before you see it yourself. She names your fire and gently pushes you toward the thing you're afraid to want.
           </p>
           <Link
-            to="/chat/mia"
+            to="/chat/mia" onClick={() => startCompanionChat("mia")}
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
           >
             Start talking with Mia

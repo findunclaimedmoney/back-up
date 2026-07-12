@@ -4,6 +4,7 @@ import { ArrowRight, MessageCircle, Mic, Video, Camera, ChevronLeft } from "luci
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
+import { startCompanionChat } from "@/lib/companionCTA";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 const MONICA_VIDEO =
@@ -86,7 +87,7 @@ export default function MonicaLanding() {
             </div>
 
             <Link
-              to="/chat/monica"
+              to="/chat/monica" onClick={() => startCompanionChat("monica")}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
             >
               Talk with Monica
@@ -106,7 +107,7 @@ export default function MonicaLanding() {
             No hesitation. No pretense. Just a presence that fills the space and makes you feel like you're exactly where you should be.
           </p>
           <Link
-            to="/chat/monica"
+            to="/chat/monica" onClick={() => startCompanionChat("monica")}
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium text-base transition-all hover:gap-3 hover:bg-primary/90 shadow-lg shadow-primary/20"
           >
             Start talking with Monica

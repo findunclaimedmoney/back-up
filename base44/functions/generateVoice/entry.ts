@@ -20,6 +20,21 @@ Deno.serve(async (req) => {
 
     if (!text) return Response.json({ error: 'text is required' }, { status: 400 });
 
+    // Track free voice message usage
+    let subs = await base44.entities.Subscription.filter({ created_by_id: user.id });
+    if (subs.length === 0) {
+      subs = await base44.asServiceRole.entities.Subscription.filter({ owner_user_id: user.id });
+    }
+    if (subs.length > 0) {
+      const sub = subs[0];
+      const freeRemaining = (sub.free_voice_messages || 0) - (sub.free_voice_messages_used || 0);
+      if (freeRemaining > 0) {
+        await base44.asServiceRole.entities.Subscription.update(sub.id, {
+          free_voice_messages_used: (sub.free_voice_messages_used || 0) + 1,
+        });
+      }
+    }
+
     const elevenVoiceId = voice_id || ELEVENLABS_VOICE_MAP[companion_id];
     if (!elevenVoiceId) {
       return Response.json({ error: 'No ElevenLabs voice mapped for this companion' }, { status: 400 });
