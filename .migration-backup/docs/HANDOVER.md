@@ -12,7 +12,7 @@
 
 - **App name:** GLIMR
 - **Platform:** Base44 (React + Tailwind + Vite + shadcn/ui)
-- **Custom domain:** glimr.app
+- **Custom domain:** glimr.com.au
 - **Support email:** admin@glimr.com.au
 - **App ID:** 6a4ad4122d2c58f83324b2ce
 - **User timezone:** Australia/Perth (UTC+8)
