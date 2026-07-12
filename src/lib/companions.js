@@ -29,7 +29,7 @@ export const COMPANIONS = [
     voice_id: "ThT5KcBeYPX3keUQqHPh",
     voice_name: "Dorothy - Pleasant, young, British female",
     voice_locked: true,
-    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/c9976b75b_Jess_Hero_Video.mp4",
+    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/280b8c8d4_Jesss_Engaging_Greeting.mp4",
     stripe_price_id: "price_1TsEO4EHzw6rVQI2Tx2KTOLB",
   },
   {
