@@ -363,6 +363,37 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Investor / Pitch Deck strip */}
+      <section className="px-6 pb-16 border-t border-border pt-16">
+        <div className="max-w-5xl mx-auto">
+          <div className="relative overflow-hidden rounded-[2rem] border border-primary/20 bg-card px-8 py-10 sm:px-14 sm:py-12 flex flex-col sm:flex-row items-center gap-8">
+            {/* Glow accent */}
+            <div className="absolute -top-16 -left-16 w-48 h-48 rounded-full bg-primary/8 blur-3xl pointer-events-none" />
+            <div className="flex-1 text-center sm:text-left relative">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span className="text-xs font-medium uppercase tracking-widest text-primary">For investors</span>
+              </div>
+              <h2 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight mb-2">
+                Interested in GLIMR?
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
+                We're building the future of AI companionship. See our vision, traction, and opportunity in the full pitch deck.
+              </p>
+            </div>
+            <a
+              href="/pitch-deck/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 inline-flex items-center gap-2 min-h-[48px] px-8 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity relative"
+            >
+              View pitch deck
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-border px-6 pt-10 pb-24">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">

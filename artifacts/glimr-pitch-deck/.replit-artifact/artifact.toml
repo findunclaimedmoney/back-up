@@ -1,5 +1,5 @@
 kind = "slides"
-previewPath = "/glimr-pitch-deck/"
+previewPath = "/pitch-deck/"
 title = "GLIMR Pitch Deck"
 version = "1.0.0"
 id = "artifacts/glimr-pitch-deck"
@@ -7,7 +7,7 @@ router = "path"
 
 [[services]]
 name = "web"
-paths = [ "/glimr-pitch-deck/" ]
+paths = [ "/pitch-deck/" ]
 localPort = 19632
 
 [services.development]
@@ -24,4 +24,4 @@ to = "/index.html"
 
 [services.env]
 PORT = "19632"
-BASE_PATH = "/glimr-pitch-deck/"
+BASE_PATH = "/pitch-deck/"
