@@ -14,8 +14,13 @@ import { base44 } from "@/api/base44Client";
 const withEmotions = (prompt) => `${prompt}\n\n${MIA_EMOTION_STATES_PROMPT}`;
 
 export const COMPANIONS = [
+  // ⚠️ PRODUCTION-LOCKED COMPANIONS — Do NOT modify image, voice_id, avatar_id,
+  // video_url, or stripe_price_id on these 4. They are live with connected
+  // HeyGen avatars, ElevenLabs voices, and Stripe products. Changing any ID
+  // breaks the live integration. Only edit personality/description text.
   {
     id: "jess",
+    locked: true,
     name: "Jess",
     tagline: "She listens",
     subtitle: "Warm, empathetic, and deeply curious about you",
@@ -89,6 +94,7 @@ export const COMPANIONS = [
   {
     id: "zac",
     name: "Zac",
+    locked: true,
     tagline: "He steadies",
     subtitle: "Grounded, direct, and genuinely supportive",
     description:
@@ -107,6 +113,7 @@ export const COMPANIONS = [
   {
     id: "zac2",
     name: "Blake",
+    locked: true,
     tagline: "He captivates",
     subtitle: "Confident, magnetic, and dangerously charming",
     description:
