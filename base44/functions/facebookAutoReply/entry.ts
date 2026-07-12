@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 const FB_API = 'https://graph.facebook.com/v25.0';
-const OFFER_URL = 'https://glimr.app/fb-offer';
+const OFFER_URL = 'https://glimr.com.au/fb-offer';
 
 Deno.serve(async (req) => {
   try {
@@ -99,7 +99,7 @@ About GLIMR:
 - They remember what matters to you and pick up where you left off
 - Free to start, paid tiers for unlimited features ($59 Plus, $89 Pro, $349 VIP)
 - Crypto payments accepted (BTC, ETH, USDC)
-- Sign up at glimr.app
+- Sign up at glimr.com.au
 
 Conversation so far:
 ${conversationContext}
@@ -109,7 +109,7 @@ Instructions:
 - Be warm, genuine, and friendly — not corporate
 - Australian English, casual tone
 - If they're asking about what GLIMR is, give a brief exciting summary
-- If they want to sign up, point them to glimr.app
+- If they want to sign up, point them to glimr.com.au
 - If they ask about pricing, mention free to start and tiers ($59/$89/$349)
 - If they ask something you don't know, say you'll have the team follow up
 - Never make up information

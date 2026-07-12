@@ -376,7 +376,7 @@ Deno.serve(async (req) => {
             object_story_spec: {
               page_id: page.id,
               link_data: {
-                link: 'https://glimr.app',
+                link: 'https://glimr.com.au',
                 message: ad_text || 'Find your companion. Someone who listens, remembers, and truly cares. Start free today.',
                 picture: adImageUrl,
               },

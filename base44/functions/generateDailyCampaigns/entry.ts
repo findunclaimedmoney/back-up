@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
       : '';
 
     const topicResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are GLIMR's marketing director. GLIMR is an Australian AI companionship platform fighting loneliness. Companions: Jess, Mia, Luna, Sophie, Natalie, Zac, Jessica. Free tier — text chat, no card. Paid: Plus ($59/mo), Pro ($89/mo), VIP ($349/mo). Sign up at glimr.app/jess-offer — first 10 signups get a FREE 15-minute live video session with Jess (15 credits, no card needed).${statsContext}
+      prompt: `You are GLIMR's marketing director. GLIMR is an Australian AI companionship platform fighting loneliness. Companions: Jess, Mia, Luna, Sophie, Natalie, Zac, Jessica. Free tier — text chat, no card. Paid: Plus ($59/mo), Pro ($89/mo), VIP ($349/mo). Sign up at glimr.com.au/jess-offer — first 10 signups get a FREE 15-minute live video session with Jess (15 credits, no card needed).${statsContext}
 
 Generate 3 DIFFERENT campaign ideas for BOTH Facebook and Instagram. Each campaign must feature ONE specific companion by name. Write the companion_name field with the exact companion name.
 
@@ -94,7 +94,7 @@ Rules:
 - NO emojis anywhere in the caption, hashtags, or CTA. Plain text only.
 - NO cartoons, illustrations, or animated character references.
 - Mention the limited offer: first 10 signups get a FREE 15-minute live video session with Jess — no credit card needed.
-- Sign up at glimr.app/jess-offer
+- Sign up at glimr.com.au/jess-offer
 
 Return JSON: caption (post text), hashtags (space-separated with #), cta (final CTA line).`,
         response_json_schema: {
@@ -132,7 +132,7 @@ Return JSON: caption (post text), hashtags (space-separated with #), cta (final 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: user.email,
       subject: `3 Campaigns Ready for Approval — ${today}`,
-      body: `Hi! Mia here.\n\nI've prepared 3 campaigns for Facebook and Instagram. Each features one of your real companions with their photo or video and a caption. No emojis, no cartoons, no AI-generated images — just real companion content.\n\n${campaignList}\n\nReview and approve them here: https://glimr.app/campaign-review\n\nAll campaigns promote the free 15-min video session offer at glimr.app/jess-offer.\n\nWarm,\nMia`,
+      body: `Hi! Mia here.\n\nI've prepared 3 campaigns for Facebook and Instagram. Each features one of your real companions with their photo or video and a caption. No emojis, no cartoons, no AI-generated images — just real companion content.\n\n${campaignList}\n\nReview and approve them here: https://glimr.com.au/campaign-review\n\nAll campaigns promote the free 15-min video session offer at glimr.com.au/jess-offer.\n\nWarm,\nMia`,
     });
 
     return Response.json({ success: true, created: created.length, campaigns: created });

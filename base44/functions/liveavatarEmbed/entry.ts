@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
             await base44.integrations.Core.SendEmail({
               to: user.email,
               subject: 'Your GLIMR credit is running low',
-              body: `Hi ${user.full_name || 'there'},\n\nYour session with ${companion_name} just started, and your remaining credit balance is ${newBalance.toFixed(1)} credits.\n\nThat's not enough for another 15-minute session. Top up anytime to keep the connection going:\nhttps://glimr.app/pricing\n\nWith warmth,\nThe GLIMR Team`,
+              body: `Hi ${user.full_name || 'there'},\n\nYour session with ${companion_name} just started, and your remaining credit balance is ${newBalance.toFixed(1)} credits.\n\nThat's not enough for another 15-minute session. Top up anytime to keep the connection going:\nhttps://glimr.com.au/pricing\n\nWith warmth,\nThe GLIMR Team`,
             });
           } catch (e) {
             // Best-effort notification
