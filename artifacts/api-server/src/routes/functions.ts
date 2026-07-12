@@ -1065,17 +1065,31 @@ router.post("/:name", async (req, res) => {
       // ── Caption generator (OpenAI) ────────────────────────────────────────
 
       case "generateCaption": {
-        const { topic, platform } = params as { topic: string; platform: string };
+        const { topic, platform, companion } = params as { topic: string; platform: string; companion?: string };
         if (!topic) return res.json({ data: { caption: "" } });
 
         const guides: Record<string, string> = {
-          instagram: "an Instagram caption (150-200 words, warm personal tone, 2-3 relevant hashtags)",
-          facebook: "a Facebook post (100-150 words, conversational, no hashtags)",
-          tiktok: "a TikTok caption (punchy hook, under 100 words, 3-5 hashtags)",
-          twitter: "an X/Twitter post (under 280 characters, sharp, 1-2 hashtags)",
-          email: "an email subject line followed by a 2-sentence opener, Mia's warm voice",
+          instagram: "an Instagram caption — hook line, 3-4 sentences of warm copy, blank line, then 8-12 hashtags on their own line. Emojis are fine. 150-220 words total.",
+          facebook:  "a Facebook post — hook line, 2-3 short paragraphs, conversational and warm. End with a single clear CTA. No hashtags. 100-160 words.",
+          tiktok:    "a TikTok video caption — punchy opening hook (first 3 words must grab attention), 2 sentences of copy, then 5-7 hashtags. Under 120 words. Emojis welcome.",
+          twitter:   "an X/Twitter thread opener — first tweet under 280 characters, sharp and thought-provoking, 1-2 hashtags. Then write 2 follow-up tweet replies (numbered 2/ and 3/) to expand the idea.",
+          story:     "an Instagram Story caption — very short (1-2 lines max), punchy, with a single CTA like 'Link in bio →' or 'Swipe up'. Emojis encouraged.",
+          email:     "an email: first line is the subject line (max 9 words, curiosity-driven), blank line, then a 3-sentence email opener in Mia's warm voice ending with a CTA button label in square brackets like [Start chatting free].",
         };
         const guide = guides[platform] ?? guides.instagram;
+
+        const imageSizes: Record<string, string> = {
+          instagram: "1080 × 1080 px (square) or 1080 × 1350 px (portrait 4:5)",
+          facebook:  "1200 × 628 px (landscape) or 1080 × 1080 px (square)",
+          tiktok:    "1080 × 1920 px (vertical 9:16)",
+          twitter:   "1600 × 900 px (landscape 16:9)",
+          story:     "1080 × 1920 px (vertical 9:16)",
+          email:     "600 × 300 px (email header banner)",
+        };
+
+        const companionLine = companion && companion !== "general"
+          ? `The post should feature or reference the companion called ${companion}.`
+          : "";
 
         const openaiMod = await import("openai");
         const OpenAI = (openaiMod as any).default ?? (openaiMod as any).OpenAI;
@@ -1084,12 +1098,34 @@ router.post("/:name", async (req, res) => {
         const completion = await openai.chat.completions.create({
           model: "gpt-4o-mini",
           messages: [
-            { role: "system", content: `You are Mia, GLIMR's marketing director. GLIMR is an AI companion app — people connect with warm, genuine AI companions (Jess, Mia, Zac, Sophie, Blake, Oliver and others). Write ${guide}. Focus on connection, presence, and being heard. Never say "AI" explicitly. No emojis except on TikTok/Instagram.` },
+            {
+              role: "system",
+              content: `You are Mia, GLIMR's creative marketing director. GLIMR is an AI companion platform — people connect with warm, real companions (Jess, Mia, Zac, Sophie, Jessica, Luna and others). Never say "AI" or "artificial". Focus on connection, loneliness, being truly heard, and genuine presence.
+
+Write ${guide}. ${companionLine}
+
+Then on a new line write:
+IMAGE_PROMPT: [one sentence describing a cinematic, warm, phone-on-screen or cosy lifestyle photo that would work as the visual for this post — no faces, photorealistic]
+
+Return ONLY the post copy and IMAGE_PROMPT line. No commentary.`,
+            },
             { role: "user", content: `Write a ${platform} post about: ${topic}` },
           ],
-          max_tokens: 400,
+          max_tokens: 600,
         });
-        return res.json({ data: { caption: completion.choices[0]?.message?.content ?? "" } });
+
+        const raw = completion.choices[0]?.message?.content ?? "";
+        const imagePromptMatch = raw.match(/IMAGE_PROMPT:\s*(.+)/i);
+        const imagePrompt = imagePromptMatch ? imagePromptMatch[1].trim() : "";
+        const caption = raw.replace(/IMAGE_PROMPT:.+/i, "").trim();
+
+        return res.json({
+          data: {
+            caption,
+            image_prompt: imagePrompt,
+            image_size: imageSizes[platform] ?? imageSizes.instagram,
+          },
+        });
       }
 
       // ── AI image generator (DALL-E 3) ─────────────────────────────────────

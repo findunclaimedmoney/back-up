@@ -7,7 +7,7 @@ import {
   TrendingUp, Crown, Heart, Zap, UserCheck, PiggyBank, Coins,
   Send, Loader2, Sparkles, ChevronDown, ChevronUp, ArrowLeft,
   Upload, Download, Image, Type, Wand2, RefreshCw, Copy, Check,
-  ExternalLink, Tag, BarChart2, Settings,
+  ExternalLink, Tag, BarChart2, Settings, Link2, Instagram, Facebook,
 } from "lucide-react";
 import {
   LineChart, Line, PieChart, Pie, Cell,
@@ -290,77 +290,264 @@ function Overview() {
 
 // ─── MARKETING ────────────────────────────────────────────────────────────────
 
-function Marketing() {
-  const [caption, setCaption] = useState("");
-  const [topic, setTopic] = useState("");
-  const [platform, setPlatform] = useState("instagram");
-  const [generating, setGenerating] = useState(false);
-  const [result, setResult] = useState(null);
+const SOCIAL_PLATFORMS = [
+  { id: "instagram", label: "Instagram", color: "from-purple-500 to-pink-500" },
+  { id: "facebook",  label: "Facebook",  color: "from-blue-600 to-blue-500" },
+  { id: "story",     label: "Story",     color: "from-orange-500 to-pink-400" },
+  { id: "tiktok",    label: "TikTok",    color: "from-black to-gray-700" },
+  { id: "twitter",   label: "X / Twitter", color: "from-gray-800 to-gray-700" },
+  { id: "email",     label: "Email",     color: "from-primary to-primary/70" },
+];
+
+const COMPANIONS_FOR_UTM = [
+  { id: "general",  label: "General (no companion)" },
+  { id: "jess",     label: "Jess" },
+  { id: "mia",      label: "Mia" },
+  { id: "zac",      label: "Zac" },
+  { id: "jessica",  label: "Jessica" },
+  { id: "luna",     label: "Luna" },
+  { id: "monica",   label: "Monica" },
+];
+
+const LANDING_PAGES = [
+  { label: "Home",        path: "/" },
+  { label: "Jess",        path: "/jess" },
+  { label: "Mia",         path: "/mia" },
+  { label: "Zac",         path: "/zac" },
+  { label: "Jessica",     path: "/jessica" },
+  { label: "Luna",        path: "/luna" },
+  { label: "Monica",      path: "/monica" },
+  { label: "All companions", path: "/companions" },
+  { label: "Pricing",     path: "/pricing" },
+];
+
+function CopyButton({ text, className = "" }) {
   const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      onClick={copy}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${copied ? "bg-emerald-500/15 text-emerald-400" : "bg-muted text-muted-foreground hover:text-foreground"} ${className}`}
+    >
+      {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+      {copied ? "Copied!" : "Copy"}
+    </button>
+  );
+}
+
+function Marketing() {
+  const BASE_URL = "https://glimr.com.au";
+
+  // ── UTM Link Builder state ──────────────────────────────────────────────────
+  const [utmPage,     setUtmPage]     = useState("/");
+  const [utmSource,   setUtmSource]   = useState("instagram");
+  const [utmCampaign, setUtmCampaign] = useState("");
+
+  const utmLink = (() => {
+    const p = new URLSearchParams();
+    p.set("utm_source",   utmSource);
+    p.set("utm_medium",   "social");
+    if (utmCampaign.trim()) p.set("utm_campaign", utmCampaign.trim().toLowerCase().replace(/\s+/g, "_"));
+    return `${BASE_URL}${utmPage}?${p.toString()}`;
+  })();
+
+  // ── Post Kit generator state ────────────────────────────────────────────────
+  const [platform,   setPlatform]   = useState("instagram");
+  const [companion,  setCompanion]  = useState("general");
+  const [topic,      setTopic]      = useState("");
+  const [campaign,   setCampaign]   = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [kit,        setKit]        = useState(null); // { caption, image_prompt, image_size }
 
   const generate = async () => {
     if (!topic.trim()) return;
     setGenerating(true);
-    setResult(null);
+    setKit(null);
     try {
-      const res = await base44.functions.invoke("generateCaption", { topic, platform });
-      setResult(res.data?.caption ?? res.data?.text ?? "");
+      const res = await base44.functions.invoke("generateCaption", { topic, platform, companion });
+      const caption   = res.data?.caption    ?? "";
+      const imgPrompt = res.data?.image_prompt ?? "";
+      const imgSize   = res.data?.image_size   ?? "";
+
+      // Build the UTM link for this post
+      const p = new URLSearchParams();
+      p.set("utm_source", platform === "story" ? "instagram" : platform);
+      p.set("utm_medium", "social");
+      if (campaign.trim()) p.set("utm_campaign", campaign.trim().toLowerCase().replace(/\s+/g, "_"));
+      const page = companion !== "general" ? `/${companion}` : "/";
+      const link = `${BASE_URL}${page}?${p.toString()}`;
+
+      setKit({ caption, image_prompt: imgPrompt, image_size: imgSize, link });
     } catch (err) {
-      setResult(`Error: ${err.message}`);
+      setKit({ caption: `Error: ${err.message}`, image_prompt: "", image_size: "", link: "" });
     } finally {
       setGenerating(false);
     }
   };
 
-  const copy = () => {
-    navigator.clipboard.writeText(result || "");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const PLATFORMS = ["instagram", "facebook", "tiktok", "twitter", "email"];
-
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6 max-w-3xl">
+
       {/* Quick links */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: "Campaign Review", href: "/campaign-review", icon: BarChart2 },
-          { label: "Promo Codes", href: "/promo-admin", icon: Tag },
-          { label: "Marketing Stats", href: "/marketing-dashboard", icon: TrendingUp },
-          { label: "Companion Hub", href: "/companion-hub", icon: Users },
+          { label: "Campaign Review",  href: "/campaign-review",    icon: BarChart2 },
+          { label: "Promo Codes",      href: "/promo-admin",        icon: Tag },
+          { label: "Marketing Stats",  href: "/marketing-dashboard", icon: TrendingUp },
+          { label: "Companion Hub",    href: "/companion-hub",       icon: Users },
         ].map(({ label, href, icon: Icon }) => (
-          <Link key={href} to={href} className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 hover:border-primary/30 hover:bg-card/80 transition-colors">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <Icon className="w-4 h-4 text-primary" />
+          <Link key={href} to={href} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 hover:border-primary/30 hover:bg-card/80 transition-colors">
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Icon className="w-3.5 h-3.5 text-primary" />
             </div>
-            <span className="text-sm font-medium">{label}</span>
-            <ExternalLink className="w-3 h-3 text-muted-foreground ml-auto" />
+            <span className="text-xs font-medium leading-tight">{label}</span>
           </Link>
         ))}
       </div>
 
-      {/* Caption generator */}
-      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
-        <div>
-          <h2 className="font-heading text-base font-semibold">Caption Generator</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Mia writes platform-native copy for any topic</p>
+      {/* ── UTM Link Builder ────────────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <Link2 className="w-4 h-4 text-primary" />
+          <h2 className="font-heading text-base font-semibold">Trackable Link Builder</h2>
+        </div>
+        <p className="text-xs text-muted-foreground -mt-2">
+          Paste these links into your Facebook/Instagram posts, bio, or video descriptions. Every click is recorded in Marketing Stats.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Destination page */}
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Destination page</label>
+            <select
+              value={utmPage}
+              onChange={e => setUtmPage(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl bg-background border border-border text-sm focus:outline-none focus:border-primary/40 transition-colors"
+            >
+              {LANDING_PAGES.map(p => (
+                <option key={p.path} value={p.path}>{p.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Platform / source */}
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Platform (source)</label>
+            <select
+              value={utmSource}
+              onChange={e => setUtmSource(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl bg-background border border-border text-sm focus:outline-none focus:border-primary/40 transition-colors"
+            >
+              {["instagram","facebook","tiktok","youtube","twitter","email","linktree","bio"].map(s => (
+                <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Campaign name */}
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Campaign name (optional)</label>
+            <input
+              type="text"
+              value={utmCampaign}
+              onChange={e => setUtmCampaign(e.target.value)}
+              placeholder="e.g. mia_reel_jan"
+              className="w-full px-3 py-2 rounded-xl bg-background border border-border text-sm focus:outline-none focus:border-primary/40 transition-colors"
+            />
+          </div>
         </div>
 
+        {/* Generated link */}
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-muted/40 border border-border">
+          <p className="flex-1 text-xs font-mono text-foreground break-all select-all">{utmLink}</p>
+          <CopyButton text={utmLink} className="flex-shrink-0" />
+        </div>
+
+        {/* Shortcut links for all companions */}
+        <div>
+          <p className="text-xs text-muted-foreground mb-2">Quick companion links — Instagram bio / Facebook page</p>
+          <div className="flex flex-wrap gap-2">
+            {COMPANIONS_FOR_UTM.filter(c => c.id !== "general").map(c => {
+              const p = new URLSearchParams({ utm_source: "instagram", utm_medium: "social" });
+              const link = `${BASE_URL}/${c.id}?${p.toString()}`;
+              return (
+                <div key={c.id} className="flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-border bg-background text-xs text-muted-foreground">
+                  <span>{c.label}</span>
+                  <CopyButton text={link} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Social Post Kit Generator ───────────────────────────────────────── */}
+      <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" />
+          <h2 className="font-heading text-base font-semibold">Social Post Kit</h2>
+        </div>
+        <p className="text-xs text-muted-foreground -mt-2">
+          Mia writes a ready-to-post caption, hashtags, image brief, and trackable link — one click.
+        </p>
+
+        {/* Platform */}
         <div className="flex flex-wrap gap-2">
-          {PLATFORMS.map(p => (
-            <Pill key={p} active={platform === p} onClick={() => setPlatform(p)}>
-              {p.charAt(0).toUpperCase() + p.slice(1)}
-            </Pill>
+          {SOCIAL_PLATFORMS.map(p => (
+            <button
+              key={p.id}
+              onClick={() => setPlatform(p.id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                platform === p.id
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border text-muted-foreground hover:text-foreground bg-card"
+              }`}
+            >
+              {p.label}
+            </button>
           ))}
         </div>
 
-        <textarea
-          value={topic}
-          onChange={e => setTopic(e.target.value)}
-          placeholder="What's the topic? e.g. 'Jess helps with loneliness', 'new crypto payments feature', 'feeling heard'"
-          className="w-full h-20 px-4 py-3 rounded-xl bg-background border border-border text-sm resize-none focus:outline-none focus:border-primary/40 transition-colors"
-        />
+        {/* Companion + campaign row */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Feature companion</label>
+            <select
+              value={companion}
+              onChange={e => setCompanion(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl bg-background border border-border text-sm focus:outline-none focus:border-primary/40 transition-colors"
+            >
+              {COMPANIONS_FOR_UTM.map(c => (
+                <option key={c.id} value={c.id}>{c.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Campaign tag (for tracking)</label>
+            <input
+              type="text"
+              value={campaign}
+              onChange={e => setCampaign(e.target.value)}
+              placeholder="e.g. mia_reel_jan"
+              className="w-full px-3 py-2 rounded-xl bg-background border border-border text-sm focus:outline-none focus:border-primary/40 transition-colors"
+            />
+          </div>
+        </div>
+
+        {/* Topic */}
+        <div>
+          <label className="text-xs text-muted-foreground mb-1 block">What's this post about?</label>
+          <textarea
+            value={topic}
+            onChange={e => setTopic(e.target.value)}
+            placeholder="e.g. 'Feeling alone on a Sunday', 'Jess remembers everything you tell her', 'Valentine's Day — no one should spend it alone'"
+            className="w-full h-20 px-4 py-3 rounded-xl bg-background border border-border text-sm resize-none focus:outline-none focus:border-primary/40 transition-colors"
+          />
+        </div>
 
         <button
           onClick={generate}
@@ -368,35 +555,72 @@ function Marketing() {
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 disabled:opacity-40 transition-opacity"
         >
           {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-          {generating ? "Writing…" : "Generate"}
+          {generating ? "Writing your post kit…" : "Generate post kit"}
         </button>
 
-        {result && (
-          <div className="relative rounded-xl bg-muted/40 border border-border p-4">
-            <p className="text-sm leading-relaxed whitespace-pre-wrap pr-8">{result}</p>
-            <button onClick={copy} className="absolute top-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors">
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground" />}
+        {/* Results */}
+        {kit && (
+          <div className="space-y-3">
+            {/* Caption */}
+            <div className="rounded-xl border border-border bg-background p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Caption</p>
+                <CopyButton text={kit.caption} />
+              </div>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">{kit.caption}</p>
+            </div>
+
+            {/* Image brief + size */}
+            {kit.image_prompt && (
+              <div className="rounded-xl border border-border bg-background p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Image brief</p>
+                  <CopyButton text={kit.image_prompt} />
+                </div>
+                <p className="text-sm text-foreground mb-1">{kit.image_prompt}</p>
+                {kit.image_size && (
+                  <p className="text-xs text-muted-foreground mt-1">📐 Recommended size: <span className="font-medium text-foreground">{kit.image_size}</span> — use the AI Image Generator in Tools to create it</p>
+                )}
+              </div>
+            )}
+
+            {/* Trackable link */}
+            {kit.link && (
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wide">Your trackable link</p>
+                  <CopyButton text={kit.link} />
+                </div>
+                <p className="text-xs font-mono text-foreground break-all">{kit.link}</p>
+                <p className="text-xs text-muted-foreground mt-1.5">Paste this as your CTA link — every click is tracked in Marketing Stats</p>
+              </div>
+            )}
+
+            {/* Full kit copy */}
+            <button
+              onClick={() => {
+                const full = `${kit.caption}\n\n${kit.link}`;
+                navigator.clipboard.writeText(full);
+              }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              Copy caption + link together
             </button>
           </div>
         )}
       </div>
 
-      {/* Companion landing pages */}
-      <div className="rounded-2xl border border-border bg-card p-6">
+      {/* ── Companion landing pages ─────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-border bg-card p-5">
         <h2 className="font-heading text-base font-semibold mb-1">Companion Landing Pages</h2>
-        <p className="text-xs text-muted-foreground mb-4">Direct traffic links for each companion — use these in ads</p>
+        <p className="text-xs text-muted-foreground mb-3">Direct-traffic links — use these when you can't add UTM params (e.g. stories swipe-up, printed QR codes)</p>
         <div className="flex flex-wrap gap-2">
-          {[
-            { label: "Jess", href: "/jess" },
-            { label: "Mia", href: "/mia" },
-            { label: "Zac", href: "/zac" },
-            { label: "Jessica", href: "/jessica" },
-            { label: "Monica", href: "/monica" },
-            { label: "Companions", href: "/companions" },
-          ].map(({ label, href }) => (
-            <Link key={href} to={href} target="_blank" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-background text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors">
+          {LANDING_PAGES.map(({ label, path }) => (
+            <a key={path} href={`${BASE_URL}${path}`} target="_blank" rel="noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-background text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors">
               {label} <ExternalLink className="w-3 h-3" />
-            </Link>
+            </a>
           ))}
         </div>
       </div>
