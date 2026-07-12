@@ -26,6 +26,57 @@ async function getAdminEmails(): Promise<string[]> {
 }
 
 const router = Router();
+
+// ── Public functions — no auth required (anonymous visitors) ──────────────────
+const PUBLIC_FN = new Set(["trackVisit", "convertVisit"]);
+
+router.post("/:name", async (req, res, next) => {
+  const { name } = req.params as { name: string };
+  if (!PUBLIC_FN.has(name)) return next();
+
+  const params: Record<string, unknown> = req.body?.params ?? req.body ?? {};
+  const session = req.session as any;
+  const userId = session?.userId ?? null;
+
+  switch (name) {
+    case "trackVisit": {
+      const { companion_id, source, ref_code, utm_campaign, visitor_key } = params as Record<string, string>;
+      const [visit] = await db.insert(entitiesTable).values({
+        model: "Visit",
+        userId: userId as any ?? null,
+        data: {
+          companion_id:  companion_id ?? "home",
+          source:        source        ?? "direct",
+          ref_code:      ref_code      ?? null,
+          utm_campaign:  utm_campaign  ?? null,
+          visitor_key:   visitor_key   ?? null,
+          converted:     false,
+          visited_at:    new Date().toISOString(),
+        },
+      }).returning({ id: entitiesTable.id });
+      return res.json({ data: { visit_id: visit.id, success: true } });
+    }
+    case "convertVisit": {
+      const { visit_id } = params as { visit_id: string };
+      if (visit_id) {
+        const [existing] = await db.select().from(entitiesTable)
+          .where(and(eq(entitiesTable.id, visit_id as any), eq(entitiesTable.model, "Visit")))
+          .limit(1);
+        if (existing) {
+          await db.update(entitiesTable).set({
+            data: { ...(existing.data as object), converted: true, converted_at: new Date().toISOString(), converted_user_id: userId },
+            updatedDate: new Date(),
+          }).where(eq(entitiesTable.id, visit_id as any));
+        }
+      }
+      return res.json({ data: { success: true } });
+    }
+    default:
+      return next();
+  }
+});
+
+// ── All other functions require auth ──────────────────────────────────────────
 router.use(requireAuth);
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -833,42 +884,6 @@ router.post("/:name", async (req, res) => {
         return res.json({ data: { success: true } });
       }
 
-      // ── Marketing (no-op) ─────────────────────────────────────────────────
-
-      case "trackVisit": {
-        const { companion_id, source, ref_code, utm_campaign, visitor_key } = params as Record<string, string>;
-        const [visit] = await db.insert(entitiesTable).values({
-          model: "Visit",
-          userId: userId as any ?? null,
-          data: {
-            companion_id:  companion_id ?? "home",
-            source:        source        ?? "direct",
-            ref_code:      ref_code      ?? null,
-            utm_campaign:  utm_campaign  ?? null,
-            visitor_key:   visitor_key   ?? null,
-            converted:     false,
-            visited_at:    new Date().toISOString(),
-          },
-        }).returning({ id: entitiesTable.id });
-        return res.json({ data: { visit_id: visit.id, success: true } });
-      }
-
-      case "convertVisit": {
-        const { visit_id } = params as { visit_id: string };
-        if (visit_id) {
-          const [existing] = await db.select().from(entitiesTable)
-            .where(and(eq(entitiesTable.id, visit_id as any), eq(entitiesTable.model, "Visit")))
-            .limit(1);
-          if (existing) {
-            await db.update(entitiesTable).set({
-              data: { ...(existing.data as object), converted: true, converted_at: new Date().toISOString(), converted_user_id: userId },
-              updatedDate: new Date(),
-            }).where(eq(entitiesTable.id, visit_id as any));
-          }
-        }
-        return res.json({ data: { success: true } });
-      }
-
       case "grantFacebookBonus":
       case "trackMessageUsage":
       case "marketingAction":
@@ -891,6 +906,26 @@ router.post("/:name", async (req, res) => {
 
       case "healthCheck":
         return res.json({ data: { status: "ok" } });
+
+      // ── Recent orders ─────────────────────────────────────────────────────
+
+      case "getRecentOrders": {
+        const callerRow = await db.select({ role: usersTable.role }).from(usersTable).where(eq(usersTable.id, userId as any)).limit(1);
+        if (callerRow[0]?.role !== "admin") return res.status(403).json({ data: { error: "Admin access required" } });
+
+        const orders = await db
+          .select({ id: entitiesTable.id, userId: entitiesTable.userId, data: entitiesTable.data, createdDate: entitiesTable.createdDate })
+          .from(entitiesTable)
+          .where(eq(entitiesTable.model, "Order"))
+          .orderBy(desc(entitiesTable.createdDate))
+          .limit(100);
+
+        return res.json({ data: { orders: orders.map(o => ({
+          id: o.id,
+          ...(o.data as object),
+          created_at: o.createdDate,
+        })) } });
+      }
 
       // ── Admin dashboard stats ─────────────────────────────────────────────
 

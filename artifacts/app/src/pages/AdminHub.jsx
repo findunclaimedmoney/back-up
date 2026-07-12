@@ -18,6 +18,7 @@ import {
 
 const TABS = [
   { id: "overview",   label: "Overview",   icon: LayoutDashboard },
+  { id: "orders",     label: "Orders",     icon: PiggyBank },
   { id: "mia",        label: "Mia",         icon: MessageSquare },
   { id: "marketing",  label: "Marketing",   icon: Megaphone },
   { id: "tools",      label: "Tools",       icon: Wrench },
@@ -582,6 +583,119 @@ function Tools() {
 
 // ─── USERS ────────────────────────────────────────────────────────────────────
 
+// ─── ORDERS TAB ───────────────────────────────────────────────────────────────
+
+const COMPANION_NAMES = { jess:"Jess", mia:"Mia", zac:"Zac", sophie:"Sophie", blake:"Blake", oliver:"Oliver", luna:"Luna", home:"Mia" };
+const TIER_BADGE = { free:"bg-muted text-muted-foreground", starter:"bg-purple-500/20 text-purple-300", plus:"bg-blue-500/20 text-blue-300", pro:"bg-primary/20 text-primary", vip:"bg-amber-500/20 text-amber-300" };
+
+function OrdersTab() {
+  const [orders, setOrders] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(null);
+
+  const load = () => {
+    setLoading(true);
+    base44.functions.invoke("getRecentOrders", {})
+      .then(res => setOrders(res.data?.orders ?? []))
+      .catch(() => setOrders([]))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { load(); }, []);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const id = setInterval(load, 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (loading && !orders) return (
+    <div className="flex items-center justify-center h-64">
+      <div className="w-8 h-8 border-2 border-muted border-t-primary rounded-full animate-spin" />
+    </div>
+  );
+
+  const total = orders?.reduce((s, o) => s + (o.amount_aud ?? 0), 0) ?? 0;
+
+  return (
+    <div className="p-6 space-y-5">
+      {/* Summary row */}
+      <div className="grid grid-cols-3 gap-4">
+        <StatCard icon={PiggyBank}  label="Total orders"   value={orders?.length ?? 0} accent="bg-primary/10" />
+        <StatCard icon={Coins}      label="Revenue (AUD)"  value={`${(total / 100).toFixed(2)}`} accent="bg-emerald-500/10" />
+        <StatCard icon={Crown}      label="Latest order"   value={orders?.[0]?.plan_label ?? "—"} sub={orders?.[0]?.email} accent="bg-amber-500/10" />
+      </div>
+
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="font-heading text-sm font-semibold text-muted-foreground uppercase tracking-wider">Order feed</h2>
+        <button onClick={load} className="w-8 h-8 rounded-lg border border-border bg-card flex items-center justify-center hover:bg-muted transition-colors">
+          <RefreshCw className={`w-3.5 h-3.5 text-muted-foreground ${loading ? "animate-spin" : ""}`} />
+        </button>
+      </div>
+
+      {/* Orders list */}
+      <div className="space-y-2">
+        {(!orders || orders.length === 0) ? (
+          <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground text-sm">
+            No orders yet — they'll appear here the moment someone pays.
+          </div>
+        ) : orders.map((o, i) => (
+          <div key={o.id ?? i}
+            className={`rounded-2xl border bg-card p-4 cursor-pointer transition-all ${selected === i ? "border-primary/40" : "border-border hover:border-border/80 hover:bg-muted/10"}`}
+            onClick={() => setSelected(selected === i ? null : i)}
+          >
+            <div className="flex items-center justify-between gap-3">
+              {/* Left: name + email */}
+              <div className="min-w-0">
+                <p className="font-semibold text-sm truncate">{o.name || o.email}</p>
+                <p className="text-xs text-muted-foreground truncate">{o.email}</p>
+              </div>
+              {/* Centre: plan badge + companion */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span className={`text-xs px-2.5 py-1 rounded-full font-medium capitalize ${TIER_BADGE[o.tier] ?? TIER_BADGE.free}`}>
+                  {o.plan_label ?? o.tier}
+                </span>
+                {o.companion_id && o.companion_id !== "home" && (
+                  <span className="text-xs text-muted-foreground">via {COMPANION_NAMES[o.companion_id] ?? o.companion_id}</span>
+                )}
+              </div>
+              {/* Right: amount + date */}
+              <div className="text-right flex-shrink-0">
+                <p className="text-sm font-bold text-primary">${((o.amount_aud ?? 0) / 100).toFixed(2)}</p>
+                <p className="text-xs text-muted-foreground">
+                  {o.paid_at ? new Date(o.paid_at).toLocaleDateString("en-AU", { day: "numeric", month: "short" }) : "—"}
+                </p>
+              </div>
+            </div>
+
+            {/* Expanded detail */}
+            {selected === i && (
+              <div className="mt-4 pt-4 border-t border-border space-y-3">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div><p className="text-xs text-muted-foreground mb-1">Customer</p><p className="font-medium">{o.name || "—"}</p><p className="text-xs text-muted-foreground">{o.email}</p></div>
+                  <div><p className="text-xs text-muted-foreground mb-1">Package</p><p className="font-medium">{o.plan_label}</p><p className="text-xs text-muted-foreground">${((o.amount_aud ?? 0) / 100).toFixed(2)} AUD / month</p></div>
+                  <div><p className="text-xs text-muted-foreground mb-1">Companion</p><p className="font-medium">{COMPANION_NAMES[o.companion_id] ?? o.companion_id ?? "—"}</p></div>
+                  <div><p className="text-xs text-muted-foreground mb-1">Ordered</p><p className="font-medium">{o.paid_at ? new Date(o.paid_at).toLocaleString("en-AU") : "—"}</p></div>
+                </div>
+                {/* Action checklist */}
+                <div className="rounded-xl bg-background border border-border p-3 space-y-1.5">
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">Action checklist</p>
+                  <p className="text-xs text-emerald-400">✅ Subscription activated</p>
+                  <p className="text-xs text-emerald-400">✅ Welcome email sent from {COMPANION_NAMES[o.companion_id] ?? "Mia"}</p>
+                  <p className="text-xs text-emerald-400">✅ Order dispatch sent to your inbox</p>
+                  {["pro","vip"].includes(o.tier) && <p className="text-xs text-amber-400">⚡ Create Anam avatar for this customer</p>}
+                  {o.tier === "vip" && <p className="text-xs text-amber-400">⚡ Schedule personal onboarding call within 24h</p>}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function UsersTab() {
   const [users, setUsers] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -693,6 +807,7 @@ export default function AdminHub() {
       {/* Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto flex flex-col overflow-hidden">
         {tab === "overview"  && <Overview />}
+        {tab === "orders"    && <OrdersTab />}
         {tab === "mia"       && <div className="flex-1 flex flex-col overflow-hidden h-[calc(100vh-120px)]"><MiaChat /></div>}
         {tab === "marketing" && <Marketing />}
         {tab === "tools"     && <Tools />}

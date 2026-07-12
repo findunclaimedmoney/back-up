@@ -83,15 +83,44 @@ router.post("/", async (req, res) => {
             creditBalance: currentBalance + credits,
           });
 
-          // Alert admin — fire and forget
+          // Store order record + fire all emails — fire and forget
           try {
             const userRow = await db.select({ email: usersTable.email, fullName: usersTable.fullName })
               .from(usersTable).where(eq(usersTable.id, userId as any)).limit(1);
-            if (userRow[0]) {
-              const { notifyAdminUpgrade } = await import("../lib/mailer");
-              notifyAdminUpgrade(userRow[0].email, userRow[0].fullName ?? "", meta.tier).catch(() => {});
+            const user = userRow[0];
+            const tierNames: Record<string, string> = { starter: "GLIMR Starter", plus: "GLIMR Plus", pro: "GLIMR Pro", vip: "GLIMR VIP" };
+            const tierAmounts: Record<string, number> = { starter: 2900, plus: 4900, pro: 9900, vip: 19900 };
+            const companionId = (meta.companion_id as string) || "mia";
+            const planLabel = tierNames[meta.tier] ?? meta.tier;
+            const amountAud = tierAmounts[meta.tier] ?? 0;
+
+            // Persist order to DB
+            await db.insert(entitiesTable).values({
+              model: "Order",
+              userId: userId as any,
+              data: {
+                type: "subscription",
+                tier: meta.tier,
+                plan_label: planLabel,
+                amount_aud: amountAud,
+                companion_id: companionId,
+                email: user?.email ?? "",
+                name: user?.fullName ?? "",
+                stripe_session_id: session.id,
+                status: "paid",
+                paid_at: new Date().toISOString(),
+              },
+            });
+
+            if (user) {
+              const { sendCompanionWelcomeEmail, dispatchOrderToMia } = await import("../lib/mailer");
+              const firstName = (user.fullName ?? "").split(" ")[0] || "there";
+              sendCompanionWelcomeEmail(user.email, firstName, companionId, meta.tier).catch(() => {});
+              dispatchOrderToMia({ email: user.email, name: user.fullName ?? "", tier: meta.tier, companionId, amountAud, planLabel }).catch(() => {});
             }
-          } catch {}
+          } catch (e: any) {
+            (req as any).log?.warn({ err: e.message }, "Order record/email failed — non-fatal");
+          }
         } else if (meta.photo_credits) {
           const add = parseInt(meta.photo_credits, 10);
           const current = (existing?.data as any)?.photoCredits ?? 0;
