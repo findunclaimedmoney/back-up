@@ -27,6 +27,8 @@ export default function Pricing() {
   const [topupLoading, setTopupLoading] = useState(null);
   const [billingLoading, setBillingLoading] = useState(false);
   const [cryptoOpen, setCryptoOpen] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -147,7 +149,10 @@ export default function Pricing() {
 
     setLoading(tierId);
     try {
-      const res = await base44.functions.invoke("createCheckout", { tier: tierId });
+      const res = await base44.functions.invoke("createCheckout", {
+        tier: tierId,
+        ...(promoApplied && promoCode ? { coupon: promoCode.toUpperCase() } : {}),
+      });
       if (res.data?.url) {
         window.location.href = res.data.url;
       }
@@ -212,6 +217,29 @@ export default function Pricing() {
             <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto leading-relaxed">
               From casual conversation to the deepest connection you've ever felt.
             </p>
+            <div className="mt-6 max-w-sm mx-auto">
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={promoCode}
+                  onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoApplied(false); }}
+                  placeholder="Promo code"
+                  className="flex-1 px-4 py-2.5 rounded-full bg-background/80 border border-border text-sm text-center font-medium tracking-wider placeholder:text-muted-foreground placeholder:tracking-normal placeholder:font-normal focus:outline-none focus:border-primary/40 transition-colors"
+                />
+                <button
+                  onClick={() => setPromoApplied(true)}
+                  disabled={!promoCode.trim() || promoApplied}
+                  className="min-h-[44px] px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-medium text-sm disabled:opacity-50 transition-opacity whitespace-nowrap"
+                >
+                  {promoApplied ? "Applied" : "Apply"}
+                </button>
+              </div>
+              {promoApplied && (
+                <p className="text-xs text-primary mt-2 font-medium">
+                  50% off applied — your discount will be reflected at checkout
+                </p>
+              )}
+            </div>
             <button
               onClick={() => setCryptoOpen(true)}
               className="mt-6 inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
