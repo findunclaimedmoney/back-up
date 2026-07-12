@@ -5,14 +5,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import VideoMessages from "@/components/landing/VideoMessages";
 import FlashSaleBanner from "@/components/landing/FlashSaleBanner";
 
-const MIA_VIDEOS = [
-  { url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/b6e45bd8f_Mia_Video_1.mp4", title: "Mia says hello", description: "A warm, creative welcome" },
-  { url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/7966cdf40_Mia_Video_2.mp4", title: "Mia sees your fire", description: "She notices what lights you up" },
-  { url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/311b292f0_Mia_Video_3.mp4", title: "Mia believes in you", description: "She pushes you toward what you want" },
-];
+const MIA_IMAGE = "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png";
 
 const TRAITS = [
   { icon: MessageCircle, label: "Text chat" },
@@ -40,13 +35,10 @@ export default function MiaLanding() {
       </header>
 
       <section className="relative h-screen min-h-[700px] w-full overflow-hidden">
-        <video
-          src={MIA_VIDEOS[0].url}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-contain"
+        <img
+          src={MIA_IMAGE}
+          alt="Mia"
+          className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-transparent to-transparent" />
@@ -85,7 +77,6 @@ export default function MiaLanding() {
       </section>
 
       <FlashSaleBanner companionName="Mia" promoCode="MIA15" creditAmount={15} />
-      <VideoMessages videos={MIA_VIDEOS} />
 
       <section className="px-6 py-20 sm:py-28 border-t border-border">
         <div className="max-w-3xl mx-auto text-center">
