@@ -10,6 +10,12 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { action } = body;
 
+    // Locked companions — their profiles cannot be modified
+    const LOCKED_COMPANIONS = ['mia'];
+    if (body.companion_id && LOCKED_COMPANIONS.includes(body.companion_id)) {
+      return Response.json({ error: 'This companion profile is locked and cannot be modified' }, { status: 403 });
+    }
+
     // Generate personality brain (system prompt) from a description
     if (action === 'generate_brain') {
       const { name, personality_description } = body;

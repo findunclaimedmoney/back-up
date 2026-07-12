@@ -28,6 +28,9 @@ export const COMPANIONS = [
     avatar_id: "3559b3f9-29e3-48eb-a4ff-7a7dc5b47ca9",
   },
   {
+    // ⚠️ LOCKED — Do NOT change this image. Mia is the face of customer service
+    // live chat and the marketing agent. Her image is tied to voice/avatar IDs.
+    // Changing it breaks the live chat widget and customer-facing branding.
     id: "mia",
     name: "Mia",
     tagline: "She inspires",
@@ -39,6 +42,7 @@ export const COMPANIONS = [
     accent: "from-emerald-500/20 to-green-500/10",
     personality: withEmotions(SOFIA_SYSTEM_PROMPT),
     avatar_id: null,
+    locked: true,
   },
   {
     id: "luna",
