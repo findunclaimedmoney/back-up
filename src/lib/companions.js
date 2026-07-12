@@ -101,7 +101,7 @@ export const COMPANIONS = [
     voice_id: "onwK4e9ZLuTAKqWW03F9",
     voice_name: "Daniel - Deep, British, middle-aged male",
     voice_locked: true,
-    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/4ae99a1fa_Zac_Hero_Video.mp4",
+    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/25306ac77_ElevenLabs_video_google-veo-3-1-fast_amansittingo_2026-07-07T16_31_52.mp4",
     stripe_price_id: "price_1TsEbwEHzw6rVQI2IoCaDA8F",
   },
   {
