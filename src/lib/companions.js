@@ -112,6 +112,7 @@ export const COMPANIONS = [
     avatar_id: null,
     voice_id: "cjVigY5qzO86Huf0OWal",
     voice_name: "Eric - Smooth, Trustworthy",
+    voice_locked: true,
   },
   {
     id: "leo",
@@ -127,6 +128,7 @@ export const COMPANIONS = [
     avatar_id: null,
     voice_id: "JBFqnCBsd6RMkjVDRZzb",
     voice_name: "George - Warm, Captivating Storyteller",
+    voice_locked: true,
   },
   {
     id: "marcus",
@@ -142,6 +144,7 @@ export const COMPANIONS = [
     avatar_id: null,
     voice_id: "IKne3meq5aSn9XLyUdCD",
     voice_name: "Charlie - Deep, Confident, Energetic",
+    voice_locked: true,
   },
   {
     id: "natalie",
@@ -157,6 +160,7 @@ export const COMPANIONS = [
     avatar_id: null,
     voice_id: "pFZP5JQG7iQjIQuC4Bku",
     voice_name: "Lily - Velvety Actress",
+    voice_locked: true,
   },
   {
     id: "jessica",
@@ -188,6 +192,7 @@ export const COMPANIONS = [
     avatar_id: null,
     voice_id: "FGY2WhTYpPnrIDTdsKH5",
     voice_name: "Laura - Enthusiast, Quirky Attitude",
+    voice_locked: true,
   },
 ];
 
