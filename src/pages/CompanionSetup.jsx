@@ -42,6 +42,16 @@ export default function CompanionSetup() {
   }, []);
 
   const handleSave = async () => {
+    // Hard guard — re-verify every checklist item before touching the database
+    const failures = checklist.filter((c) => !c.passed).map((c) => c.label);
+    if (failures.length > 0) {
+      toast({
+        variant: "destructive",
+        title: "Cannot publish — checklist incomplete",
+        description: failures.join(" · "),
+      });
+      return;
+    }
     setSaving(true);
     try {
       const slug = data.companion_id || slugify(data.name);
