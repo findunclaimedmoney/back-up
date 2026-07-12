@@ -164,7 +164,7 @@ export default function Landing() {
       <section className="px-6 pb-20">
         <div className="max-w-5xl mx-auto relative overflow-hidden rounded-[2rem] border border-border">
           <img
-            src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1200&q=80"
+            src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/19ce39eea_Womaninsilkrobe.png"
             alt="Romantic candlelight connection"
             className="w-full h-[300px] sm:h-[400px] object-cover"
           />
@@ -208,9 +208,9 @@ export default function Landing() {
       <section className="px-6 pb-20 border-t border-border pt-16">
         <div className="max-w-4xl mx-auto relative overflow-hidden rounded-[2rem] border border-border">
           <img
-            src="https://images.unsplash.com/photo-1518199266791-5375e0bd9917?w=1200&q=80"
+            src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png"
             alt="Warm intimate moment"
-            className="w-full h-[280px] sm:h-[360px] object-cover"
+            className="w-full h-[280px] sm:h-[360px] object-cover object-top"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent" />
           <div className="absolute inset-0 flex items-center p-8 sm:p-12">
@@ -302,7 +302,7 @@ export default function Landing() {
       <section className="px-6 py-16 border-t border-border">
         <div className="max-w-5xl mx-auto relative overflow-hidden rounded-[2rem] border border-border">
           <img
-            src="https://images.unsplash.com/photo-1494774157365-9e19c420b1f3?w=1200&q=80"
+            src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/de484828a_generated_image.png"
             alt="Warm evening light"
             className="absolute inset-0 w-full h-full object-cover opacity-20"
           />
