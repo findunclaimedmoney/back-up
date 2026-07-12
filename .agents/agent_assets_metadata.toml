@@ -53,3 +53,9 @@ id = "f_vgmHuyGrIVdvyvSKHx_"
 uri = "file://artifacts/missingcash-clip/public/videos/mia-talk.mp4"
 type = "video"
 title = "Mia Talking Head — Your Voice"
+
+[[outputs]]
+id = "TMsxT4XwPF_jWaziMmpFc"
+uri = "file://.local/outputs/MissingCash---Stratton-Finance-Deck.pptx"
+type = "slides"
+title = "MissingCash × Stratton Finance Deck.pptx"
