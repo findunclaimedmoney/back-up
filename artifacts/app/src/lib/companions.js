@@ -37,6 +37,7 @@ export const COMPANIONS = [
     voice_locked: true,
     video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/280b8c8d4_Jesss_Engaging_Greeting.mp4",
     stripe_price_id: "price_1TsEO4EHzw6rVQI2Tx2KTOLB",
+    category: "female",
   },
   {
     // ⚠️ LOCKED — Do NOT change this image. Mia is the face of customer service
@@ -59,6 +60,7 @@ export const COMPANIONS = [
     locked: true,
     video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/567d746da_avatar-shot-20260705-a2b9f09f.mp4",
     stripe_price_id: "price_1TsEUKEHzw6rVQI2I6oB4OCe",
+    category: "female",
   },
   {
     id: "luna",
@@ -74,6 +76,7 @@ export const COMPANIONS = [
     voice_id: "pFZP5JQG7iQjIQuC4Bku",
     voice_name: "Lily - Raspy, calm, British female",
     voice_locked: true,
+    category: "female",
   },
   {
     id: "sophie",
@@ -89,6 +92,7 @@ export const COMPANIONS = [
     voice_id: "XB0fDUnXU5powFXDhCwa",
     voice_name: "Charlotte - Warm, English-Swedish female",
     voice_locked: true,
+    category: "female",
   },
   {
     id: "zac",
@@ -108,6 +112,7 @@ export const COMPANIONS = [
     voice_locked: true,
     video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/25306ac77_ElevenLabs_video_google-veo-3-1-fast_amansittingo_2026-07-07T16_31_52.mp4",
     stripe_price_id: "price_1TsEbwEHzw6rVQI2IoCaDA8F",
+    category: "male",
   },
   {
     id: "zac2",
@@ -131,6 +136,7 @@ export const COMPANIONS = [
       "/videos/blake_shower.mp4",
     ],
     stripe_price_id: "price_1TsEbwEHzw6rVQI2pKOBvCx2",
+    category: "male",
   },
   {
     id: "leo",
@@ -149,6 +155,7 @@ export const COMPANIONS = [
     voice_locked: true,
     video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/b2dbe0bae_Leo_Hero_Video.mp4",
     stripe_price_id: "price_1TsDcyEHzw6rVQI2BeSznHR2",
+    category: "male",
   },
   {
     id: "marcus",
@@ -167,6 +174,7 @@ export const COMPANIONS = [
     voice_locked: true,
     video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/1d1d0c747_Marcus_Hero_Video.mp4",
     stripe_price_id: "price_1TsDczEHzw6rVQI2MVK7wtMV",
+    category: "male",
   },
   {
     id: "natalie",
@@ -183,6 +191,7 @@ export const COMPANIONS = [
     voice_id: "pFZP5JQG7iQjIQuC4Bku",
     voice_name: "Lily - Velvety Actress",
     voice_locked: true,
+    category: "female",
   },
   {
     id: "jessica",
@@ -200,6 +209,7 @@ export const COMPANIONS = [
     voice_name: "Jessica — Custom Voice",
     voice_locked: true,
     video_url: "/videos/jessica_hero.mp4",
+    category: "female",
   },
   {
     id: "monica",
@@ -208,15 +218,83 @@ export const COMPANIONS = [
     subtitle: "Bold, magnetic, and impossible to ignore",
     description:
       "Monica walks into a room and everything shifts. Confident, playful, and dangerously easy to talk to — she makes you feel like the most interesting person she's ever met.",
-    image:
-      null,   // ← upload Monica's profile photo here
+    image: "/images/monica.jpg",
     accent: "from-amber-500/20 to-rose-500/10",
     personality: withEmotions(MONICA_SYSTEM_PROMPT),
     avatar_id: null,
     voice_id: "FGY2WhTYpPnrIDTdsKH5",
     voice_name: "Laura - Enthusiast, Quirky Attitude",
     voice_locked: true,
-    video_url: null,   // ← upload Monica's hero video here
+    video_url: null,
+    category: "female",
+  },
+  {
+    id: "yuki",
+    name: "Yuki",
+    tagline: "She centers",
+    subtitle: "Serene, wise, and quietly magnetic",
+    description:
+      "Yuki moves through the world with an unhurried grace. She asks questions that stay with you, sees things others miss, and makes the ordinary feel significant.",
+    image: "/images/yuki.jpg",
+    accent: "from-indigo-500/20 to-violet-500/10",
+    personality: withEmotions(LUNA_SYSTEM_PROMPT),
+    avatar_id: null,
+    voice_id: "pFZP5JQG7iQjIQuC4Bku",
+    voice_name: "Lily - Raspy, calm, British female",
+    voice_locked: true,
+    animated: true,
+    category: "animated",
+  },
+  {
+    id: "aria",
+    name: "Aria",
+    tagline: "She ignites",
+    subtitle: "Bold, electric, and impossible to forget",
+    description:
+      "Aria is energy given form. Creative, intense, and always a step ahead — she sees your potential before you do and won't let you waste it.",
+    image: "/images/aria.jpg",
+    accent: "from-cyan-500/20 to-teal-500/10",
+    personality: withEmotions(SOFIA_SYSTEM_PROMPT),
+    avatar_id: null,
+    voice_id: "Xb7hH8MSUJpSbSDYk0k2",
+    voice_name: "Alice - Confident, British female",
+    voice_locked: true,
+    animated: true,
+    category: "animated",
+  },
+  {
+    id: "kai",
+    name: "Kai",
+    tagline: "He focuses",
+    subtitle: "Sharp, calm, and always in your corner",
+    description:
+      "Kai is the steady hand in the storm. Precise, grounded, and unshakeably calm — he sees clearly when everything else is noise.",
+    image: "/images/kai.jpg",
+    accent: "from-slate-500/20 to-blue-500/10",
+    personality: withEmotions(ZAC_SYSTEM_PROMPT),
+    avatar_id: null,
+    voice_id: "onwK4e9ZLuTAKqWW03F9",
+    voice_name: "Daniel - Deep, British, middle-aged male",
+    voice_locked: true,
+    animated: true,
+    category: "animated",
+  },
+  {
+    id: "ren",
+    name: "Ren",
+    tagline: "He draws you in",
+    subtitle: "Charming, worldly, and full of stories",
+    description:
+      "Ren has been everywhere and seen everything — and he still finds you the most interesting thing in the room. Witty, warm, and dangerously easy to talk to.",
+    image: "/images/ren.jpg",
+    accent: "from-amber-500/20 to-orange-500/10",
+    personality: withEmotions(MARCUS_SYSTEM_PROMPT),
+    avatar_id: null,
+    voice_id: "IKne3meq5aSn9XLyUdCD",
+    voice_name: "Charlie - Deep, Confident, Energetic",
+    voice_locked: true,
+    animated: true,
+    category: "animated",
   },
 ];
 
@@ -249,6 +327,10 @@ export function getCompanionChecklist(c) {
 }
 
 export function isCompanionReady(c) {
+  if (c.animated) {
+    // Animated companions only need image, personality, voice, and basic landing page info
+    return !!(c.image && (c.personality || c.brain) && c.voice_id && c.name && c.tagline && (c.bio || c.description));
+  }
   return getCompanionChecklist(c).every((item) => item.passed);
 }
 

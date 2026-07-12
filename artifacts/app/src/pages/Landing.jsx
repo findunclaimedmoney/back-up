@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { COMPANIONS, isCompanionReady } from "@/lib/companions";
 import { captureReferralCode } from "@/lib/companionStructure";
@@ -32,11 +32,19 @@ const FEATURES = [
   { icon: Bitcoin, title: "Crypto payments", desc: "Pay with BTC, ETH or USDC" },
 ];
 
+const CATEGORIES = [
+  { id: "all", label: "All" },
+  { id: "female", label: "Female" },
+  { id: "male", label: "Male" },
+  { id: "animated", label: "Animated" },
+];
+
 export default function Landing() {
   useEffect(() => {
     captureReferralCode();
   }, []);
   useTrackVisit("home");
+  const [activeCategory, setActiveCategory] = useState("all");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -125,8 +133,8 @@ export default function Landing() {
       </section>
 
       {/* Companions */}
-      <section className="px-6 pb-20">
-        <div className="text-center mb-10">
+      <section id="companions-grid" className="px-6 pb-20">
+        <div className="text-center mb-8">
           <h2 className="font-heading text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
             Meet your companions
           </h2>
@@ -134,8 +142,24 @@ export default function Landing() {
             Each one has a different presence. Find the one that feels right for you.
           </p>
         </div>
+        {/* Category filter pills */}
+        <div className="flex items-center justify-center gap-2 mb-8 flex-wrap">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all border ${
+                activeCategory === cat.id
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-4">
-          {COMPANIONS.filter(isCompanionReady).map((c) => (
+          {COMPANIONS.filter((c) => isCompanionReady(c) && (activeCategory === "all" || c.category === activeCategory)).map((c) => (
             <Link
               key={c.id}
               to="/register"
@@ -156,27 +180,43 @@ export default function Landing() {
               </div>
             </Link>
           ))}
-
         </div>
       </section>
 
-      {/* Emotional connection banner */}
+      {/* Explore Categories */}
       <section className="px-6 pb-20">
-        <div className="max-w-5xl mx-auto relative overflow-hidden rounded-[2rem] border border-border">
-          <img
-            src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/19ce39eea_Womaninsilkrobe.png"
-            alt="Romantic candlelight connection"
-            className="w-full h-[300px] sm:h-[400px] object-cover object-top"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 text-center">
-            <h2 className="font-heading text-2xl sm:text-4xl font-semibold tracking-tight mb-3 text-foreground">
-              The connection you've been missing
-            </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed text-sm sm:text-base">
-              Someone who remembers your story, notices when you're quiet, and shows up —
-              not because they have to, but because they want to.
-            </p>
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-6">
+            <h2 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight">Explore by category</h2>
+            <p className="text-sm text-muted-foreground mt-1">Every vibe, every type — find who you connect with.</p>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            {CATEGORIES.filter((cat) => cat.id !== "all").map((cat) => {
+              const featured = COMPANIONS.find((c) => isCompanionReady(c) && c.category === cat.id);
+              if (!featured) return null;
+              const count = COMPANIONS.filter((c) => isCompanionReady(c) && c.category === cat.id).length;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    setActiveCategory(cat.id);
+                    document.getElementById("companions-grid")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                  className="group relative overflow-hidden rounded-2xl border border-border aspect-[3/4] cursor-pointer text-left"
+                >
+                  <img
+                    src={featured.image}
+                    alt={cat.label}
+                    className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="text-xs font-medium text-white/60 uppercase tracking-widest mb-1">{count} companions</p>
+                    <p className="font-heading text-xl font-bold text-white">{cat.label}</p>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
