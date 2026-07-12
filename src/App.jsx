@@ -70,14 +70,13 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
+  // Handle authentication errors — any auth failure redirects to login
+  // (user_not_registered shows a dedicated error screen instead)
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      // Redirect to login — in-app navigation works on mobile webviews
-      return <Navigate to="/login" replace />;
     }
+    return <Navigate to="/login" replace />;
   }
 
   // Render the main app

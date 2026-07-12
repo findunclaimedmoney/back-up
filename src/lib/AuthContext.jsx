@@ -131,14 +131,13 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingAuth(false);
       setIsAuthenticated(false);
       setAuthChecked(true);
-      
-      // If user auth fails, it might be an expired token
-      if (error.status === 401 || error.status === 403) {
-        setAuthError({
-          type: 'auth_required',
-          message: 'Authentication required'
-        });
-      }
+      // Any auth check failure (expired token, 403, network error) →
+      // redirect to login so the user can re-authenticate instead of
+      // getting stuck on a page with broken API calls
+      setAuthError({
+        type: 'auth_required',
+        message: 'Authentication required'
+      });
     }
   };
 

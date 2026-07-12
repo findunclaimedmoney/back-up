@@ -1,20 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Navigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import Landing from "@/pages/Landing";
 
 export default function Home() {
-  const [authChecked, setAuthChecked] = useState(false);
-  const [authed, setAuthed] = useState(false);
+  const { isAuthenticated, user, isLoadingAuth, isLoadingPublicSettings } = useAuth();
 
-  useEffect(() => {
-    base44.auth.isAuthenticated().then((result) => {
-      setAuthed(result);
-      setAuthChecked(true);
-    });
-  }, []);
-
-  if (!authChecked) {
+  if (isLoadingAuth || isLoadingPublicSettings) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
@@ -22,7 +14,8 @@ export default function Home() {
     );
   }
 
-  if (authed) {
+  // Only admins go to the admin dashboard; everyone else sees the landing page
+  if (isAuthenticated && user?.role === 'admin') {
     return <Navigate to="/dashboard" replace />;
   }
 
