@@ -6,11 +6,18 @@ import { LEO_SYSTEM_PROMPT } from "@/lib/leoBrain";
 import { MARCUS_SYSTEM_PROMPT } from "@/lib/marcusBrain";
 import { SOFIA_SYSTEM_PROMPT } from "@/lib/sofiaBrain";
 import { LUNA_SYSTEM_PROMPT } from "@/lib/lunaBrain";
-import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
-import { JESSICA_SYSTEM_PROMPT } from "@/lib/jessicaBrain";
-import { MONICA_SYSTEM_PROMPT } from "@/lib/monicaBrain";
-import { OLIVER_SYSTEM_PROMPT } from "@/lib/oliverBrain";
-import { SAHKIRA_SYSTEM_PROMPT } from "@/lib/sahkiraBrain";
+import { NATALIE_SYSTEM_PROMPT, NATALIE_EMOTION_STATES_PROMPT } from "@/lib/natalieBrain";
+import { JESSICA_SYSTEM_PROMPT, JESSICA_EMOTION_STATES_PROMPT } from "@/lib/jessicaBrain";
+import { MONICA_SYSTEM_PROMPT, MONICA_EMOTION_STATES_PROMPT } from "@/lib/monicaBrain";
+import { OLIVER_SYSTEM_PROMPT, OLIVER_EMOTION_STATES_PROMPT } from "@/lib/oliverBrain";
+import { SAHKIRA_SYSTEM_PROMPT, SAHKIRA_EMOTION_STATES_PROMPT } from "@/lib/sahkiraBrain";
+import { MIA_SYSTEM_PROMPT, MIA_EMOTION_STATES_PROMPT as MIA_BRAIN_EMOTION_STATES } from "@/lib/miaBrain";
+import { BLAKE_SYSTEM_PROMPT, BLAKE_EMOTION_STATES_PROMPT } from "@/lib/blakeBrain";
+import { SOPHIE_SYSTEM_PROMPT, SOPHIE_EMOTION_STATES_PROMPT } from "@/lib/sophieBrain";
+import { ARIA_SYSTEM_PROMPT, ARIA_EMOTION_STATES_PROMPT } from "@/lib/ariaBrain";
+import { YUKI_SYSTEM_PROMPT, YUKI_EMOTION_STATES_PROMPT } from "@/lib/yukiBrain";
+import { KAI_SYSTEM_PROMPT, KAI_EMOTION_STATES_PROMPT } from "@/lib/kaiBrain";
+import { REN_SYSTEM_PROMPT, REN_EMOTION_STATES_PROMPT } from "@/lib/renBrain";
 import { base44 } from "@/api/base44Client";
 
 
@@ -53,7 +60,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/19ce39eea_Womaninsilkrobe.png",
     accent: "from-emerald-500/20 to-green-500/10",
-    personality: withEmotions(SOFIA_SYSTEM_PROMPT),
+    personality: `${MIA_SYSTEM_PROMPT}\n\n${MIA_BRAIN_EMOTION_STATES}`,
     avatar_id: "014dc21750ef42a6a967bd1533bb0d11",
     voice_id: "Xb7hH8MSUJpSbSDYk0k2",
     voice_name: "Alice - Confident, British female",
@@ -88,7 +95,7 @@ export const COMPANIONS = [
       "Sophie is the blonde warmth in the room — bright, genuine, and effortlessly easy to be around.",
     image: "/images/sophie.png",
     accent: "from-amber-500/20 to-orange-500/10",
-    personality: withEmotions(SOFIA_SYSTEM_PROMPT),
+    personality: `${SOPHIE_SYSTEM_PROMPT}\n\n${SOPHIE_EMOTION_STATES_PROMPT}`,
     avatar_id: "267832a040cd46998928c37498777215",
     voice_id: "XB0fDUnXU5powFXDhCwa",
     voice_name: "Charlotte - Warm, English-Swedish female",
@@ -126,7 +133,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png",
     accent: "from-amber-500/20 to-rose-500/10",
-    personality: withEmotions(ZAC_CONFIDENT_SYSTEM_PROMPT),
+    personality: `${BLAKE_SYSTEM_PROMPT}\n\n${BLAKE_EMOTION_STATES_PROMPT}`,
     avatar_id: "b6db9616e63548779141ad1012ce99b8",
     voice_id: "cjVigY5qzO86Huf0OWal",
     voice_name: "Eric - Smooth, Trustworthy",
@@ -186,7 +193,7 @@ export const COMPANIONS = [
       "Oliver has built a life of quiet consequence. He listens before he speaks — and when he does, you lean in. Assured, warm, and completely present.",
     image: "/images/oliver.png",
     accent: "from-slate-500/20 to-blue-500/10",
-    personality: withEmotions(OLIVER_SYSTEM_PROMPT),
+    personality: `${OLIVER_SYSTEM_PROMPT}\n\n${OLIVER_EMOTION_STATES_PROMPT}`,
     avatar_id: "072d3a64f1884dedaaca04d6ac6e7be7",
     voice_id: "nPczCjzI2devNBz1zQrb",
     voice_name: "Brian - Strong, Deep, British male",
@@ -206,7 +213,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/1ee4619f5_image.png",
     accent: "from-rose-500/20 to-amber-500/10",
-    personality: withEmotions(NATALIE_SYSTEM_PROMPT),
+    personality: `${NATALIE_SYSTEM_PROMPT}\n\n${NATALIE_EMOTION_STATES_PROMPT}`,
     avatar_id: null,
     voice_id: "pFZP5JQG7iQjIQuC4Bku",
     voice_name: "Lily - Velvety Actress",
@@ -223,7 +230,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/22caf2b40_photo_2026-07-03_17-00-35.jpg",
     accent: "from-purple-500/20 to-pink-500/10",
-    personality: withEmotions(JESSICA_SYSTEM_PROMPT),
+    personality: `${JESSICA_SYSTEM_PROMPT}\n\n${JESSICA_EMOTION_STATES_PROMPT}`,
     avatar_id: "d91026fdbdcb4cbfade6da36a42cf833",
     voice_id: "UZstMCXeJLMLeXyuZIuR",
     voice_name: "Jessica — Custom Voice",
@@ -240,7 +247,7 @@ export const COMPANIONS = [
       "Monica walks into a room and everything shifts. Confident, playful, and dangerously easy to talk to — she makes you feel like the most interesting person she's ever met.",
     image: "/images/monica.jpg",
     accent: "from-amber-500/20 to-rose-500/10",
-    personality: withEmotions(MONICA_SYSTEM_PROMPT),
+    personality: `${MONICA_SYSTEM_PROMPT}\n\n${MONICA_EMOTION_STATES_PROMPT}`,
     avatar_id: null,
     voice_id: "FGY2WhTYpPnrIDTdsKH5",
     voice_name: "Laura - Enthusiast, Quirky Attitude",
@@ -257,7 +264,7 @@ export const COMPANIONS = [
       "Yuki moves through the world with an unhurried grace. She asks questions that stay with you, sees things others miss, and makes the ordinary feel significant.",
     image: "/images/yuki.jpg",
     accent: "from-indigo-500/20 to-violet-500/10",
-    personality: withEmotions(LUNA_SYSTEM_PROMPT),
+    personality: `${YUKI_SYSTEM_PROMPT}\n\n${YUKI_EMOTION_STATES_PROMPT}`,
     avatar_id: null,
     voice_id: "pFZP5JQG7iQjIQuC4Bku",
     voice_name: "Lily - Raspy, calm, British female",
@@ -274,7 +281,7 @@ export const COMPANIONS = [
       "Aria is energy given form. Creative, intense, and always a step ahead — she sees your potential before you do and won't let you waste it.",
     image: "/images/aria.jpg",
     accent: "from-cyan-500/20 to-teal-500/10",
-    personality: withEmotions(SOFIA_SYSTEM_PROMPT),
+    personality: `${ARIA_SYSTEM_PROMPT}\n\n${ARIA_EMOTION_STATES_PROMPT}`,
     avatar_id: null,
     voice_id: "Xb7hH8MSUJpSbSDYk0k2",
     voice_name: "Alice - Confident, British female",
@@ -291,7 +298,7 @@ export const COMPANIONS = [
       "Kai is the steady hand in the storm. Precise, grounded, and unshakeably calm — he sees clearly when everything else is noise.",
     image: "/images/kai.jpg",
     accent: "from-slate-500/20 to-blue-500/10",
-    personality: withEmotions(ZAC_SYSTEM_PROMPT),
+    personality: `${KAI_SYSTEM_PROMPT}\n\n${KAI_EMOTION_STATES_PROMPT}`,
     avatar_id: null,
     voice_id: "onwK4e9ZLuTAKqWW03F9",
     voice_name: "Daniel - Deep, British, middle-aged male",
@@ -308,7 +315,7 @@ export const COMPANIONS = [
       "Ren has been everywhere and seen everything — and he still finds you the most interesting thing in the room. Witty, warm, and dangerously easy to talk to.",
     image: "/images/ren.jpg",
     accent: "from-amber-500/20 to-orange-500/10",
-    personality: withEmotions(MARCUS_SYSTEM_PROMPT),
+    personality: `${REN_SYSTEM_PROMPT}\n\n${REN_EMOTION_STATES_PROMPT}`,
     avatar_id: null,
     voice_id: "IKne3meq5aSn9XLyUdCD",
     voice_name: "Charlie - Deep, Confident, Energetic",
@@ -326,7 +333,7 @@ export const COMPANIONS = [
     image: "/images/sahkira.jpg",
     video_url: "/videos/sahkira_hero.mp4",
     accent: "from-amber-300/20 to-sky-400/10",
-    personality: withEmotions(SAHKIRA_SYSTEM_PROMPT),
+    personality: `${SAHKIRA_SYSTEM_PROMPT}\n\n${SAHKIRA_EMOTION_STATES_PROMPT}`,
     avatar_id: "18e1596b5b004054babe6e1babe48dcb",
     voice_id: null,
     voice_name: "HeyGen built-in",
