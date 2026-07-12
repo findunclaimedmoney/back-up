@@ -119,7 +119,7 @@ export const COMPANIONS = [
     voice_id: "cjVigY5qzO86Huf0OWal",
     voice_name: "Eric - Smooth, Trustworthy",
     voice_locked: true,
-    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/41993070f_Blake_Hero_Video.mp4",
+    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/b2a1c98c0_307f5321d_Zac_Shower_Clip.mp4",
     stripe_price_id: "price_1TsEbwEHzw6rVQI2pKOBvCx2",
   },
   {
