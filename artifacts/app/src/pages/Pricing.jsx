@@ -189,6 +189,7 @@ export default function Pricing() {
     try {
       const res = await base44.functions.invoke("createCheckout", {
         tier: tierId,
+        companion_id: localStorage.getItem("glimr_last_companion") || "mia",
         ...(promoApplied && promoCode ? { coupon: promoCode.toUpperCase() } : {}),
       });
       if (res.data?.url) {

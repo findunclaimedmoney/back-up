@@ -182,7 +182,7 @@ router.post("/:name", async (req, res) => {
               },
               quantity: 1,
             }],
-            metadata: { userId, tier: params.tier as string },
+            metadata: { userId, tier: params.tier as string, companion_id: (params.companion_id as string) || "mia" },
             success_url: `${baseUrl()}/pricing?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url:  `${baseUrl()}/pricing`,
             ...(params.coupon ? { discounts: [{ coupon: params.coupon as string }] } : {}),

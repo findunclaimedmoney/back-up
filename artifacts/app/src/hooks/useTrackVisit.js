@@ -37,6 +37,9 @@ export function useTrackVisit(companionId) {
       localStorage.setItem("glimr_visitor_key", visitor_key);
     }
 
+    // Remember which companion brought this visitor — used to personalise the post-payment email
+    localStorage.setItem("glimr_last_companion", companionId);
+
     base44.functions
       .invoke("trackVisit", {
         companion_id: companionId,
