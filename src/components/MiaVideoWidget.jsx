@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Video, X, Loader2, MessageCircle } from "lucide-react";
 
 const MIA_IMAGE =
-  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png";
+  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/19ce39eea_Womaninsilkrobe.png";
 
 export default function MiaVideoWidget() {
   const [open, setOpen] = useState(false);

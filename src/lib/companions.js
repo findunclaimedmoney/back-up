@@ -43,15 +43,15 @@ export const COMPANIONS = [
     description:
       "Mia sees what you're capable of before you see it yourself. She notices what lights you up, names your fire, and gently pushes you toward the thing you're afraid to want.",
     image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png",
+      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/19ce39eea_Womaninsilkrobe.png",
     accent: "from-emerald-500/20 to-green-500/10",
     personality: withEmotions(SOFIA_SYSTEM_PROMPT),
-    avatar_id: "66b0d00bdc5743ae9044ef8043c63189",
+    avatar_id: "585391970fcc475ea62a63ad8908698e",
     voice_id: "Xb7hH8MSUJpSbSDYk0k2",
     voice_name: "Alice - Confident, British female",
     voice_locked: true,
     locked: true,
-    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/cffaf0534_Mia_Hero_Video.mp4",
+    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/567d746da_avatar-shot-20260705-a2b9f09f.mp4",
     stripe_price_id: "price_1TsEUKEHzw6rVQI2I6oB4OCe",
   },
   {

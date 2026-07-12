@@ -8,7 +8,7 @@ const AGENT_NAME = "marketing_agent";
 const STORAGE_KEY = "glimr_mia_marketing_chat";
 
 const MIA_IMAGE =
-  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png";
+  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/19ce39eea_Womaninsilkrobe.png";
 
 const GREETING =
   "Hey, I'm Mia — your marketing director. I can create social posts, generate videos, publish to Facebook & Instagram, and run Meta Ads. What should we work on first?";

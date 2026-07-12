@@ -6,7 +6,7 @@ import VoiceRecorderButton from "@/components/VoiceRecorderButton";
 import { MessageCircle, X, Send, GripVertical, RefreshCw } from "lucide-react";
 
 const MIA_IMAGE =
-  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png";
+  "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/19ce39eea_Womaninsilkrobe.png";
 
 const GREETING = MIA_GREETING;
 
