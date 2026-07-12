@@ -10,6 +10,7 @@ import { NATALIE_SYSTEM_PROMPT } from "@/lib/natalieBrain";
 import { JESSICA_SYSTEM_PROMPT } from "@/lib/jessicaBrain";
 import { MONICA_SYSTEM_PROMPT } from "@/lib/monicaBrain";
 import { OLIVER_SYSTEM_PROMPT } from "@/lib/oliverBrain";
+import { SAHKIRA_SYSTEM_PROMPT } from "@/lib/sahkiraBrain";
 import { base44 } from "@/api/base44Client";
 
 
@@ -312,6 +313,24 @@ export const COMPANIONS = [
     avatar_id: null,
     voice_id: "IKne3meq5aSn9XLyUdCD",
     voice_name: "Charlie - Deep, Confident, Energetic",
+    voice_locked: true,
+    animated: true,
+    category: "animated",
+  },
+  {
+    id: "sahkira",
+    name: "Sahkira",
+    tagline: "She illuminates",
+    subtitle: "Luminous, dreamy, and impossible to forget",
+    description:
+      "Sahkira exists somewhere between dream and reality — warm, unhurried, and impossible to look away from. She notices everything, remembers what matters, and makes the ordinary feel quietly magical.",
+    image: "/images/sahkira.jpg",
+    video_url: "/videos/sahkira_hero.mp4",
+    accent: "from-amber-300/20 to-sky-400/10",
+    personality: withEmotions(SAHKIRA_SYSTEM_PROMPT),
+    avatar_id: null,
+    voice_id: "EXAVITQu4vr4xnSDxMaL",
+    voice_name: "Sarah - Soft, warm, American female",
     voice_locked: true,
     animated: true,
     category: "animated",
