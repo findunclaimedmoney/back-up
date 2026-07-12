@@ -29,15 +29,14 @@ export const COMPANIONS = [
     subtitle: "Warm, empathetic, and deeply curious about you",
     description:
       "Jess is a compassionate listener who remembers what matters to you. She speaks with warmth, asks thoughtful questions, and makes you feel genuinely heard.",
-    image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png",
+    image: "/images/jess_brunette.jpg",
     accent: "from-amber-500/20 to-rose-500/10",
     personality: `${JESS_SYSTEM_PROMPT}\n\n${JESS_EMOTION_STATES_PROMPT}`,
     avatar_id: "3559b3f9-29e3-48eb-a4ff-7a7dc5b47ca9",
     voice_id: "ThT5KcBeYPX3keUQqHPh",
     voice_name: "Dorothy - Pleasant, young, British female",
     voice_locked: true,
-    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/280b8c8d4_Jesss_Engaging_Greeting.mp4",
+    video_url: "/videos/jess_brunette_hero.mp4",
     stripe_price_id: "price_1TsEO4EHzw6rVQI2Tx2KTOLB",
     category: "female",
   },
