@@ -94,6 +94,7 @@ export const COMPANIONS = [
     description:
       "Sophie is the blonde warmth in the room — bright, genuine, and effortlessly easy to be around.",
     image: "/images/sophie.png",
+    video_url: "/videos/jess_brunette_hero.mp4",
     accent: "from-amber-500/20 to-orange-500/10",
     personality: `${SOPHIE_SYSTEM_PROMPT}\n\n${SOPHIE_EMOTION_STATES_PROMPT}`,
     avatar_id: "267832a040cd46998928c37498777215",

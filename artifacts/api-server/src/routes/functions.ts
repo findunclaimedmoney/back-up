@@ -703,10 +703,31 @@ router.post("/:name", async (req, res) => {
         const currencyMap: Record<string, string> = { USDC: "usdc_polygon", BTC: "btc", ETH: "eth" };
         const currency = currencyMap[d.asset ?? "USDC"] ?? "usdc_polygon";
         const moonpayKey = process.env["MOONPAY_API_KEY"];
+        const moonpaySecret = process.env["MOONPAY_SECRET_KEY"];
 
         let url: string;
         if (moonpayKey && d.address) {
-          url = `https://buy.moonpay.com?apiKey=${moonpayKey}&currencyCode=${currency}&baseCurrencyAmount=${d.usd_amount ?? ""}&walletAddress=${encodeURIComponent(d.address ?? "")}`;
+          const base = "https://buy.moonpay.com";
+          const query = new URLSearchParams({
+            apiKey:             moonpayKey,
+            currencyCode:       currency,
+            baseCurrencyCode:   "aud",
+            baseCurrencyAmount: String(d.usd_amount ?? ""),
+            walletAddress:      d.address ?? "",
+          });
+          const unsigned = `${base}?${query.toString()}`;
+
+          // Sign the URL so MoonPay verifies it hasn't been tampered with
+          if (moonpaySecret) {
+            const { createHmac } = await import("crypto");
+            const signature = createHmac("sha256", moonpaySecret)
+              .update(`?${query.toString()}`)
+              .digest("base64");
+            query.set("signature", signature);
+            url = `${base}?${query.toString()}`;
+          } else {
+            url = unsigned;
+          }
         } else {
           // Fallback — takes user to MoonPay buy page pre-selected on the asset
           url = `https://www.moonpay.com/buy/${d.asset?.toLowerCase() ?? "usdc"}`;

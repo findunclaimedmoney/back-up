@@ -3,6 +3,7 @@ import cors from "cors";
 import pinoHttp from "pino-http";
 import session from "express-session";
 import router from "./routes";
+import stripeWebhookRouter from "./routes/stripe-webhook";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
@@ -28,6 +29,10 @@ app.use(
 );
 
 app.use(cors({ origin: true, credentials: true }));
+
+// Stripe webhook needs raw body for signature verification — register before express.json()
+app.use("/api/stripe-webhook", express.raw({ type: "application/json" }), stripeWebhookRouter);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
