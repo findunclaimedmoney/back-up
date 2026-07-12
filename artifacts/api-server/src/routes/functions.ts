@@ -273,7 +273,93 @@ router.post("/:name", async (req, res) => {
 
       // ── Live avatar (LiveAvatar.com iframe embed) ─────────────────────────
 
-      case "anamSession":
+      // ── Anam.ai streaming avatar ──────────────────────────────────────────
+
+      case "anamSession": {
+        const anamKey = process.env["ANAM_API_KEY"];
+        if (!anamKey) {
+          return res.json({ data: { upgrade_required: true, message: "Live avatar not configured" } });
+        }
+
+        const companionName = ((params.companion_name ?? "") as string).toLowerCase();
+        const passedAvatarId = (params.avatar_id ?? "") as string;
+
+        // ── 1. Resolve persona ID from Anam ─────────────────────────────────
+        let personaId: string | null = null;
+
+        try {
+          const pRes = await fetch("https://api.anam.ai/v1/personas", {
+            headers: { "Authorization": `Bearer ${anamKey}` },
+          });
+
+          if (pRes.ok) {
+            const pData = await pRes.json() as any;
+            const personas: any[] = pData.personas ?? pData.data ?? (Array.isArray(pData) ? pData : []);
+
+            // Exact id match → name contains match → first persona
+            const match =
+              personas.find((p: any) => (p.id ?? p.persona_id) === passedAvatarId) ??
+              personas.find((p: any) =>
+                (p.name ?? "").toLowerCase().includes(companionName.split(" ")[0]) ||
+                companionName.includes((p.name ?? "").toLowerCase())
+              ) ??
+              personas[0] ??
+              null;
+
+            if (match) personaId = match.id ?? match.persona_id ?? null;
+          } else {
+            req.log.warn({ status: pRes.status }, "Anam personas fetch non-ok");
+          }
+        } catch (err) {
+          req.log.error({ err }, "Anam personas fetch failed");
+        }
+
+        if (!personaId) {
+          return res.json({
+            data: {
+              upgrade_required: true,
+              message: "No live avatar persona configured for this companion yet.",
+            },
+          });
+        }
+
+        // ── 2. Create session ────────────────────────────────────────────────
+        try {
+          const sRes = await fetch("https://api.anam.ai/v1/sessions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${anamKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ personaId }),
+          });
+
+          const sData = await sRes.json() as any;
+
+          if (!sRes.ok) {
+            req.log.error({ status: sRes.status, sData }, "Anam session create failed");
+            return res.json({ data: { error: sData?.message ?? "Failed to create Anam session" } });
+          }
+
+          const sessionToken: string = sData.sessionToken ?? sData.session_token ?? sData.token;
+          if (!sessionToken) {
+            return res.json({ data: { error: "Anam returned no session token" } });
+          }
+
+          return res.json({
+            data: {
+              sessionToken,
+              session_duration_seconds: params.duration
+                ? (params.duration as number) * 60
+                : null,
+            },
+          });
+        } catch (err: any) {
+          req.log.error({ err }, "Anam session error");
+          return res.json({ data: { error: err.message ?? "Anam session error" } });
+        }
+      }
+
       case "liveavatarEmbed":
       case "createLiveAvatar": {
         // Map companion IDs → LiveAvatar avatar IDs via env vars
