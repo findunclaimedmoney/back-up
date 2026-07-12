@@ -72,6 +72,7 @@ export default function CompanionProfile() {
         {companion.video_url ? (
           <video
             src={companion.video_url}
+            poster={companion.image || undefined}
             autoPlay
             loop
             muted
