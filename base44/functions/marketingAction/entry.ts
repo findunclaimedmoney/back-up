@@ -13,11 +13,11 @@ Deno.serve(async (req) => {
       case 'generate_post': {
         const { topic, platform = 'facebook', tone = 'warm' } = body;
         const platformGuides = {
-          facebook: 'Facebook: longer-form, story-driven, community-building. 2-4 sentences. Warm, human tone. End with a question or CTA.',
-          instagram: 'Instagram: visual-first, scroll-stopping hook in first line. 1-3 sentences. Trending hashtags. Use emojis tastefully.',
-          tiktok: 'TikTok: POV-style, short punchy hook. Casual, trendy language. Maximum 2 sentences + hashtags.',
+          facebook: 'Facebook: longer-form, story-driven, community-building. 2-4 sentences. Warm, human tone. End with a question or CTA. NO emojis.',
+          instagram: 'Instagram: visual-first, scroll-stopping hook in first line. 1-3 sentences. Trending hashtags. NO emojis — plain text only.',
+          tiktok: 'TikTok: POV-style, short punchy hook. Casual, trendy language. Maximum 2 sentences + hashtags. NO emojis.',
         };
-        const prompt = `You are GLIMR's marketing director. Create a social media post about: "${topic}"\n\nPlatform: ${platform}\nTone: ${tone}\n${platformGuides[platform] || platformGuides.facebook}\n\nGLIMR is a companionship platform addressing loneliness through AI companions that remember you. Free tier available — text chat, no card needed.\n\nReturn JSON with: caption (string), hashtags (string, space-separated with #), cta (string, the call-to-action line).\nDo NOT include quotes around the values.`;
+        const prompt = `You are GLIMR's marketing director. Create a social media post about: "${topic}"\n\nPlatform: ${platform}\nTone: ${tone}\n${platformGuides[platform] || platformGuides.facebook}\n\nGLIMR is a companionship platform addressing loneliness through AI companions that remember you. Free tier available — text chat, no card needed.\n\nSTRICT RULES:\n- NO emojis anywhere in the caption, hashtags, or CTA. Plain text only.\n- NO cartoons, illustrations, or animated characters. Companions are REAL people.\n- Only use existing companion photos and videos — never AI-generated images.\n- Keep it high-quality and authentic.\n\nReturn JSON with: caption (string), hashtags (string, space-separated with #), cta (string, the call-to-action line).\nDo NOT include quotes around the values.`;
         const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
           prompt,
           response_json_schema: {
@@ -287,7 +287,11 @@ Deno.serve(async (req) => {
       }
 
       case 'create_ad': {
-        const { budget_usd = 11, duration_days = 7, ad_text, image_prompt } = body;
+        const { budget_usd = 11, duration_days = 7, ad_text, image_url } = body;
+        // BOSS RULE: Only existing companion images allowed — NO AI-generated images
+        if (!image_url) {
+          return Response.json({ error: 'image_url is required. Only use existing companion photos — no AI-generated images allowed.' }, { status: 400 });
+        }
         // Meta Ads minimum for AU lifetime budget is ~A$10.22 — enforce minimum
         const minBudget = 1100;
         const budgetCents = Math.max(Math.round(budget_usd * 100), minBudget);
@@ -304,10 +308,8 @@ Deno.serve(async (req) => {
         }
         const actId = accountsData.data[0].account_id;
 
-        // Generate ad image
-        const imageResult = await base44.asServiceRole.integrations.Core.GenerateImage({
-          prompt: image_prompt || 'A warm, inviting social media ad for GLIMR, an AI companionship app addressing loneliness. Show a person smiling at their phone, warm golden tones, modern minimal design, emotional connection.',
-        });
+        // Use the provided companion image — do NOT generate AI images
+        const adImageUrl = image_url;
 
         // Get Facebook page for ad creative
         const fbConn = await base44.asServiceRole.connectors.getConnection('facebook_pages');
@@ -375,7 +377,7 @@ Deno.serve(async (req) => {
               link_data: {
                 link: 'https://glimr.app',
                 message: ad_text || 'Find your companion. Someone who listens, remembers, and truly cares. Start free today.',
-                picture: imageResult.url,
+                picture: adImageUrl,
               },
             },
             access_token: conn.accessToken,
@@ -404,7 +406,7 @@ Deno.serve(async (req) => {
           campaign_id: campaignData.id,
           adset_id: adSetData.id,
           ad_id: adData.id,
-          image_url: imageResult.url,
+          image_url: adImageUrl,
           budget: `$${budget_usd}`,
           duration: `${duration_days} days`,
           start: startTime.toISOString(),
