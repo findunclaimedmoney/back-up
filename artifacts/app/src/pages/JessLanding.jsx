@@ -9,12 +9,11 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import VideoMessages from "@/components/landing/VideoMessages";
 import FlashSaleBanner from "@/components/landing/FlashSaleBanner";
 
-const JESS_VIDEO =
-  "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/280b8c8d4_Jesss_Engaging_Greeting.mp4";
+const JESS_VIDEO = "/videos/jess_greeting.mp4";
 
 const JESS_VIDEOS = [
   { url: JESS_VIDEO, title: "Jess says hello", description: "A warm welcome from Jess" },
-  { url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/754417f2e_Jesss_Intriguing_Invitation.mp4", title: "Jess invites you in", description: "An intriguing invitation to connect" },
+  { url: "/videos/jess_invitation.mp4", title: "Jess invites you in", description: "An intriguing invitation to connect" },
 ];
 
 const TRAITS = [
