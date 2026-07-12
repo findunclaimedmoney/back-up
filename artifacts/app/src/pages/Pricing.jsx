@@ -6,6 +6,7 @@ import { useGoBack } from "@/hooks/useGoBack";
 import { TIERS } from "@/lib/creditSystem";
 import TierCard from "@/components/pricing/TierCard";
 import IntimacyAddOnCard from "@/components/pricing/IntimacyAddOnCard";
+import BedtimeTalkCard from "@/components/pricing/BedtimeTalkCard";
 import TopUpCard from "@/components/pricing/TopUpCard";
 import CreditUsageCard from "@/components/pricing/CreditUsageCard";
 import CryptoPaymentModal from "@/components/pricing/CryptoPaymentModal";
@@ -25,6 +26,7 @@ export default function Pricing() {
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
   const [addonLoading, setAddonLoading] = useState(null);
   const [topupLoading, setTopupLoading] = useState(null);
+  const [bedtimeLoading, setBedtimeLoading] = useState(null);
   const [billingLoading, setBillingLoading] = useState(false);
   const [cryptoOpen, setCryptoOpen] = useState(false);
   const [promoCode, setPromoCode] = useState("");
@@ -119,6 +121,22 @@ export default function Pricing() {
     } catch (err) {
       console.error(err);
       setTopupLoading(null);
+    }
+  };
+
+  const handlePurchaseBedtime = async (packId) => {
+    const authed = await base44.auth.isAuthenticated();
+    if (!authed) { window.location.href = "/login"; return; }
+    setBedtimeLoading(packId);
+    try {
+      const res = await base44.functions.invoke("createCheckout", {
+        addon: "bedtime",
+        duration: packId,
+      });
+      if (res.data?.url) window.location.href = res.data.url;
+    } catch (err) {
+      console.error(err);
+      setBedtimeLoading(null);
     }
   };
 
@@ -328,7 +346,7 @@ export default function Pricing() {
             </div>
           </section>
 
-          <section className="px-6 pb-24">
+          <section className="px-6 pb-12">
             <div className="max-w-3xl mx-auto">
               <IntimacyAddOnCard
                 included={intimacyPackage}
@@ -336,6 +354,15 @@ export default function Pricing() {
                 loading={addonLoading}
                 onPurchase={handlePurchaseAddon}
                 minutesUsed={minutesUsed}
+              />
+            </div>
+          </section>
+
+          <section className="px-6 pb-24">
+            <div className="max-w-3xl mx-auto">
+              <BedtimeTalkCard
+                loading={bedtimeLoading}
+                onPurchase={handlePurchaseBedtime}
               />
             </div>
           </section>

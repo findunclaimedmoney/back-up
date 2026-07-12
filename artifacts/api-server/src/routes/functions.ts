@@ -22,6 +22,17 @@ const TOPUP_PRICES: Record<string, { name: string; amountCents: number; credits:
   pack_50: { name: "10 credits", amountCents: 5000, credits: 10 },
 };
 
+// Session packages — billed as one-time payments, add credits + unlock layer
+const INTIMACY_PRICES: Record<string, { name: string; amountCents: number; credits: number }> = {
+  "15min": { name: "Intimacy Session — 15 Minutes", amountCents:  7500, credits: 15 },
+  "30min": { name: "Intimacy Session — 30 Minutes", amountCents: 15000, credits: 30 },
+};
+
+const BEDTIME_PRICES: Record<string, { name: string; amountCents: number; credits: number }> = {
+  "15min": { name: "Bedtime Talk with Jess — 15 Minutes", amountCents:  5500, credits: 11 },
+  "30min": { name: "Bedtime Talk with Jess — 30 Minutes", amountCents:  9900, credits: 20 },
+};
+
 function baseUrl(): string {
   return process.env["REPLIT_DEV_DOMAIN"]
     ? `https://${process.env["REPLIT_DEV_DOMAIN"]}`
@@ -146,9 +157,15 @@ router.post("/:name", async (req, res) => {
           return res.json({ data: { url: sess.url } });
         }
 
-        // Top-up / add-on
+        // Top-up / add-on / session package
+        const addonType = (params.addon ?? "topup") as string;
         const packId = (params.duration ?? params.pack_id) as string;
-        const pack = TOPUP_PRICES[packId];
+
+        const pack =
+          addonType === "intimacy" ? INTIMACY_PRICES[packId] :
+          addonType === "bedtime"  ? BEDTIME_PRICES[packId]  :
+          TOPUP_PRICES[packId];
+
         if (!pack) return res.json({ data: { url: null, message: "Unknown pack" } });
 
         const sess = await stripe.checkout.sessions.create({
@@ -163,7 +180,7 @@ router.post("/:name", async (req, res) => {
             },
             quantity: 1,
           }],
-          metadata: { userId, addon: (params.addon ?? "topup") as string, packId, credits: String(pack.credits) },
+          metadata: { userId, addon: addonType, packId, credits: String(pack.credits) },
           success_url: `${baseUrl()}/pricing?session_id={CHECKOUT_SESSION_ID}`,
           cancel_url:  `${baseUrl()}/pricing`,
         });
@@ -225,8 +242,11 @@ router.post("/:name", async (req, res) => {
         if (meta.credits) {
           const addCredits = parseInt(meta.credits, 10);
           const currentBalance = (existing?.data as any)?.creditBalance ?? 0;
+          // Intimacy purchases also unlock the intimacy layer
+          const extra = meta.addon === "intimacy" ? { intimacyPackage: true } : {};
           const updated = await upsertSubEntity(userId, existing, {
             creditBalance: currentBalance + addCredits,
+            ...extra,
           });
           return res.json({ data: { success: true, credit_added: addCredits, new_balance: updated.creditBalance } });
         }

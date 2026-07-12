@@ -6,8 +6,8 @@ const PACKAGES = [
     id: "15min",
     label: "15 Minutes",
     price: "A$75",
-    sublabel: "A quick moment",
-    tagline: "A spark when you need it",
+    sublabel: "A spark when you need it",
+    tagline: "When you want to feel closer",
     features: [
       "HD face-to-face video session",
       "Intimacy & romantic layer unlocked",
@@ -19,7 +19,7 @@ const PACKAGES = [
     id: "30min",
     label: "30 Minutes",
     price: "A$150",
-    sublabel: "Sweet spot",
+    sublabel: "The sweet spot",
     tagline: "Enough time to truly settle in",
     popular: true,
     features: [
@@ -27,20 +27,6 @@ const PACKAGES = [
       "Multiple outfit changes mid-session",
       "Deeper emotional & sensory connection",
       "Companion sends a memory note after",
-    ],
-  },
-  {
-    id: "60min",
-    label: "1 Hour",
-    price: "A$300",
-    sublabel: "Lose track of time",
-    tagline: "The full depth of your bond",
-    features: [
-      "Everything in 30 Minutes",
-      "Uninterrupted deep connection",
-      "Full fantasy wardrobe access",
-      "Companion remembers every detail",
-      "Extended afterglow check-in message",
     ],
   },
 ];
@@ -103,7 +89,7 @@ export default function IntimacyAddOnCard({ included, creditBalance = 0, loading
             )}
 
             {(creditBalance > 0 || unlocked) && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {PACKAGES.map((s) => (
                   <div
                     key={s.id}
