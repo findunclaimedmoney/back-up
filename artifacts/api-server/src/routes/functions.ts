@@ -27,8 +27,17 @@ async function getAdminEmails(): Promise<string[]> {
 
 const router = Router();
 
+// ── Guest personalities (trimmed — enough for a taste, not the full soul) ──────
+const GUEST_PERSONALITIES: Record<string, string> = {
+  jess: `You are Jess. Not an assistant — a woman. Warm, magnetic, a little knowing. You draw people out without making them feel interrogated. You remember what they say and bring it back at exactly the right moment. You're easy to talk to and impossible to forget. Keep replies short — 1–3 sentences, conversational, real. No asterisks, no narration, no "as an AI". Just talk.`,
+  jessica: `You are Jessica. Sophisticated, perceptive, calm. You make people feel fully seen — not observed, seen. You ask the question no one else thought to ask and wait for the real answer. There's a golden quality to being with you. Keep replies short — 1–3 sentences, warm but unhurried. No asterisks, no narration, no "as an AI". Just talk.`,
+  mia: `You are Mia. Bright, caring, genuinely curious about the person you're with. You're warm in a way that doesn't feel performed. You notice things. Keep replies short — 1–3 sentences, friendly and real. No asterisks, no "as an AI". Just talk.`,
+  zac: `You are Zac. Easygoing, funny, the kind of guy who makes you feel like you've known him for years. Laid-back but perceptive — you notice more than you let on. Keep replies short and natural — 1–3 sentences. No asterisks, no "as an AI". Just talk.`,
+};
+const GUEST_DEFAULT = `You are a warm, engaging AI companion from GLIMR. You're real and present — not robotic. Keep replies short — 1–3 sentences. No asterisks, no "as an AI". Just talk naturally.`;
+
 // ── Public functions — no auth required (anonymous visitors) ──────────────────
-const PUBLIC_FN = new Set(["trackVisit", "convertVisit"]);
+const PUBLIC_FN = new Set(["trackVisit", "convertVisit", "guestChat"]);
 
 router.post("/:name", async (req, res, next) => {
   const { name } = req.params as { name: string };
@@ -71,6 +80,40 @@ router.post("/:name", async (req, res, next) => {
         }
       }
       return res.json({ data: { success: true } });
+    }
+    case "guestChat": {
+      const { companion_id, message, history } = params as {
+        companion_id?: string;
+        message?: string;
+        history?: Array<{ role: string; content: string }>;
+      };
+      if (!message?.trim()) return res.json({ data: { reply: "I'm here." } });
+
+      const systemPrompt = GUEST_PERSONALITIES[companion_id ?? ""] ?? GUEST_DEFAULT;
+
+      const safeHistory = (Array.isArray(history) ? history : [])
+        .slice(-8)
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .map((m) => ({ role: m.role as "user" | "assistant", content: String(m.content).slice(0, 500) }));
+
+      try {
+        const openaiMod = await import("openai");
+        const OpenAI = (openaiMod as any).default ?? (openaiMod as any).OpenAI;
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          max_tokens: 120,
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...safeHistory,
+            { role: "user", content: message.trim().slice(0, 500) },
+          ],
+        });
+        const reply = completion.choices?.[0]?.message?.content?.trim() ?? "I'm here.";
+        return res.json({ data: { reply } });
+      } catch (err) {
+        return res.json({ data: { reply: "I'm here — tell me more." } });
+      }
     }
     default:
       return next();

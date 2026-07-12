@@ -38,6 +38,7 @@ const CompanionApply = React.lazy(() => import('./pages/CompanionApply'));
 const CompanionHub = React.lazy(() => import('./pages/CompanionHub'));
 const PromoAdmin = React.lazy(() => import('./pages/PromoAdmin'));
 const CompanionSetup = React.lazy(() => import('./pages/CompanionSetup'));
+const GuestChatPage = React.lazy(() => import('./pages/GuestChatPage'));
 
 const HealthCheck = React.lazy(() => import('./pages/HealthCheck'));
 const MoonPayReturn = React.lazy(() => import('./pages/MoonPayReturn'));
@@ -61,6 +62,13 @@ const PageLoader = () => (
     <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
   </div>
 );
+
+// Serves authenticated Chat or the 10-free-message guest experience
+function ChatRoute() {
+  const { isAuthenticated, isLoadingAuth, authChecked } = useAuth();
+  if (!authChecked || isLoadingAuth) return <PageLoader />;
+  return isAuthenticated ? <Chat /> : <GuestChatPage />;
+}
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -137,8 +145,10 @@ const AuthenticatedApp = () => {
         <Route path="/promo-admin" element={<PromoAdmin />} />
       <Route path="/create-companion" element={<CompanionSetup />} />
 
+        {/* Chat: authenticated → full Chat, guest → 10-free GuestChatPage */}
+        <Route path="/chat/:companionId" element={<ChatRoute />} />
+
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
-          <Route path="/chat/:companionId" element={<Chat />} />
           <Route path="/games" element={<Games />} />
           <Route path="/create" element={<CreateCompanion />} />
           <Route path="/custom-avatar" element={<CustomAvatar />} />

@@ -132,6 +132,73 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── Talk to them free — Jess & Jessica video cards ──────────────── */}
+      <section className="px-6 pb-16">
+        <div className="text-center mb-6">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-primary mb-3">
+            ✦ Try before you sign up
+          </span>
+          <h2 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight mb-1">
+            Talk to them — free
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            10 messages free. No account, no card — just click and start talking.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+          {[
+            {
+              id: "jess",
+              name: "Jess",
+              tagline: "warm · magnetic · unforgettable",
+              video: "/companion-videos/jess-intro.mp4",
+            },
+            {
+              id: "jessica",
+              name: "Jessica",
+              tagline: "sophisticated · perceptive · golden",
+              video: "/companion-videos/jessica-intro.mp4",
+            },
+          ].map(({ id, name, tagline, video }) => (
+            <Link
+              key={id}
+              to={`/chat/${id}`}
+              className="group relative overflow-hidden rounded-2xl border border-border bg-card hover:border-primary/40 transition-all active:scale-[0.98]"
+            >
+              <div className="relative aspect-[9/16] overflow-hidden">
+                <video
+                  src={video}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+
+                {/* Play badge top-right */}
+                <div className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <div className="w-2.5 h-2.5 border-l-[6px] border-l-white border-y-[4px] border-y-transparent ml-0.5" />
+                </div>
+
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <p className="text-[10px] text-primary font-medium uppercase tracking-wide mb-0.5">{tagline}</p>
+                  <p className="font-heading text-xl font-bold text-white leading-tight">{name}</p>
+                  <div className="mt-2.5 flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold w-fit">
+                    Talk to {name}
+                    <ArrowRight className="w-3 h-3 ml-0.5" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+        <p className="text-center text-xs text-muted-foreground mt-3">
+          10 free messages · no card · no account needed
+        </p>
+      </section>
+
       {/* Companions */}
       <section id="companions-grid" className="px-6 pb-20">
         <div className="text-center mb-8">
