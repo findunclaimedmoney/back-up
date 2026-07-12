@@ -5,7 +5,7 @@ import { getCompanion, getCompanionAsync } from "@/lib/companions";
 import MessageBubble from "@/components/companion/MessageBubble";
 import ChatInput from "@/components/companion/ChatInput";
 import PullToRefresh from "@/components/PullToRefresh";
-import { ArrowLeft, ArrowRight, Video, Lock, Shirt } from "lucide-react";
+import { ArrowLeft, ArrowRight, Video, Lock, Shirt, MoreVertical, Brain, Trash2 } from "lucide-react";
 import LiveAvatarView from "@/components/companion/LiveAvatarView";
 import AnamView from "@/components/companion/AnamView";
 import { decidePhotoAction, generateCompanionPhoto } from "@/lib/companionPhotos";
@@ -123,6 +123,8 @@ const navigate = useNavigate();
   const customId = isCustom ? companionId.replace("custom-", "") : null;
 
   const staticCompanion = getCompanion(companionId);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
   const [customCompanion, setCustomCompanion] = useState(null);
   const [customLoading, setCustomLoading] = useState(isCustom);
   const [entityCompanion, setEntityCompanion] = useState(null);
@@ -648,16 +650,21 @@ Respond as ${companion.name}. Reply with only your message — no prefix, no quo
     <div className="flex flex-col h-screen bg-background text-foreground">
       {/* Header */}
       <header className="flex-shrink-0 border-b border-border bg-background/80 backdrop-blur-md" style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}>
-        <div className="max-w-2xl mx-auto px-4 pb-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-2xl mx-auto px-3 pb-3 flex items-center justify-between gap-2">
+
+          {/* Left — back button + companion info */}
+          <div className="flex items-center gap-2 min-w-0">
             <button
-onClick={goBack}              className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-muted transition-colors select-none"
-              aria-label="Back"
+              onClick={goBack}
+              className="flex items-center gap-1 min-w-[44px] min-h-[44px] px-2 rounded-full hover:bg-muted transition-colors select-none flex-shrink-0"
+              aria-label="Go home"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 flex-shrink-0" />
+              <span className="text-xs font-medium hidden sm:inline">Home</span>
             </button>
-            <div className="flex items-center gap-2.5">
-              <div className="relative">
+
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="relative flex-shrink-0">
                 <img
                   src={companionDisplayImage}
                   alt={companion.name}
@@ -665,45 +672,80 @@ onClick={goBack}              className="w-11 h-11 rounded-full flex items-cente
                 />
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-primary border-2 border-background" />
               </div>
-              <div>
-                <h1 className="font-heading text-base font-semibold leading-none">
+              <div className="min-w-0">
+                <h1 className="font-heading text-base font-semibold leading-none truncate">
                   {companion.name}
                 </h1>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">
                   {thinking ? "typing…" : companion.tagline.toLowerCase()}
                 </p>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+
+          {/* Right — video + overflow menu */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {/* Video — always visible */}
             <button
               onClick={() => setVideoMode(true)}
-              className="flex items-center gap-1.5 min-h-[44px] text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted select-none"
+              className="flex items-center gap-1.5 min-h-[44px] min-w-[44px] px-3 rounded-full hover:bg-muted transition-colors select-none text-muted-foreground hover:text-foreground"
+              aria-label="Face to face video"
             >
-              <Video className="w-3.5 h-3.5" />
-              Face to face
+              <Video className="w-4 h-4" />
+              <span className="text-xs font-medium hidden sm:inline">Video</span>
             </button>
-            <button
-              onClick={() => setShowWardrobe(true)}
-              className="flex items-center gap-1.5 min-h-[44px] text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted select-none"
-            >
-              <Shirt className="w-3.5 h-3.5" />
-              Wardrobe
-            </button>
-            {memories.length > 0 && (
-              <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-muted" title={memories.map(m => `${m.key}: ${m.value}`).join('\n')}>
-                {memories.length} {memories.length === 1 ? "memory" : "memories"}
-              </span>
-            )}
 
-            {hasMessages && (
+            {/* ⋮ overflow menu — wardrobe, memory, clear */}
+            <div className="relative" ref={menuRef}>
               <button
-                onClick={handleClear}
-                className="min-h-[44px] text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-full hover:bg-muted select-none"
+                onClick={() => setShowMenu((v) => !v)}
+                className="w-11 h-11 rounded-full flex items-center justify-center hover:bg-muted transition-colors select-none text-muted-foreground hover:text-foreground"
+                aria-label="More options"
               >
-                Clear
+                <MoreVertical className="w-4 h-4" />
               </button>
-            )}
+
+              {showMenu && (
+                <>
+                  {/* backdrop to close on tap-outside */}
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowMenu(false)}
+                  />
+                  <div className="absolute right-0 top-12 z-50 w-48 rounded-2xl border border-border bg-card shadow-xl overflow-hidden">
+                    <button
+                      onClick={() => { setShowMenu(false); setShowWardrobe(true); }}
+                      className="w-full flex items-center gap-3 px-4 py-3.5 text-sm hover:bg-muted transition-colors text-left"
+                    >
+                      <Shirt className="w-4 h-4 text-muted-foreground" />
+                      Wardrobe
+                    </button>
+                    {memories.length > 0 && (
+                      <button
+                        className="w-full flex items-center gap-3 px-4 py-3.5 text-sm hover:bg-muted transition-colors text-left cursor-default"
+                        title={memories.map(m => `${m.key}: ${m.value}`).join('\n')}
+                        onClick={() => setShowMenu(false)}
+                      >
+                        <Brain className="w-4 h-4 text-muted-foreground" />
+                        {memories.length} {memories.length === 1 ? "memory" : "memories"}
+                      </button>
+                    )}
+                    {hasMessages && (
+                      <>
+                        <div className="h-px bg-border mx-4" />
+                        <button
+                          onClick={() => { setShowMenu(false); handleClear(); }}
+                          className="w-full flex items-center gap-3 px-4 py-3.5 text-sm hover:bg-muted transition-colors text-left text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Clear chat
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </header>
