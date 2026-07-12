@@ -83,7 +83,7 @@ export default function Slide1Hero() {
             margin: 0,
           }}
         >
-          glimr.com.au
+          glimr.com.au/pitchdeck
         </p>
       </div>
     </div>

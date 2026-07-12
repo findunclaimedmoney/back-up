@@ -84,7 +84,7 @@ export default function Slide6Cta() {
             margin: 0,
           }}
         >
-          glimr.com.au
+          glimr.com.au/pitchdeck
         </p>
       </div>
 
