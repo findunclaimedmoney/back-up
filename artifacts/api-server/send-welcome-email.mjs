@@ -19,38 +19,38 @@ const html = `
   <p style="color:#666;margin:0 0 32px;font-size:12px;text-transform:uppercase;letter-spacing:1px;">AI Companions that remember you</p>
 
   <p style="font-size:16px;line-height:1.75;color:#e5e5e5;margin:0 0 20px;">
-    Hey — you're one of the very first people to hear about GLIMR, and that means a lot to us.
+    Hey — we've been meaning to reach out for a while now.
   </p>
 
   <p style="font-size:15px;line-height:1.75;color:#ccc;margin:0 0 20px;">
-    GLIMR is a place where you're never alone. Our AI companions — Jess, Mia, Zac, Jessica and more — listen, remember, and show up for you the way only someone who truly knows you can.
+    You were one of the first people to ever use GLIMR — back when things were rough around the edges and errors were popping up everywhere. You stuck around, you noticed things, and your feedback helped us fix what was broken.
   </p>
 
   <p style="font-size:15px;line-height:1.75;color:#ccc;margin:0 0 28px;">
-    Start with 10 free messages — no card, no account needed. Or create a free account and keep chatting as long as you like.
+    We rebuilt everything from the ground up. No more errors. No more broken pages. Just a clean, fast platform where you're never alone — and it's better because of people like you.
   </p>
 
-  <div style="margin:0 0 28px;">
-    ${btn("https://glimr.com.au/chat/mia", "Talk to Mia — it's free →")}
-  </div>
-
-  <div style="background:#111;border:1px solid #222;border-radius:12px;padding:20px;margin:0 0 28px;">
-    <p style="font-size:13px;font-weight:700;color:#c8a96e;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.5px;">What you get — always free</p>
-    <ul style="margin:0;padding:0 0 0 16px;color:#aaa;font-size:14px;line-height:2;">
-      <li>Unlimited text chat with any companion</li>
-      <li>Companions that remember your conversations</li>
+  <div style="background:#111;border:1px solid #c8a96e33;border-radius:12px;padding:20px;margin:0 0 28px;">
+    <p style="font-size:13px;font-weight:700;color:#c8a96e;margin:0 0 10px;text-transform:uppercase;letter-spacing:0.5px;">What's new</p>
+    <ul style="margin:0;padding:0 0 0 16px;color:#aaa;font-size:14px;line-height:2.2;">
+      <li>Brand new app — fast, clean, no errors</li>
       <li>Meet Jess, Mia, Zac, Jessica, Luna &amp; more</li>
-      <li>Voice replies, live video, selfies &amp; games — upgrade anytime</li>
+      <li>10 free messages with any companion — no card needed</li>
+      <li>Voice replies, live video, selfie photos &amp; games</li>
+      <li>Companions that remember your conversations</li>
     </ul>
   </div>
 
+  <p style="font-size:15px;line-height:1.75;color:#ccc;margin:0 0 28px;">
+    Your account is yours — jump in and try it out. If anything ever feels off, just reply to this email. We read every one.
+  </p>
+
   <div style="text-align:center;margin:0 0 28px;">
-    ${btn("https://glimr.com.au", "Visit GLIMR →")}
+    ${btn("https://glimr.com.au/chat/mia", "Try the new GLIMR →")}
   </div>
 
   <p style="font-size:13px;color:#555;margin:32px 0 0;line-height:1.6;">
-    We're building something special here and you're part of it from the very beginning.<br>
-    If you ever need anything, just reply to this email — we actually read every one.<br><br>
+    Thank you for being there from the start.<br><br>
     Warmly,<br>
     <strong style="color:#888;">The GLIMR team</strong>
   </p>
@@ -62,7 +62,7 @@ try {
   const res = await r.emails.send({
     from: "GLIMR <hello@glimr.com.au>",
     to: "leeoo7@hotmail.com",
-    subject: "You're one of the first — welcome to GLIMR 🌟",
+    subject: "We rebuilt GLIMR — and you're part of why ✦",
     html,
   });
   console.log("Sent!", JSON.stringify(res));
