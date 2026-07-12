@@ -181,6 +181,52 @@ function Overview() {
         <StatCard icon={Crown} label="VIP / Pro" value={(stats.tier_counts?.vip ?? 0) + (stats.tier_counts?.pro ?? 0)} sub="Premium tier" accent="bg-amber-500/10" />
       </div>
 
+      {/* Visit stats */}
+      {stats.visit_stats && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <StatCard icon={BarChart2} label="Total visits" value={stats.visit_stats.total} accent="bg-violet-500/10" />
+          <StatCard icon={TrendingUp} label="Today's visits" value={stats.visit_stats.today} accent="bg-sky-500/10" />
+          <StatCard icon={Sparkles} label="Conversions" value={stats.visit_stats.conversions} sub="Visits → signups" accent="bg-emerald-500/10" />
+          <StatCard icon={Zap} label="Conv. rate" value={`${stats.visit_stats.conv_rate}%`} sub="Visits that signed up" accent="bg-amber-500/10" />
+        </div>
+      )}
+
+      {/* Source + page breakdown */}
+      {stats.visit_stats && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <h2 className="font-heading text-sm font-semibold mb-3">Traffic by Source</h2>
+            <div className="space-y-2">
+              {Object.entries(stats.visit_stats.by_source ?? {}).sort((a,b) => b[1]-a[1]).map(([src, count]) => (
+                <div key={src} className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground w-20 capitalize">{src}</span>
+                  <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full rounded-full bg-primary" style={{ width: `${Math.round((count / stats.visit_stats.total) * 100)}%` }} />
+                  </div>
+                  <span className="text-xs font-medium w-8 text-right">{count}</span>
+                </div>
+              ))}
+              {Object.keys(stats.visit_stats.by_source ?? {}).length === 0 && <p className="text-xs text-muted-foreground">No visits recorded yet</p>}
+            </div>
+          </div>
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <h2 className="font-heading text-sm font-semibold mb-3">Traffic by Page</h2>
+            <div className="space-y-2">
+              {Object.entries(stats.visit_stats.by_page ?? {}).sort((a,b) => b[1]-a[1]).map(([page, count]) => (
+                <div key={page} className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground w-20 capitalize">{page}</span>
+                  <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full rounded-full bg-violet-500" style={{ width: `${Math.round((count / stats.visit_stats.total) * 100)}%` }} />
+                  </div>
+                  <span className="text-xs font-medium w-8 text-right">{count}</span>
+                </div>
+              ))}
+              {Object.keys(stats.visit_stats.by_page ?? {}).length === 0 && <p className="text-xs text-muted-foreground">No visits recorded yet</p>}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Growth */}

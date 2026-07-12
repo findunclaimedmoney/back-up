@@ -835,11 +835,43 @@ router.post("/:name", async (req, res) => {
 
       // ── Marketing (no-op) ─────────────────────────────────────────────────
 
-      case "convertVisit":
+      case "trackVisit": {
+        const { companion_id, source, ref_code, utm_campaign, visitor_key } = params as Record<string, string>;
+        const [visit] = await db.insert(entitiesTable).values({
+          model: "Visit",
+          userId: userId as any ?? null,
+          data: {
+            companion_id:  companion_id ?? "home",
+            source:        source        ?? "direct",
+            ref_code:      ref_code      ?? null,
+            utm_campaign:  utm_campaign  ?? null,
+            visitor_key:   visitor_key   ?? null,
+            converted:     false,
+            visited_at:    new Date().toISOString(),
+          },
+        }).returning({ id: entitiesTable.id });
+        return res.json({ data: { visit_id: visit.id, success: true } });
+      }
+
+      case "convertVisit": {
+        const { visit_id } = params as { visit_id: string };
+        if (visit_id) {
+          const [existing] = await db.select().from(entitiesTable)
+            .where(and(eq(entitiesTable.id, visit_id as any), eq(entitiesTable.model, "Visit")))
+            .limit(1);
+          if (existing) {
+            await db.update(entitiesTable).set({
+              data: { ...(existing.data as object), converted: true, converted_at: new Date().toISOString(), converted_user_id: userId },
+              updatedDate: new Date(),
+            }).where(eq(entitiesTable.id, visit_id as any));
+          }
+        }
+        return res.json({ data: { success: true } });
+      }
+
       case "grantFacebookBonus":
       case "trackMessageUsage":
       case "marketingAction":
-      case "trackVisit":
       case "requestCustomVideo":
         return res.json({ data: { success: true } });
 
@@ -901,12 +933,40 @@ router.post("/:name", async (req, res) => {
           });
         }
 
+        // Visit stats
+        const visits = await db.select({ data: entitiesTable.data, createdDate: entitiesTable.createdDate })
+          .from(entitiesTable).where(eq(entitiesTable.model, "Visit"));
+
+        const totalVisits    = visits.length;
+        const todayVisits    = visits.filter(v => v.createdDate >= today).length;
+        const conversions    = visits.filter(v => (v.data as any)?.converted).length;
+        const convRate       = totalVisits > 0 ? Math.round((conversions / totalVisits) * 100) : 0;
+        const sourceBreakdown: Record<string, number> = {};
+        const pageBreakdown:   Record<string, number> = {};
+        for (const v of visits) {
+          const d = v.data as any;
+          const src  = d.source       ?? "direct";
+          const page = d.companion_id ?? "home";
+          sourceBreakdown[src]  = (sourceBreakdown[src]  ?? 0) + 1;
+          pageBreakdown[page]   = (pageBreakdown[page]   ?? 0) + 1;
+        }
+
+        // Attach today visits to growth
+        for (const g of growth) {
+          const dayVisits = visits.filter(v => {
+            const vDate = new Date(v.createdDate);
+            return vDate.toLocaleDateString("en-AU", { day: "numeric", month: "short" }) === g.date;
+          });
+          (g as any).visits = dayVisits.length;
+        }
+
         return res.json({ data: {
           totals: { total_users: allUsers.length, paid_users: paidUsers, free_users: tierCounts.free ?? 0 },
           today_signups: todaySignups,
           tier_counts: tierCounts,
           credits_by_tier: creditsByTier,
           growth,
+          visit_stats: { total: totalVisits, today: todayVisits, conversions, conv_rate: convRate, by_source: sourceBreakdown, by_page: pageBreakdown },
         }});
       }
 
