@@ -1,14 +1,21 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Check, X, Loader2, ExternalLink, Video } from "lucide-react";
+import { ArrowLeft, Check, X, Loader2, ExternalLink, Video, MessageCircle, Pencil, Trash2, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function CampaignReview() {
   const { toast } = useToast();
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [publishingId, setPublishingId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editData, setEditData] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [uploadingType, setUploadingType] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const loadCampaigns = useCallback(async () => {
     try {
@@ -81,6 +88,70 @@ export default function CampaignReview() {
     }
   };
 
+  const handleEdit = (camp) => {
+    setEditingId(camp.id);
+    setEditData({ caption: camp.caption || "", image_url: camp.image_url || "", video_url: camp.video_url || "" });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditData(null);
+  };
+
+  const handleSaveEdit = async (camp) => {
+    setSavingEdit(true);
+    try {
+      await base44.entities.MarketingCampaign.update(camp.id, {
+        caption: editData.caption,
+        image_url: editData.image_url || null,
+        video_url: editData.video_url || null,
+      });
+      setCampaigns((prev) =>
+        prev.map((c) =>
+          c.id === camp.id
+            ? { ...c, caption: editData.caption, image_url: editData.image_url, video_url: editData.video_url }
+            : c
+        )
+      );
+      setEditingId(null);
+      setEditData(null);
+      toast({ title: "Saved", description: "Campaign updated." });
+    } catch (err) {
+      toast({ variant: "destructive", title: "Save failed", description: err.message });
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const handleDelete = async (camp) => {
+    setDeletingId(camp.id);
+    try {
+      await base44.entities.MarketingCampaign.delete(camp.id);
+      setCampaigns((prev) => prev.filter((c) => c.id !== camp.id));
+      toast({ title: "Deleted", description: "Campaign removed." });
+    } catch (err) {
+      toast({ variant: "destructive", title: "Delete failed", description: err.message });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleUpload = async (file, type) => {
+    if (!file) return;
+    setUploadingType(type);
+    try {
+      const res = await base44.integrations.Core.UploadFile({ file });
+      if (res.data?.file_url) {
+        setEditData((prev) => ({ ...prev, [type]: res.data.file_url }));
+        toast({ title: "Uploaded", description: `${type === "image_url" ? "Image" : "Video"} ready.` });
+      }
+    } catch (err) {
+      toast({ variant: "destructive", title: "Upload failed", description: err.message });
+    } finally {
+      setUploadingType(null);
+    }
+  };
+
   const statusBadge = (status) => {
     const styles = {
       draft: "bg-amber-500/10 text-amber-500",
@@ -113,6 +184,13 @@ export default function CampaignReview() {
             Mia's daily Facebook campaigns — review, approve & publish.
           </p>
         </div>
+        <Link
+          to="/mia-marketing"
+          className="ml-auto inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          <MessageCircle className="w-4 h-4" />
+          Talk to Mia
+        </Link>
       </header>
 
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-4">
@@ -147,32 +225,132 @@ export default function CampaignReview() {
                   </div>
                 </div>
 
-                {camp.video_url ? (
-                  <div className="rounded-xl overflow-hidden bg-black/50 mb-3 max-h-[400px] flex items-center">
-                    <video
-                      src={camp.video_url}
-                      controls
-                      className="w-full max-h-[400px] object-contain"
-                    />
+                {editingId === camp.id ? (
+                  <div className="space-y-3 mb-3">
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Caption</label>
+                      <Textarea
+                        value={editData.caption}
+                        onChange={(e) => setEditData((p) => ({ ...p, caption: e.target.value }))}
+                        className="min-h-[120px] text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Image</label>
+                      {editData.image_url && (
+                        <img src={editData.image_url} alt="Preview" className="w-full max-h-[200px] object-cover rounded-xl mb-2" />
+                      )}
+                      <div className="flex gap-2">
+                        <Input
+                          value={editData.image_url}
+                          onChange={(e) => setEditData((p) => ({ ...p, image_url: e.target.value }))}
+                          placeholder="Image URL"
+                          className="h-10 text-sm"
+                        />
+                        <label className="min-h-[40px] px-4 rounded-full border border-border text-sm font-medium hover:bg-muted transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                          {uploadingType === "image_url" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                          Upload
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleUpload(e.target.files[0], "image_url")}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Video</label>
+                      {editData.video_url && (
+                        <video src={editData.video_url} controls className="w-full max-h-[200px] object-contain rounded-xl mb-2" />
+                      )}
+                      <div className="flex gap-2">
+                        <Input
+                          value={editData.video_url}
+                          onChange={(e) => setEditData((p) => ({ ...p, video_url: e.target.value }))}
+                          placeholder="Video URL"
+                          className="h-10 text-sm"
+                        />
+                        <label className="min-h-[40px] px-4 rounded-full border border-border text-sm font-medium hover:bg-muted transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                          {uploadingType === "video_url" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                          Upload
+                          <input
+                            type="file"
+                            accept="video/*"
+                            className="hidden"
+                            onChange={(e) => handleUpload(e.target.files[0], "video_url")}
+                          />
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                ) : camp.image_url ? (
-                  <div className="rounded-xl overflow-hidden bg-black/50 mb-3">
-                    <img
-                      src={camp.image_url}
-                      alt={camp.companion_name || "Campaign"}
-                      className="w-full max-h-[400px] object-cover object-top"
-                    />
-                  </div>
-                ) : null}
+                ) : (
+                  <>
+                    {camp.video_url ? (
+                      <div className="rounded-xl overflow-hidden bg-black/50 mb-3 max-h-[400px] flex items-center">
+                        <video
+                          src={camp.video_url}
+                          controls
+                          className="w-full max-h-[400px] object-contain"
+                        />
+                      </div>
+                    ) : camp.image_url ? (
+                      <div className="rounded-xl overflow-hidden bg-black/50 mb-3">
+                        <img
+                          src={camp.image_url}
+                          alt={camp.companion_name || "Campaign"}
+                          className="w-full max-h-[400px] object-cover object-top"
+                        />
+                      </div>
+                    ) : null}
 
-                <div className="rounded-xl bg-muted/50 p-4">
-                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-                    {camp.caption}
-                  </p>
-                </div>
+                    <div className="rounded-xl bg-muted/50 p-4">
+                      <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                        {camp.caption}
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
 
-              {camp.status === "draft" && (
+              {camp.status === "draft" && editingId === camp.id && (
+                <div className="flex gap-2 px-5 pb-5">
+                  <button
+                    onClick={() => handleSaveEdit(camp)}
+                    disabled={savingEdit}
+                    className="flex-1 min-h-[44px] rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {savingEdit ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving…
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Save changes
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={handleCancelEdit}
+                    className="min-h-[44px] px-6 rounded-full border border-border text-sm font-medium hover:bg-muted transition-colors flex items-center justify-center gap-2"
+                  >
+                    <X className="w-4 h-4" />
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleDelete(camp)}
+                    disabled={deletingId === camp.id}
+                    className="min-h-[44px] px-6 rounded-full border border-destructive/30 text-destructive text-sm font-medium hover:bg-destructive/10 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {deletingId === camp.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    Delete
+                  </button>
+                </div>
+              )}
+
+              {camp.status === "draft" && editingId !== camp.id && (
                 <div className="flex gap-2 px-5 pb-5">
                   <button
                     onClick={() => handlePublish(camp)}
@@ -190,6 +368,13 @@ export default function CampaignReview() {
                         Publish to Facebook + Instagram
                       </>
                     )}
+                  </button>
+                  <button
+                    onClick={() => handleEdit(camp)}
+                    className="min-h-[44px] px-6 rounded-full border border-border text-sm font-medium hover:bg-muted transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Pencil className="w-4 h-4" />
+                    Edit
                   </button>
                   <button
                     onClick={() => handleReject(camp)}
