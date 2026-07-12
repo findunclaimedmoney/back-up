@@ -3,6 +3,52 @@ import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { db, usersTable, otpTokensTable } from "@workspace/db";
 import { eq, and, gt } from "drizzle-orm";
+import { Resend } from "resend";
+
+const resend = process.env["RESEND_API_KEY"] ? new Resend(process.env["RESEND_API_KEY"]) : null;
+const FROM = "GLIMR <hello@glimr.com.au>";
+const APP_URL = process.env["REPLIT_DEV_DOMAIN"]
+  ? `https://${process.env["REPLIT_DEV_DOMAIN"]}`
+  : process.env["APP_URL"] ?? "https://glimr.com.au";
+
+async function sendOtpEmail(email: string, code: string): Promise<void> {
+  if (!resend) { console.warn("[auth] RESEND_API_KEY not set — OTP not emailed:", code); return; }
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Your GLIMR verification code",
+    html: `
+      <div style="font-family:-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:40px 24px;background:#0a0a0a;color:#fff;border-radius:12px;">
+        <h1 style="font-size:28px;font-weight:700;margin:0 0 8px;">GLIMR</h1>
+        <p style="color:#999;margin:0 0 32px;font-size:14px;">Your companion is waiting.</p>
+        <p style="font-size:16px;margin:0 0 24px;">Here's your verification code:</p>
+        <div style="background:#1a1a1a;border-radius:8px;padding:24px;text-align:center;margin:0 0 24px;">
+          <span style="font-size:40px;font-weight:700;letter-spacing:12px;color:#fff;">${code}</span>
+        </div>
+        <p style="color:#666;font-size:13px;margin:0;">This code expires in 15 minutes. If you didn't request this, you can safely ignore it.</p>
+      </div>
+    `,
+  });
+}
+
+async function sendPasswordResetEmail(email: string, token: string): Promise<void> {
+  if (!resend) { console.warn("[auth] RESEND_API_KEY not set — reset link not emailed:", token); return; }
+  const resetUrl = `${APP_URL}/reset-password?token=${token}`;
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "Reset your GLIMR password",
+    html: `
+      <div style="font-family:-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:40px 24px;background:#0a0a0a;color:#fff;border-radius:12px;">
+        <h1 style="font-size:28px;font-weight:700;margin:0 0 8px;">GLIMR</h1>
+        <p style="color:#999;margin:0 0 32px;font-size:14px;">Password reset request</p>
+        <p style="font-size:16px;margin:0 0 24px;">Click the button below to reset your password. This link expires in 1 hour.</p>
+        <a href="${resetUrl}" style="display:inline-block;background:#fff;color:#000;font-weight:600;font-size:15px;padding:14px 28px;border-radius:8px;text-decoration:none;margin:0 0 24px;">Reset Password</a>
+        <p style="color:#666;font-size:13px;margin:0;">If you didn't request this, you can safely ignore it. Your password won't change.</p>
+      </div>
+    `,
+  });
+}
 
 const router = Router();
 
@@ -63,7 +109,8 @@ router.post("/register", async (req, res) => {
     const hash = await bcrypt.hash(String(password), 12);
     const [user] = await db.insert(usersTable).values({ email: String(email).toLowerCase(), passwordHash: hash, emailVerified: false }).returning({ id: usersTable.id, email: usersTable.email });
     const code = await _generateOtp(String(email).toLowerCase(), "registration");
-    req.log.info({ email }, "Registration OTP generated — wire up email delivery to send the code");
+    await sendOtpEmail(String(email).toLowerCase(), code);
+    req.log.info({ email }, "Registration OTP sent via Resend");
     return res.json({ message: "Check your email for a verification code.", email: user.email });
   } catch (err) {
     req.log.error({ err }, "auth/register error");
@@ -104,7 +151,8 @@ router.post("/resend-otp", async (req, res) => {
   if (!email) return res.status(400).json({ error: "Email required" });
   try {
     const code = await _generateOtp(String(email).toLowerCase(), "registration");
-    req.log.info({ email }, "OTP resent — wire up email delivery to send the code");
+    await sendOtpEmail(String(email).toLowerCase(), code);
+    req.log.info({ email }, "OTP resent via Resend");
     return res.json({ success: true });
   } catch (err) {
     req.log.error({ err }, "auth/resend-otp error");
@@ -148,8 +196,8 @@ router.post("/forgot-password", async (req, res) => {
   if (email) {
     try {
       const token = await _generateResetToken(String(email).toLowerCase());
-      // In production, send email with link: /reset-password?token=TOKEN
-      req.log.info({ email }, "Password reset token generated — wire up email delivery to send the link");
+      await sendPasswordResetEmail(String(email).toLowerCase(), token);
+      req.log.info({ email }, "Password reset email sent via Resend");
     } catch (err) {
       req.log.error({ err }, "forgot-password token error");
     }
