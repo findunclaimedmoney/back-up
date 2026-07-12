@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 const COMPANIONS = [
   { name: 'Jess', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png' },
-  { name: 'Mia', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/352fbed0f_EmeraldElegance.png' },
+  { name: 'Mia', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/19ce39eea_Womaninsilkrobe.png' },
   { name: 'Luna', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/1a1420690_image-1782886782778.png' },
   { name: 'Sophie', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/ba7d734da_ElegantHallwayPose.png' },
   { name: 'Zac', image: 'https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/45da0b4c5_zac.png' },
