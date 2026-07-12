@@ -261,7 +261,7 @@ export default function Pricing() {
           </section>
 
           <section className="px-6 pb-24">
-            <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4">
+            <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-4">
               {TIERS.map((tier) => (
                 <TierCard
                   key={tier.id}
@@ -272,9 +272,12 @@ export default function Pricing() {
                 />
               ))}
             </div>
+            <p className="text-center text-xs text-muted-foreground mt-6">
+              All prices in AUD · Start free — upgrade anytime · Cancel anytime
+            </p>
           </section>
 
-          {sessionsCompleted >= 2 && currentTier !== "pro" && (
+          {sessionsCompleted >= 2 && !["pro", "vip"].includes(currentTier) && (
             <section className="px-6 pb-2">
               <div className="max-w-3xl mx-auto rounded-[2rem] border border-primary/40 bg-gradient-to-br from-primary/15 to-primary/5 p-6 flex flex-col sm:flex-row items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center flex-shrink-0">

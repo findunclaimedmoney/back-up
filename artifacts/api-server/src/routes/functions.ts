@@ -9,8 +9,10 @@ router.use(requireAuth);
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TIER_PRICES: Record<string, { name: string; amountCents: number; credits: number }> = {
-  plus: { name: "GLIMR Plus",  amountCents: 5900, credits: 12 },
-  pro:  { name: "GLIMR Pro",   amountCents: 9900, credits: 20 },
+  starter: { name: "GLIMR Starter", amountCents:  2900, credits:  5 },
+  plus:    { name: "GLIMR Plus",    amountCents:  4900, credits: 10 },
+  pro:     { name: "GLIMR Pro",     amountCents:  9900, credits: 20 },
+  vip:     { name: "GLIMR VIP",     amountCents: 19900, credits: 50 },
 };
 
 const TOPUP_PRICES: Record<string, { name: string; amountCents: number; credits: number }> = {
@@ -90,7 +92,7 @@ router.post("/:name", async (req, res) => {
       case "getSubscription": {
         const sub = await getSubEntity(userId);
         const d: Record<string, any> = (sub?.data as any) ?? {};
-        const isPro = (d.tier ?? "free") === "pro";
+        const isPro = ["pro", "vip"].includes(d.tier ?? "free");
         return res.json({
           data: {
             tier:                        d.tier                   ?? "free",
@@ -294,11 +296,11 @@ router.post("/:name", async (req, res) => {
         const sub = await getSubEntity(userId);
         const subData = (sub?.data ?? {}) as any;
 
-        if ((subData.tier ?? "free") !== "pro") {
+        if (!["pro", "vip"].includes(subData.tier ?? "free")) {
           return res.json({
             data: {
               upgrade_required: true,
-              message: "Face-to-face sessions are included in the GLIMR Pro plan ($99/mo). Upgrade to unlock your custom live avatar.",
+              message: "Face-to-face sessions are included in the GLIMR Pro plan ($99/mo) and above. Upgrade to unlock your custom live avatar.",
             },
           });
         }
