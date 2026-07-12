@@ -52,6 +52,7 @@ const About = React.lazy(() => import('./pages/About'));
 const Contact = React.lazy(() => import('./pages/Contact'));
 const HumanSession = React.lazy(() => import('./pages/HumanSession'));
 const CreatePersona = React.lazy(() => import('./pages/CreatePersona'));
+const CustomAvatar = React.lazy(() => import('./pages/CustomAvatar'));
 import ProtectedRoute from '@/components/ProtectedRoute';
 import MobileShell from '@/components/MobileShell';
 
@@ -140,6 +141,7 @@ const AuthenticatedApp = () => {
           <Route path="/chat/:companionId" element={<Chat />} />
           <Route path="/games" element={<Games />} />
           <Route path="/create" element={<CreateCompanion />} />
+          <Route path="/custom-avatar" element={<CustomAvatar />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

@@ -404,6 +404,21 @@ export default function UserDashboard() {
               </button>
             </div>
 
+            {/* Custom avatar banner */}
+            <Link
+              to="/custom-avatar"
+              className="flex items-center gap-4 p-4 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/8 to-card mb-6 group hover:border-primary/40 transition-all"
+            >
+              <div className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold leading-tight">Create your own companion</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Upload your image &amp; pick a voice — from A$99/mo</p>
+              </div>
+              <ArrowRight className="w-4 h-4 text-primary shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+
             {/* Companions grid */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">

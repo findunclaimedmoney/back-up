@@ -610,6 +610,42 @@ router.post("/:name", async (req, res) => {
       case "exportCompanionToSheet":
         return res.json({ data: { url: null, message: "Google Sheets export not configured." } });
 
+      // ── Custom avatar request ─────────────────────────────────────────────
+      case "storeCustomAvatarRequest": {
+        const { imageUrl, voiceId, voiceName, audioUrl, tier } = params as Record<string, string>;
+        await db.insert(entitiesTable).values({
+          model: "CustomAvatarRequest",
+          userId: userId ?? undefined,
+          data: {
+            imageUrl:  imageUrl  ?? null,
+            voiceId:   voiceId   ?? null,
+            voiceName: voiceName ?? null,
+            audioUrl:  audioUrl  ?? null,
+            tier:      tier      ?? "pro",
+            status:    "pending_payment",
+            submittedAt: new Date().toISOString(),
+          },
+        } as any);
+
+        // Notify admin
+        const resend = getResend();
+        if (resend) {
+          const adminEmails = await getAdminEmails();
+          await resend.emails.send({
+            from: RESEND_FROM,
+            to: adminEmails,
+            subject: `New custom avatar request — ${tier?.toUpperCase() ?? "PRO"}`,
+            html: `<p>A user has submitted a custom avatar request.</p>
+                   <p><strong>Plan:</strong> ${tier}</p>
+                   <p><strong>Voice:</strong> ${voiceName ?? voiceId ?? "Custom audio upload"}</p>
+                   ${imageUrl ? `<p><strong>Image:</strong> <a href="${imageUrl}">${imageUrl}</a></p>` : ""}
+                   ${audioUrl ? `<p><strong>Audio:</strong> <a href="${audioUrl}">${audioUrl}</a></p>` : ""}`,
+          }).catch(() => {/* non-fatal */});
+        }
+
+        return res.json({ data: { success: true } });
+      }
+
       // ── Crypto — Kraken manual deposit ────────────────────────────────────
 
       case "createCryptoCheckout": {
