@@ -41,9 +41,8 @@ router.post("/:name", async (req, res, next) => {
   switch (name) {
     case "trackVisit": {
       const { companion_id, source, ref_code, utm_campaign, visitor_key } = params as Record<string, string>;
-      const [visit] = await db.insert(entitiesTable).values({
+      const visitRow: Record<string, unknown> = {
         model: "Visit",
-        userId: userId as any ?? null,
         data: {
           companion_id:  companion_id ?? "home",
           source:        source        ?? "direct",
@@ -53,7 +52,9 @@ router.post("/:name", async (req, res, next) => {
           converted:     false,
           visited_at:    new Date().toISOString(),
         },
-      }).returning({ id: entitiesTable.id });
+      };
+      if (userId) visitRow.userId = userId;
+      const [visit] = await db.insert(entitiesTable).values(visitRow as any).returning({ id: entitiesTable.id });
       return res.json({ data: { visit_id: visit.id, success: true } });
     }
     case "convertVisit": {
