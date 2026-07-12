@@ -271,14 +271,37 @@ router.post("/:name", async (req, res) => {
       case "grantVoiceBonus":
         return res.json({ data: { success: true } });
 
-      // ── Live avatar / HeyGen ─────────────────────────────────────────────
+      // ── Live avatar (LiveAvatar.com iframe embed) ─────────────────────────
 
       case "anamSession":
       case "liveavatarEmbed":
-      case "createLiveAvatar":
-        // These are now handled by /api/heygen/* proxy routes.
-        // Return a signal to the frontend to use the new WebRTC flow.
-        return res.json({ data: { useWebRTC: true, message: "Use /api/heygen/* for live avatar" } });
+      case "createLiveAvatar": {
+        // Map companion IDs → LiveAvatar avatar IDs via env vars
+        const liveAvatarMap: Record<string, string | undefined> = {
+          jess:    process.env["JESS_LIVE_AVATAR_ID"],
+          jessica: process.env["JESS_LIVE_AVATAR_ID"],
+        };
+
+        const companionId = (
+          (params.companion_id ?? params.avatarId ?? params.avatar_id ?? "") as string
+        ).toLowerCase();
+
+        const avatarId = liveAvatarMap[companionId];
+
+        if (!avatarId) {
+          return res.json({
+            data: { url: null, message: "No live avatar configured for this companion yet." },
+          });
+        }
+
+        const apiKey = process.env["LIVE_AVATAR_KEY"];
+        const url =
+          `https://embed.liveavatar.com/v1/${avatarId}` +
+          `?orientation=horizontal` +
+          (apiKey ? `&key=${encodeURIComponent(apiKey)}` : "");
+
+        return res.json({ data: { url } });
+      }
 
       // ── Companion setup ───────────────────────────────────────────────────
 
