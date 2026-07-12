@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send, Camera, X } from "lucide-react";
+import VoiceRecorderButton from "@/components/VoiceRecorderButton";
 
 export default function ChatInput({ onSend, disabled, messagesRemaining }) {
   const [text, setText] = useState("");
@@ -7,6 +8,14 @@ export default function ChatInput({ onSend, disabled, messagesRemaining }) {
   const [photoPreview, setPhotoPreview] = useState(null);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  const handleVoiceTranscribed = (transcribedText) => {
+    setText((prev) => {
+      const combined = prev ? `${prev} ${transcribedText}` : transcribedText;
+      return combined;
+    });
+    setTimeout(() => textareaRef.current?.focus(), 0);
+  };
 
   const handleSend = () => {
     const trimmed = text.trim();
