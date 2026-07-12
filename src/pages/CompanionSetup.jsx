@@ -12,6 +12,7 @@ import VoicePicker from "@/components/companion/VoicePicker";
 import AvatarUploader from "@/components/companion/AvatarUploader";
 import VideoUploader from "@/components/companion/VideoUploader";
 import PublishChecklist from "@/components/companion/PublishChecklist";
+import { getCompanionChecklist } from "@/lib/companions";
 
 const slugify = (name) => name.toLowerCase().trim().replace(/[^a-z0-9]/g, "");
 
@@ -176,15 +177,7 @@ export default function CompanionSetup() {
     );
   }
 
-  const checklist = [
-    { label: "High-quality image (1920×1080+)", passed: !!data.image_url, detail: data.image_url ? "Uploaded" : "Not uploaded" },
-    { label: "Personality brain generated", passed: !!data.brain, detail: data.brain ? "Ready" : "Not generated" },
-    { label: "Voice selected", passed: !!data.voice_id, detail: data.voice_name || "Not selected" },
-    { label: "15-second hero video", passed: !!data.video_url, detail: data.video_url ? "Uploaded" : "Not uploaded" },
-    { label: "Face-to-face avatar (LiveAvatar ID)", passed: !!data.avatar_id, detail: data.avatar_id ? "Set" : "Missing — video will use fallback face" },
-    { label: "Landing page ready", passed: !!(data.name && data.tagline && data.bio && data.image_url), detail: "Auto-generated on publish" },
-    { label: "Stripe payment connected", passed: !!data.stripe_price_id, detail: data.stripe_price_id ? "Connected" : "Not connected" },
-  ];
+  const checklist = getCompanionChecklist(data);
   const allChecksPassed = checklist.every((c) => c.passed);
   const canSave = allChecksPassed;
 

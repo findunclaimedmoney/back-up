@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { COMPANIONS } from "@/lib/companions";
+import { COMPANIONS, isCompanionReady } from "@/lib/companions";
 import { captureReferralCode } from "@/lib/companionStructure";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
 import { TIERS } from "@/lib/creditSystem";
@@ -135,7 +135,7 @@ export default function Landing() {
           </p>
         </div>
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-4">
-          {COMPANIONS.map((c) => (
+          {COMPANIONS.filter(isCompanionReady).map((c) => (
             <Link
               key={c.id}
               to="/register"

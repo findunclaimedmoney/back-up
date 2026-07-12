@@ -129,6 +129,8 @@ export const COMPANIONS = [
     voice_id: "JBFqnCBsd6RMkjVDRZzb",
     voice_name: "George - Warm, Captivating Storyteller",
     voice_locked: true,
+    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/b2dbe0bae_Leo_Hero_Video.mp4",
+    stripe_price_id: "price_1TsDcyEHzw6rVQI2BeSznHR2",
   },
   {
     id: "marcus",
@@ -145,6 +147,8 @@ export const COMPANIONS = [
     voice_id: "IKne3meq5aSn9XLyUdCD",
     voice_name: "Charlie - Deep, Confident, Energetic",
     voice_locked: true,
+    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/1d1d0c747_Marcus_Hero_Video.mp4",
+    stripe_price_id: "price_1TsDczEHzw6rVQI2MVK7wtMV",
   },
   {
     id: "natalie",
@@ -193,10 +197,41 @@ export const COMPANIONS = [
     voice_id: "FGY2WhTYpPnrIDTdsKH5",
     voice_name: "Laura - Enthusiast, Quirky Attitude",
     voice_locked: true,
+    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/18ff6aace_Jessica_Hero_Video.mp4",
   },
 ];
 
 export const getCompanion = (id) => COMPANIONS.find((c) => c.id === id);
+
+// ─── PRODUCTION READINESS CHECKLIST ─────────────────────────────────
+// Single source of truth — used by CompanionSetup (publish gate) AND
+// the Landing page (visibility gate). A companion CANNOT appear on the
+// home page or be published unless ALL items pass. Do NOT loosen this.
+export function getCompanionChecklist(c) {
+  const image = c.image || c.image_url;
+  const personality = c.personality || c.brain;
+  const voiceId = c.voice_id;
+  const videoUrl = c.video_url;
+  const avatarId = c.avatar_id;
+  const name = c.name;
+  const tagline = c.tagline;
+  const bio = c.bio || c.description;
+  const stripePriceId = c.stripe_price_id;
+
+  return [
+    { label: "High-quality image (1920×1080+)", passed: !!image, detail: image ? "Uploaded" : "Not uploaded" },
+    { label: "Personality brain generated", passed: !!personality, detail: personality ? "Ready" : "Not generated" },
+    { label: "Voice selected", passed: !!voiceId, detail: c.voice_name || "Not selected" },
+    { label: "15-second hero video", passed: !!videoUrl, detail: videoUrl ? "Uploaded" : "Not uploaded" },
+    { label: "Face-to-face avatar (LiveAvatar ID)", passed: !!avatarId, detail: avatarId ? "Set" : "Missing" },
+    { label: "Landing page ready", passed: !!(name && tagline && bio && image), detail: name ? "Auto-generated on publish" : "Not set" },
+    { label: "Stripe payment connected", passed: !!stripePriceId, detail: stripePriceId ? "Connected" : "Not connected" },
+  ];
+}
+
+export function isCompanionReady(c) {
+  return getCompanionChecklist(c).every((item) => item.passed);
+}
 
 export async function getCompanionAsync(id) {
   const staticCompanion = getCompanion(id);
