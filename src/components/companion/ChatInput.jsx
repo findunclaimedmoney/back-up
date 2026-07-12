@@ -89,6 +89,7 @@ export default function ChatInput({ onSend, disabled, messagesRemaining }) {
           >
             <Camera className="w-4 h-4" />
           </button>
+          <VoiceRecorderButton onTranscribed={handleVoiceTranscribed} disabled={disabled} />
           <textarea
             ref={textareaRef}
             value={text}
