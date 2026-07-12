@@ -21,6 +21,7 @@ const EMPTY = {
   image_url: "", voice_id: "", voice_name: "",
   avatar_id: "", avatar_status: "pending",
   video_url: "", stripe_price_id: "", price_usd: 9.99,
+  voice_locked: false,
 };
 
 export default function CompanionSetup() {
@@ -66,6 +67,7 @@ export default function CompanionSetup() {
         voice_name: data.voice_name,
         avatar_id: data.avatar_id,
         avatar_status: data.avatar_status,
+        voice_locked: data.voice_locked,
         status: "active",
       });
       setSaved(true);
@@ -258,6 +260,7 @@ export default function CompanionSetup() {
           <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Voice</h2>
           <VoicePicker
             voiceId={data.voice_id}
+            voiceLocked={data.voice_locked}
             companionName={data.name}
             onChange={update}
           />

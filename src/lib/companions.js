@@ -28,6 +28,7 @@ export const COMPANIONS = [
     avatar_id: "3559b3f9-29e3-48eb-a4ff-7a7dc5b47ca9",
     voice_id: "ThT5KcBeYPX3keUQqHPh",
     voice_name: "Dorothy - Pleasant, young, British female",
+    voice_locked: true,
   },
   {
     // ⚠️ LOCKED — Do NOT change this image. Mia is the face of customer service
@@ -46,6 +47,7 @@ export const COMPANIONS = [
     avatar_id: null,
     voice_id: "Xb7hH8MSUJpSbSDYk0k2",
     voice_name: "Alice - Confident, British female",
+    voice_locked: true,
     locked: true,
   },
   {
@@ -62,6 +64,7 @@ export const COMPANIONS = [
     avatar_id: null,
     voice_id: "pFZP5JQG7iQjIQuC4Bku",
     voice_name: "Lily - Raspy, calm, British female",
+    voice_locked: true,
   },
   {
     id: "sophie",
@@ -77,6 +80,7 @@ export const COMPANIONS = [
     avatar_id: null,
     voice_id: "XB0fDUnXU5powFXDhCwa",
     voice_name: "Charlotte - Warm, English-Swedish female",
+    voice_locked: true,
   },
   {
     id: "zac",
@@ -92,6 +96,7 @@ export const COMPANIONS = [
     avatar_id: null,
     voice_id: "onwK4e9ZLuTAKqWW03F9",
     voice_name: "Daniel - Deep, British, middle-aged male",
+    voice_locked: true,
   },
   {
     id: "zac2",
@@ -205,6 +210,7 @@ export async function getCompanionAsync(id) {
         accent: c.accent || "from-amber-500/20 to-rose-500/10",
         personality: c.personality,
         voice_id: c.voice_id || null,
+        voice_locked: c.voice_locked || false,
         avatar_id: c.avatar_id || null,
       };
     }

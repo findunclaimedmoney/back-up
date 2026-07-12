@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Mic, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
-export default function VoicePicker({ voiceId, companionName, onChange }) {
+export default function VoicePicker({ voiceId, voiceLocked, companionName, onChange }) {
   const { toast } = useToast();
   const [voices, setVoices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +33,15 @@ export default function VoicePicker({ voiceId, companionName, onChange }) {
 
   if (loading) {
     return <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>;
+  }
+
+  if (voiceLocked) {
+    return (
+      <div className="flex items-center gap-2 p-3 rounded-xl border border-primary/30 bg-primary/5">
+        <Mic className="w-4 h-4 text-primary" />
+        <p className="text-sm font-medium">Voice locked — custom voice assigned</p>
+      </div>
+    );
   }
 
   return (
