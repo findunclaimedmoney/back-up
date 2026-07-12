@@ -18,7 +18,7 @@ export default function Contact() {
     setSending(true);
     try {
       await base44.integrations.Core.SendEmail({
-        to: "support@glimr.app",
+        to: "support@glimr.com.au",
         subject: `Contact form: ${name}`,
         body: `From: ${name} (${email})\n\n${message}`,
       });
@@ -66,12 +66,12 @@ export default function Contact() {
 
           {/* Contact methods */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-            <a href="mailto:support@glimr.app" className="rounded-2xl border border-border bg-card p-5 hover:border-primary/40 transition-colors">
+            <a href="mailto:support@glimr.com.au" className="rounded-2xl border border-border bg-card p-5 hover:border-primary/40 transition-colors">
               <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center mb-3">
                 <Mail className="w-4 h-4 text-primary" />
               </div>
               <h3 className="font-medium text-sm mb-1">Email us</h3>
-              <p className="text-xs text-muted-foreground">support@glimr.app</p>
+              <p className="text-xs text-muted-foreground">support@glimr.com.au</p>
             </a>
             <div className="rounded-2xl border border-border bg-card p-5">
               <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center mb-3">

@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center" style="padding-bottom:32px;">
-                    <a href="https://glimr.app" style="display:inline-block;padding:14px 40px;background:#e8c896;color:#0a0a0a;font-size:15px;font-weight:600;text-decoration:none;border-radius:999px;letter-spacing:0.01em;">
+                    <a href="https://glimr.com.au" style="display:inline-block;padding:14px 40px;background:#e8c896;color:#0a0a0a;font-size:15px;font-weight:600;text-decoration:none;border-radius:999px;letter-spacing:0.01em;">
                       Meet ${companion}
                     </a>
                   </td>

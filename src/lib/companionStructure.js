@@ -27,7 +27,7 @@ export function generateReferralCode(name) {
 /** Build a shareable referral link from a code */
 export function buildReferralLink(code) {
   const origin =
-    typeof window !== "undefined" ? window.location.origin : "https://glimr.app";
+    typeof window !== "undefined" ? window.location.origin : "https://glimr.com.au";
   return `${origin}/?ref=${code}`;
 }
 
