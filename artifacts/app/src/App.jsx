@@ -50,6 +50,7 @@ const Account = React.lazy(() => import('./pages/Account'));
 const About = React.lazy(() => import('./pages/About'));
 const Contact = React.lazy(() => import('./pages/Contact'));
 const HumanSession = React.lazy(() => import('./pages/HumanSession'));
+const CreatePersona = React.lazy(() => import('./pages/CreatePersona'));
 import ProtectedRoute from '@/components/ProtectedRoute';
 import MobileShell from '@/components/MobileShell';
 
@@ -116,6 +117,7 @@ const AuthenticatedApp = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/vip-lounge" element={<VipLounge />} />
         <Route path="/human-session" element={<HumanSession />} />
+        <Route path="/create-persona" element={<CreatePersona />} />
         <Route path="/zac" element={<ZacConfidentLanding />} />
         <Route path="/zac-steady" element={<ZacLanding />} />
         <Route path="/jess" element={<JessLanding />} />
