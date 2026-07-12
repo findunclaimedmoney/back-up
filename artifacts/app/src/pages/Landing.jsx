@@ -166,7 +166,7 @@ export default function Landing() {
           <img
             src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/19ce39eea_Womaninsilkrobe.png"
             alt="Romantic candlelight connection"
-            className="w-full h-[300px] sm:h-[400px] object-cover"
+            className="w-full h-[300px] sm:h-[400px] object-cover object-top"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 text-center">
