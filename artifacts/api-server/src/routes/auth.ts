@@ -138,6 +138,15 @@ router.post("/verify-otp", async (req, res) => {
     await db.update(usersTable).set({ emailVerified: true }).where(eq(usersTable.email, String(email).toLowerCase()));
     const [user] = await db.select().from(usersTable).where(eq(usersTable.email, String(email).toLowerCase()));
     if (user) (req.session as any).userId = user.id;
+
+    // Fire welcome + admin notification in background — don't block the response
+    if (user) {
+      const { sendWelcomeEmail, notifyAdminNewSignup } = await import("../lib/mailer");
+      const firstName = ((user.fullName ?? "") as string).split(" ")[0] || "there";
+      sendWelcomeEmail(user.email, firstName).catch(() => {});
+      notifyAdminNewSignup(user.email, user.fullName ?? "").catch(() => {});
+    }
+
     return res.json({ success: true, access_token: "session" });
   } catch (err) {
     req.log.error({ err }, "auth/verify-otp error");

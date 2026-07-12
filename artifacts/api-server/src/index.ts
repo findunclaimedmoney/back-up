@@ -22,4 +22,12 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+
+  // ── Background scheduler — runs every hour ─────────────────────────────────
+  // Sends 24h follow-up emails to free users who haven't upgraded yet.
+  // Fires once immediately on startup (catches any missed window), then hourly.
+  import("./lib/mailer").then(({ runFollowupScheduler }) => {
+    runFollowupScheduler().catch(() => {});
+    setInterval(() => runFollowupScheduler().catch(() => {}), 60 * 60 * 1000);
+  }).catch(() => {});
 });

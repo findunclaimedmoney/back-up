@@ -82,6 +82,16 @@ router.post("/", async (req, res) => {
             monthlyCredits: credits,
             creditBalance: currentBalance + credits,
           });
+
+          // Alert admin — fire and forget
+          try {
+            const userRow = await db.select({ email: usersTable.email, fullName: usersTable.fullName })
+              .from(usersTable).where(eq(usersTable.id, userId as any)).limit(1);
+            if (userRow[0]) {
+              const { notifyAdminUpgrade } = await import("../lib/mailer");
+              notifyAdminUpgrade(userRow[0].email, userRow[0].fullName ?? "", meta.tier).catch(() => {});
+            }
+          } catch {}
         } else if (meta.photo_credits) {
           const add = parseInt(meta.photo_credits, 10);
           const current = (existing?.data as any)?.photoCredits ?? 0;
