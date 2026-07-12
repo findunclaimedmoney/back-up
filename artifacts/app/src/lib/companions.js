@@ -66,8 +66,7 @@ export const COMPANIONS = [
     subtitle: "Serene, grounded, and gently present",
     description:
       "Luna is the still point when everything moves too fast. She doesn't fix or solve — she holds space, slows things down, and brings you back to right now.",
-    image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/1a1420690_image-1782886782778.png",
+    image: "/images/luna.png",
     accent: "from-teal-500/20 to-blue-500/10",
     personality: withEmotions(LUNA_SYSTEM_PROMPT),
     avatar_id: null,
