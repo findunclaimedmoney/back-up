@@ -16,10 +16,10 @@ const TIER_PRICES: Record<string, { name: string; amountCents: number; credits: 
 };
 
 const TOPUP_PRICES: Record<string, { name: string; amountCents: number; credits: number }> = {
-  pack_5:  { name: "1 credit",   amountCents: 500,  credits: 1 },
-  pack_10: { name: "2 credits",  amountCents: 1000, credits: 2 },
-  pack_25: { name: "5 credits",  amountCents: 2500, credits: 5 },
-  pack_50: { name: "10 credits", amountCents: 5000, credits: 10 },
+  pack_20:  { name: "4 credits",  amountCents:  2000, credits: 4  },
+  pack_25:  { name: "5 credits",  amountCents:  2500, credits: 5  },
+  pack_50:  { name: "10 credits", amountCents:  5000, credits: 10 },
+  pack_100: { name: "20 credits", amountCents: 10000, credits: 20 },
 };
 
 // Session packages — billed as one-time payments, add credits + unlock layer

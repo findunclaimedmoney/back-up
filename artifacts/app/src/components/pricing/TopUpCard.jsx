@@ -66,7 +66,7 @@ export default function TopUpCard({ creditBalance = 0, onPurchase, loading }) {
         {creditBalance > 0 && (
           <div className="flex items-center gap-2 mt-6 text-xs text-muted-foreground">
             <Check className="w-3.5 h-3.5 text-primary" />
-            Enough for ~{Math.floor(creditBalance / 0.05)} text messages or ~{Math.floor(creditBalance / 0.10)} video minutes.
+            Enough for ~{Math.floor(creditBalance / 0.75)} minutes of face-to-face video · voice replies are A$0.20 each
           </div>
         )}
       </div>

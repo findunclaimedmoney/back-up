@@ -50,10 +50,10 @@ Credits are consumed per action:
 - VIP Member (A$199/mo): 50 credits/month, everything in Pro + custom companion creation, VIP-only companions, dedicated concierge support, invitation-only events.
 
 === CREDIT TOP-UP PACKS ===
-- A$5 = 1 credit
-- A$10 = 2 credits
+- A$20 = 4 credits (minimum top-up)
 - A$25 = 5 credits
-- A$50 = 10 credits
+- A$50 = 10 credits (most popular)
+- A$100 = 20 credits
 
 === PAYMENT METHODS ===
 - Credit/debit card (Stripe) — instant

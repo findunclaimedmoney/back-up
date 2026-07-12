@@ -132,12 +132,12 @@ export const CONSUMPTION_ITEMS = [
   },
 ];
 
-/** Top-up credit packs — price in USD, credits = price × 0.20 */
+/** Top-up credit packs — price in AUD, minimum A$20 */
 export const TOPUP_PACKS = [
-  { id: "pack_5", price: 5, credits: 1, popular: false },
-  { id: "pack_10", price: 10, credits: 2, popular: true },
-  { id: "pack_25", price: 25, credits: 5, popular: false },
-  { id: "pack_50", price: 50, credits: 10, popular: false },
+  { id: "pack_20",  price: 20,  credits: 4,  popular: false },
+  { id: "pack_25",  price: 25,  credits: 5,  popular: false },
+  { id: "pack_50",  price: 50,  credits: 10, popular: true  },
+  { id: "pack_100", price: 100, credits: 20, popular: false },
 ];
 
 /** Calculate how many of a given action a credit balance can cover */
