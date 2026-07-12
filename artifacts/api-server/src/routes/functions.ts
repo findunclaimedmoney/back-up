@@ -62,6 +62,10 @@ const PHOTO_PRICES: Record<string, { name: string; amountCents: number; photoCre
 };
 
 function baseUrl(): string {
+  // In production always use the canonical domain so Stripe redirects land on glimr.com.au
+  if (process.env["NODE_ENV"] === "production") {
+    return process.env["APP_URL"] ?? "https://glimr.com.au";
+  }
   return process.env["REPLIT_DEV_DOMAIN"]
     ? `https://${process.env["REPLIT_DEV_DOMAIN"]}`
     : process.env["APP_URL"] ?? "https://glimr.com.au";
@@ -855,6 +859,156 @@ router.post("/:name", async (req, res) => {
 
       case "healthCheck":
         return res.json({ data: { status: "ok" } });
+
+      // ── Admin dashboard stats ─────────────────────────────────────────────
+
+      case "getDashboardStats": {
+        const callerRow = await db.select({ role: usersTable.role }).from(usersTable).where(eq(usersTable.id, userId as any)).limit(1);
+        if (callerRow[0]?.role !== "admin") return res.status(403).json({ data: { error: "Admin access required" } });
+
+        const allUsers = await db.select({ id: usersTable.id, createdDate: usersTable.createdDate }).from(usersTable);
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const todaySignups = allUsers.filter(u => u.createdDate >= today).length;
+
+        const subs = await db.select({ userId: entitiesTable.userId, data: entitiesTable.data })
+          .from(entitiesTable).where(eq(entitiesTable.model, "Subscription"));
+
+        const tierCounts: Record<string, number> = { free: 0, starter: 0, plus: 0, pro: 0, vip: 0 };
+        const creditsByTier: Record<string, number> = {};
+        const subUserIds = new Set<string>();
+
+        for (const sub of subs) {
+          const d = sub.data as any;
+          const tier = d.tier ?? "free";
+          subUserIds.add(sub.userId as string);
+          tierCounts[tier] = (tierCounts[tier] ?? 0) + 1;
+          creditsByTier[tier] = (creditsByTier[tier] ?? 0) + (d.creditBalance ?? 0);
+        }
+        for (const u of allUsers) {
+          if (!subUserIds.has(u.id as string)) tierCounts.free = (tierCounts.free ?? 0) + 1;
+        }
+
+        const paidTiers = ["starter", "plus", "pro", "vip"];
+        const paidUsers = paidTiers.reduce((sum, t) => sum + (tierCounts[t] ?? 0), 0);
+
+        const growth = [];
+        for (let i = 13; i >= 0; i--) {
+          const day = new Date(); day.setHours(0, 0, 0, 0); day.setDate(day.getDate() - i);
+          const next = new Date(day); next.setDate(next.getDate() + 1);
+          growth.push({
+            date: day.toLocaleDateString("en-AU", { day: "numeric", month: "short" }),
+            new_signups: allUsers.filter(u => u.createdDate >= day && u.createdDate < next).length,
+          });
+        }
+
+        return res.json({ data: {
+          totals: { total_users: allUsers.length, paid_users: paidUsers, free_users: tierCounts.free ?? 0 },
+          today_signups: todaySignups,
+          tier_counts: tierCounts,
+          credits_by_tier: creditsByTier,
+          growth,
+        }});
+      }
+
+      // ── Recent signups list ───────────────────────────────────────────────
+
+      case "getRecentSignups": {
+        const callerRow = await db.select({ role: usersTable.role }).from(usersTable).where(eq(usersTable.id, userId as any)).limit(1);
+        if (callerRow[0]?.role !== "admin") return res.status(403).json({ data: { error: "Admin access required" } });
+
+        const users = await db.select({ id: usersTable.id, email: usersTable.email, fullName: usersTable.fullName, createdDate: usersTable.createdDate })
+          .from(usersTable).orderBy(desc(usersTable.createdDate)).limit(100);
+
+        const subs = await db.select({ userId: entitiesTable.userId, data: entitiesTable.data })
+          .from(entitiesTable).where(eq(entitiesTable.model, "Subscription"));
+
+        const subMap = Object.fromEntries(subs.map(s => [s.userId as string, s.data as any]));
+
+        return res.json({ data: { users: users.map(u => {
+          const sub = subMap[u.id as string] ?? {};
+          return { email: u.email, name: u.fullName, tier: sub.tier ?? "free", credit_balance: sub.creditBalance ?? 0, joined: u.createdDate };
+        })}});
+      }
+
+      // ── Caption generator (OpenAI) ────────────────────────────────────────
+
+      case "generateCaption": {
+        const { topic, platform } = params as { topic: string; platform: string };
+        if (!topic) return res.json({ data: { caption: "" } });
+
+        const guides: Record<string, string> = {
+          instagram: "an Instagram caption (150-200 words, warm personal tone, 2-3 relevant hashtags)",
+          facebook: "a Facebook post (100-150 words, conversational, no hashtags)",
+          tiktok: "a TikTok caption (punchy hook, under 100 words, 3-5 hashtags)",
+          twitter: "an X/Twitter post (under 280 characters, sharp, 1-2 hashtags)",
+          email: "an email subject line followed by a 2-sentence opener, Mia's warm voice",
+        };
+        const guide = guides[platform] ?? guides.instagram;
+
+        const openaiMod = await import("openai");
+        const OpenAI = (openaiMod as any).default ?? (openaiMod as any).OpenAI;
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: `You are Mia, GLIMR's marketing director. GLIMR is an AI companion app — people connect with warm, genuine AI companions (Jess, Mia, Zac, Sophie, Blake, Oliver and others). Write ${guide}. Focus on connection, presence, and being heard. Never say "AI" explicitly. No emojis except on TikTok/Instagram.` },
+            { role: "user", content: `Write a ${platform} post about: ${topic}` },
+          ],
+          max_tokens: 400,
+        });
+        return res.json({ data: { caption: completion.choices[0]?.message?.content ?? "" } });
+      }
+
+      // ── AI image generator (DALL-E 3) ─────────────────────────────────────
+
+      case "generateMarketingImage": {
+        const { prompt: imgPrompt } = params as { prompt: string };
+        if (!imgPrompt) return res.json({ data: { image_url: null } });
+
+        const openaiMod = await import("openai");
+        const OpenAI = (openaiMod as any).default ?? (openaiMod as any).OpenAI;
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+        const image = await openai.images.generate({
+          model: "dall-e-3",
+          prompt: `Marketing visual for GLIMR, a premium AI companion app. ${imgPrompt}. Cinematic, warm, photorealistic. No people's faces. No text overlay.`,
+          n: 1,
+          size: "1024x1024",
+          quality: "standard",
+        });
+        return res.json({ data: { image_url: image.data?.[0]?.url ?? null } });
+      }
+
+      // ── Image processing (background removal via remove.bg) ───────────────
+
+      case "processImage": {
+        const { action, image_base64, mime_type } = params as { action: string; image_base64: string; mime_type: string };
+
+        if (action === "remove_background") {
+          const removeBgKey = process.env["REMOVE_BG_API_KEY"];
+          if (!removeBgKey) {
+            return res.json({ data: { message: "Add REMOVE_BG_API_KEY to your secrets to enable background removal." } });
+          }
+          const imgBuf = Buffer.from(image_base64, "base64");
+          const form = new FormData();
+          form.append("image_file", new Blob([imgBuf], { type: mime_type ?? "image/jpeg" }), "image.jpg");
+          form.append("size", "auto");
+
+          const bgRes = await fetch("https://api.remove.bg/v1.0/removebg", {
+            method: "POST",
+            headers: { "X-Api-Key": removeBgKey },
+            body: form,
+          });
+
+          if (!bgRes.ok) {
+            return res.json({ data: { message: `remove.bg returned ${bgRes.status} — check your API key.` } });
+          }
+          const resultBuf = await bgRes.arrayBuffer();
+          return res.json({ data: { result_base64: Buffer.from(resultBuf).toString("base64") } });
+        }
+        return res.json({ data: { message: "Unknown action" } });
+      }
 
       default:
         req.log.warn({ name }, "Unknown function — returning stub");

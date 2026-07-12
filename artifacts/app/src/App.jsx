@@ -22,6 +22,7 @@ const Manual = React.lazy(() => import('./pages/Manual'));
 const Notes = React.lazy(() => import('./pages/Notes'));
 const AvatarLanding = React.lazy(() => import('./pages/AvatarLanding'));
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const AdminHub = React.lazy(() => import('./pages/AdminHub'));
 const VipLounge = React.lazy(() => import('./pages/VipLounge'));
 const ZacLanding = React.lazy(() => import('./pages/ZacLanding'));
 const ZacConfidentLanding = React.lazy(() => import('./pages/ZacConfidentLanding'));
@@ -103,7 +104,8 @@ const AuthenticatedApp = () => {
         <Route path="/manual" element={<Manual />} />
         <Route path="/notes" element={<Notes />} />
         <Route path="/avatar-landing" element={<AvatarLanding />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<AdminHub />} />
+        <Route path="/dashboard-legacy" element={<Dashboard />} />
         <Route path="/health" element={<HealthCheck />} />
         <Route path="/moonpay" element={<MoonPayReturn />} />
         <Route path="/legal" element={<Legal />} />
