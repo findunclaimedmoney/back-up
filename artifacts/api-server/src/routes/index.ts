@@ -6,6 +6,7 @@ import integrationsRouter from "./integrations";
 import functionsRouter from "./functions";
 import companionRouter from "./companion";
 import heygenRouter from "./heygen";
+import mobileRouter from "./mobile";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use("/integrations", integrationsRouter);
 router.use("/functions", functionsRouter);
 router.use(companionRouter);
 router.use(heygenRouter);
+router.use("/mobile", mobileRouter);
 
 export default router;
