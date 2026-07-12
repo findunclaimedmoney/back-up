@@ -51,6 +51,12 @@ export default function VideoEditor({ videoUrl, onEdited, onClose }) {
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const animRef = useRef(null);
+  const [aiTool, setAiTool] = useState("none");
+  const [eraseArea, setEraseArea] = useState({ x: 30, y: 30, w: 40, h: 40 });
+  const [eraseBlur, setEraseBlur] = useState(25);
+  const [chromaColor, setChromaColor] = useState("#00b140");
+  const [chromaThreshold, setChromaThreshold] = useState(45);
+  const [denoise, setDenoise] = useState(false);
 
   const filterStr = `brightness(${filters.brightness}%) contrast(${filters.contrast}%) saturate(${filters.saturation}%) sepia(${filters.sepia}%) grayscale(${filters.grayscale}%) hue-rotate(${filters.hueRotate}deg)`;
 
@@ -114,7 +120,32 @@ export default function VideoEditor({ videoUrl, onEdited, onClose }) {
       ctx.fillText(textOverlay, tx, ty);
     }
     ctx.restore();
-  }, [filterStr, loaded, crop, rotation, textOverlay, textSize, textColor, textPos]);
+
+    // AI: Magic Erase — blur selected area across all frames
+    if (aiTool === "erase") {
+      const ex = (eraseArea.x / 100) * canvas.width;
+      const ey = (eraseArea.y / 100) * canvas.height;
+      const ew = (eraseArea.w / 100) * canvas.width;
+      const eh = (eraseArea.h / 100) * canvas.height;
+      ctx.filter = `blur(${eraseBlur}px)`;
+      ctx.drawImage(canvas, ex, ey, ew, eh, ex, ey, ew, eh);
+      ctx.filter = "none";
+    }
+    // AI: Background Remover — chroma key
+    if (aiTool === "chroma") {
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+      const cr = parseInt(chromaColor.slice(1, 3), 16);
+      const cg = parseInt(chromaColor.slice(3, 5), 16);
+      const cb = parseInt(chromaColor.slice(5, 7), 16);
+      const thresh = chromaThreshold * 3;
+      for (let i = 0; i < data.length; i += 4) {
+        const dist = Math.sqrt((data[i]-cr)**2 + (data[i+1]-cg)**2 + (data[i+2]-cb)**2);
+        if (dist < thresh) { data[i] = 0; data[i+1] = 0; data[i+2] = 0; }
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+  }, [filterStr, loaded, crop, rotation, textOverlay, textSize, textColor, textPos, aiTool, eraseArea, eraseBlur, chromaColor, chromaThreshold]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -157,6 +188,33 @@ export default function VideoEditor({ videoUrl, onEdited, onClose }) {
     }
   }, [currentTime, trimEnd, trimStart, isPlaying]);
 
+  const handleAutoEnhance = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    const tmp = document.createElement("canvas");
+    const sw = Math.min(v.videoWidth || 320, 320);
+    const sh = Math.min(v.videoHeight || 180, 180);
+    tmp.width = sw;
+    tmp.height = sh;
+    const tctx = tmp.getContext("2d");
+    tctx.drawImage(v, 0, 0, sw, sh);
+    const sample = tctx.getImageData(0, 0, sw, sh);
+    const data = sample.data;
+    let totalR = 0, totalG = 0, totalB = 0, count = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      totalR += data[i];
+      totalG += data[i + 1];
+      totalB += data[i + 2];
+      count++;
+    }
+    const avgBrightness = (totalR + totalG + totalB) / (3 * count);
+    const brightness = avgBrightness < 100 ? Math.min(160, 100 + (100 - avgBrightness) * 0.6) : avgBrightness > 180 ? Math.max(80, 100 - (avgBrightness - 180) * 0.4) : 105;
+    const contrast = avgBrightness < 80 || avgBrightness > 180 ? 125 : 115;
+    const saturation = 130;
+    setFilters({ ...DEFAULT_FILTER, brightness: Math.round(brightness), contrast: Math.round(contrast), saturation: Math.round(saturation) });
+    toast({ title: "Auto-enhanced", description: `Brightness ${Math.round(brightness)}%, contrast ${Math.round(contrast)}%, saturation ${Math.round(saturation)}%` });
+  };
+
   const handleExport = async () => {
     setProcessing(true);
     setProgress(0);
@@ -169,9 +227,25 @@ export default function VideoEditor({ videoUrl, onEdited, onClose }) {
       const source = audioCtx.createMediaElementSource(v);
       const gainNode = audioCtx.createGain();
       gainNode.gain.value = volume;
-      source.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
+
+      let lastNode = gainNode;
+      if (denoise) {
+        const highpass = audioCtx.createBiquadFilter();
+        highpass.type = "highpass";
+        highpass.frequency.value = 85;
+        const denoiseComp = audioCtx.createDynamicsCompressor();
+        denoiseComp.threshold.value = -40;
+        denoiseComp.knee.value = 10;
+        denoiseComp.ratio.value = 6;
+        denoiseComp.attack.value = 0.005;
+        denoiseComp.release.value = 0.1;
+        lastNode.connect(highpass);
+        highpass.connect(denoiseComp);
+        lastNode = denoiseComp;
+      }
+      lastNode.connect(audioCtx.destination);
       const audioDest = audioCtx.createMediaStreamDestination();
+      lastNode.connect(audioDest);
 
       const vw = v.videoWidth || 1280;
       const vh = v.videoHeight || 720;
@@ -236,6 +310,31 @@ export default function VideoEditor({ videoUrl, onEdited, onClose }) {
         }
         ctx.restore();
 
+        // AI: Magic Erase (export)
+        if (aiTool === "erase") {
+          const ex = (eraseArea.x / 100) * canvas.width;
+          const ey = (eraseArea.y / 100) * canvas.height;
+          const ew = (eraseArea.w / 100) * canvas.width;
+          const eh = (eraseArea.h / 100) * canvas.height;
+          ctx.filter = `blur(${eraseBlur}px)`;
+          ctx.drawImage(canvas, ex, ey, ew, eh, ex, ey, ew, eh);
+          ctx.filter = "none";
+        }
+        // AI: Background Remover (export)
+        if (aiTool === "chroma") {
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imgData.data;
+          const cr = parseInt(chromaColor.slice(1, 3), 16);
+          const cg = parseInt(chromaColor.slice(3, 5), 16);
+          const cb = parseInt(chromaColor.slice(5, 7), 16);
+          const thresh = chromaThreshold * 3;
+          for (let i = 0; i < data.length; i += 4) {
+            const dist = Math.sqrt((data[i]-cr)**2 + (data[i+1]-cg)**2 + (data[i+2]-cb)**2);
+            if (dist < thresh) { data[i] = 0; data[i+1] = 0; data[i+2] = 0; }
+          }
+          ctx.putImageData(imgData, 0, 0);
+        }
+
         setProgress(Math.round(((v.currentTime - trimStart) / (trimEnd - trimStart)) * 100));
         requestAnimationFrame(drawLoop);
       };
@@ -276,6 +375,7 @@ export default function VideoEditor({ videoUrl, onEdited, onClose }) {
     { id: "text", label: "Text", icon: Type },
     { id: "crop", label: "Crop", icon: Crop },
     { id: "speed", label: "Speed", icon: Gauge },
+    { id: "ai", label: "AI", icon: Wand2 },
   ];
 
   return (
@@ -431,6 +531,59 @@ export default function VideoEditor({ videoUrl, onEdited, onClose }) {
               </div>
               <div className="rounded-xl bg-muted/30 p-3 text-xs text-muted-foreground">
                 Final duration after speed: {formatTime((trimEnd - trimStart) / speed)}
+              </div>
+            </>
+          )}
+
+          {activeTab === "ai" && (
+            <>
+              <p className="text-xs text-muted-foreground">CapCut-style AI tools, all free and browser-based.</p>
+
+              <div className="rounded-xl bg-muted/50 p-4 space-y-3">
+                <button onClick={() => setAiTool(aiTool === "erase" ? "none" : "erase")} className={`w-full text-left text-sm font-medium ${aiTool === "erase" ? "text-primary" : "text-foreground"}`}>
+                  Magic Erase {aiTool === "erase" ? "(active)" : ""}
+                </button>
+                {aiTool === "erase" && (
+                  <div className="space-y-3 pl-2">
+                    <p className="text-xs text-muted-foreground">Select the area to erase — it will be blurred out across all frames.</p>
+                    <Slider label="Area Left (X)" value={eraseArea.x} min={0} max={90} unit="%" onChange={(v) => setEraseArea((p) => ({ ...p, x: v, w: Math.min(p.w, 100 - v) }))} />
+                    <Slider label="Area Top (Y)" value={eraseArea.y} min={0} max={90} unit="%" onChange={(v) => setEraseArea((p) => ({ ...p, y: v, h: Math.min(p.h, 100 - v) }))} />
+                    <Slider label="Area Width" value={eraseArea.w} min={5} max={100} unit="%" onChange={(v) => setEraseArea((p) => ({ ...p, w: v }))} />
+                    <Slider label="Area Height" value={eraseArea.h} min={5} max={100} unit="%" onChange={(v) => setEraseArea((p) => ({ ...p, h: v }))} />
+                    <Slider label="Blur Strength" value={eraseBlur} min={5} max={60} unit="px" onChange={setEraseBlur} />
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-xl bg-muted/50 p-4 space-y-3">
+                <button onClick={() => setAiTool(aiTool === "chroma" ? "none" : "chroma")} className={`w-full text-left text-sm font-medium ${aiTool === "chroma" ? "text-primary" : "text-foreground"}`}>
+                  Background Remover {aiTool === "chroma" ? "(active)" : ""}
+                </button>
+                {aiTool === "chroma" && (
+                  <div className="space-y-3 pl-2">
+                    <p className="text-xs text-muted-foreground">Pick the background color to remove (green screen, solid backdrops).</p>
+                    <div className="flex items-center gap-3">
+                      <input type="color" value={chromaColor} onChange={(e) => setChromaColor(e.target.value)} className="w-12 h-10 rounded-lg cursor-pointer bg-transparent border border-border" />
+                      <span className="text-xs text-muted-foreground">Background color</span>
+                    </div>
+                    <Slider label="Threshold" value={chromaThreshold} min={10} max={100} onChange={setChromaThreshold} />
+                  </div>
+                )}
+              </div>
+
+              <button onClick={handleAutoEnhance} className="w-full min-h-[44px] rounded-xl border border-primary/30 bg-primary/5 text-primary text-sm font-medium hover:bg-primary/10 transition-colors flex items-center justify-center gap-2">
+                <Wand2 className="w-4 h-4" /> Auto Enhance (AI Color Correction)
+              </button>
+              <p className="text-xs text-muted-foreground -mt-2">Analyzes the current frame and auto-adjusts brightness, contrast, and saturation.</p>
+
+              <div className="flex items-center justify-between rounded-xl bg-muted/50 p-3">
+                <div>
+                  <p className="text-sm font-medium">Denoise Audio</p>
+                  <p className="text-xs text-muted-foreground">Removes background hum and noise (high-pass filter + compressor)</p>
+                </div>
+                <button onClick={() => setDenoise(!denoise)} className={`w-11 h-6 rounded-full transition-colors ${denoise ? "bg-primary" : "bg-muted-foreground/30"}`}>
+                  <span className={`block w-5 h-5 bg-white rounded-full transition-transform ${denoise ? "translate-x-5" : "translate-x-0.5"}`} />
+                </button>
               </div>
             </>
           )}
