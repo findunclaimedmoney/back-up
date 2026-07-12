@@ -83,7 +83,7 @@ export default function Slide1Hero() {
             margin: 0,
           }}
         >
-          glimr.app
+          glimr.com.au
         </p>
       </div>
     </div>

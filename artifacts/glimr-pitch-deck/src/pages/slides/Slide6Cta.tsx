@@ -84,7 +84,7 @@ export default function Slide6Cta() {
             margin: 0,
           }}
         >
-          glimr.app
+          glimr.com.au
         </p>
       </div>
 
