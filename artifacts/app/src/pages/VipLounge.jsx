@@ -53,6 +53,9 @@ export default function VipLounge() {
     }
   });
 
+  // Derive companion early — must come before selectedAvatarId which references it
+  const companion = getCompanion(selectedCompanionId);
+
   const isMaleCompanion = selectedCompanionId === "zac" || selectedCompanionId === "zac2";
 
   const selectedAvatarId = avatarIds[selectedCompanionId] || companion?.avatar_id || null;
@@ -94,8 +97,6 @@ export default function VipLounge() {
       .finally(() => setLoading(false));
   }, []);
 
-  const companion = getCompanion(selectedCompanionId);
-
   const handleLaunch = (mode) => {
     setActiveSession(mode);
   };
@@ -104,7 +105,7 @@ export default function VipLounge() {
     setActiveSession(null);
   };
 
-  // Build a companion with intimacy personality injected for the intimacy session
+  // companion already declared above — build intimacy variant with personality injected
   const intimacyCompanion = companion
     ? {
         ...companion,
