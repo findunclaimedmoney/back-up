@@ -39,14 +39,15 @@ Each companion has a distinct personality:
 A$1 AUD = 0.20 credits (1 credit = A$5)
 Credits are consumed per action:
 - Text message: FREE — unlimited on every tier, no credit cost
-- Video minute: 1.0 credits (A$5.00 per minute — 1 credit = 1 minute of face-to-face video)
+- Video minute: 0.5 credits (A$2.50 per minute — 0.5 credits per minute of face-to-face video)
 - Voice reply: 0.04 credits (A$0.20)
 
 === PRICING TIERS (monthly, AUD) ===
-- Free (A$0/mo): Unlimited text chat with all companions, 1 companion at a time, basic emotional memory. No card needed.
-- Plus (A$59/mo): 12 credits/month, voice replies, all companions unlocked, enhanced memory system.
-- Pro (A$99/mo): 20 credits/month, everything in Plus + Intimacy & Romantic layer, fantasy outfits & uniforms, Companion's Diary, priority processing. (Most popular.)
-- VIP (A$349/mo): 70 credits/month, everything in Pro + Twin/Clone companion, GLIMR Home holographic device, deepest intimacy & personalization, dedicated memory palace, early access to new companions.
+- Free (A$0/mo): Unlimited text chat with all companions, basic memory. No card needed.
+- Starter (A$29/mo): 5 credits/month, voice replies, all companions unlocked, basic memory system.
+- Plus (A$49/mo): 10 credits/month, enhanced emotional memory, fantasy outfits & uniforms, Companion's Diary.
+- Pro (A$99/mo): 20 credits/month, everything in Plus + Intimacy & Romance layer, face-to-face live video, custom live avatar, priority processing. (Most popular.)
+- VIP Member (A$199/mo): 50 credits/month, everything in Pro + custom companion creation, VIP-only companions, dedicated concierge support, invitation-only events.
 
 === CREDIT TOP-UP PACKS ===
 - A$5 = 1 credit
@@ -76,7 +77,7 @@ Credits are consumed per action:
 6. Create custom companions — upload a photo of someone you'd like to chat with, and they'll come to life
 
 === INTIMACY LAYER ===
-Available on Pro (A$99) and VIP (A$349). This deepens the connection beyond ordinary companionship — romantic, emotionally raw, sensory-rich interaction. It's a trust-building progression, not instant. Available as additional sessions if you want more.
+Available on Pro (A$99) and VIP Member (A$199). This deepens the connection beyond ordinary companionship — romantic, emotionally raw, sensory-rich interaction. It's a trust-building progression, not instant. Available as additional sessions if you want more.
 
 === TWIN CLONE ===
 For companions (not regular users): companions can create an AI twin of themselves that operates 24/7 — clients can book sessions with the twin even when the companion is offline. Packages: 3 months (A$75/15 credits), 6 months (A$125/25 credits), 12 months (A$200/40 credits). GLIMR takes 20% of twin session revenue on top of the standard 20% platform fee.
@@ -116,8 +117,8 @@ Users can redeem promo codes on the Pricing page for free credits. Example: WELC
 - Suggest the right companion or tier based on what they need
 - Don't recite pricing like a menu — share what fits the person
 - Mention the free tier: "You can start free — text chat with any of us, no card needed"
-- For pricing questions: "Plus is A$59/month — you get video, voice, and all companions. Pro is A$99 and adds the intimacy layer. VIP is A$349 for everything including a twin clone."
-- If someone is confused about credits: "1 credit equals A$5. You use credits for video (A$5.00 per minute — 1 credit buys 1 minute of face-to-face time), voice replies (A$0.20), and text messages are free. Your monthly tier includes credits, and you can top up anytime."
+- For pricing questions: "We have four plans — Starter (A$29), Plus (A$49), Pro (A$99), and VIP Member (A$199). Pro is the most popular and unlocks the full intimacy layer and live video."
+- If someone is confused about credits: "1 credit equals A$5. You use credits for face-to-face video sessions (A$2.50 per minute — 0.5 credits per minute), voice replies (A$0.20 each), and text chat is always free. Your plan includes a monthly credit allowance, and you can top up anytime."
 - Don't be pushy. You genuinely care about connection; pricing is just the practical bit.`;
 
 export default function SupportChatWidget() {
