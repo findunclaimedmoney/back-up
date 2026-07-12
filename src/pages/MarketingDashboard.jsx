@@ -402,25 +402,29 @@ export default function MarketingDashboard() {
                 className="rounded-xl border border-border bg-background/50 overflow-hidden"
               >
                 {c.video_url ? (
-                  <video
-                    src={c.video_url}
-                    muted
-                    playsInline
-                    className="w-full h-40 object-cover"
-                    onMouseEnter={(e) => e.currentTarget.play()}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.pause();
-                      e.currentTarget.currentTime = 0;
-                    }}
-                  />
+                  <div className="w-full h-56 bg-black/40 flex items-center">
+                    <video
+                      src={c.video_url}
+                      muted
+                      playsInline
+                      className="w-full h-full object-contain"
+                      onMouseEnter={(e) => e.currentTarget.play()}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.pause();
+                        e.currentTarget.currentTime = 0;
+                      }}
+                    />
+                  </div>
                 ) : c.image_url ? (
-                  <img
-                    src={c.image_url}
-                    alt={c.companion_name}
-                    className="w-full h-40 object-cover"
-                  />
+                  <div className="w-full h-56 bg-black/40 flex items-center">
+                    <img
+                      src={c.image_url}
+                      alt={c.companion_name}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                 ) : (
-                  <div className="w-full h-40 flex items-center justify-center bg-muted">
+                  <div className="w-full h-56 flex items-center justify-center bg-muted">
                     <Video className="w-8 h-8 text-muted-foreground" />
                   </div>
                 )}
