@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { MIA_PERSONALITY, MIA_GREETING, MIA_QUICK_QUESTIONS } from "@/lib/miaConsciousness";
+import { MIA_PERSONALITY, MIA_GREETING, MIA_QUICK_QUESTIONS, MIA_APPROVAL_PROTOCOL } from "@/lib/miaConsciousness";
 import SupportVoiceButton from "@/components/SupportVoiceButton";
 import VoiceRecorderButton from "@/components/VoiceRecorderButton";
 import { MessageCircle, X, Send, GripVertical, RefreshCw } from "lucide-react";
@@ -206,6 +206,8 @@ export default function SupportChatWidget() {
       const prompt = `${MIA_PERSONALITY}
 
 ${BUSINESS_KNOWLEDGE}
+
+${MIA_APPROVAL_PROTOCOL}
 
 --- Conversation so far ---
 ${history}

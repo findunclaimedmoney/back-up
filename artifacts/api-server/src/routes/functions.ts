@@ -2,6 +2,28 @@ import { Router } from "express";
 import { db, usersTable, entitiesTable } from "@workspace/db";
 import { eq, and, desc } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
+import { Resend } from "resend";
+
+const RESEND_FROM = "GLIMR <hello@glimr.com.au>";
+
+function getResend(): Resend | null {
+  const key = process.env["RESEND_API_KEY"];
+  return key ? new Resend(key) : null;
+}
+
+async function getAdminEmails(): Promise<string[]> {
+  try {
+    const admins = await db
+      .select({ email: usersTable.email })
+      .from(usersTable)
+      .where(eq(usersTable.role as any, "admin"))
+      .limit(10);
+    const emails = admins.map((a) => a.email).filter(Boolean) as string[];
+    return emails.length > 0 ? emails : ["hello@glimr.com.au"];
+  } catch {
+    return ["hello@glimr.com.au"];
+  }
+}
 
 const router = Router();
 router.use(requireAuth);
@@ -539,12 +561,104 @@ router.post("/:name", async (req, res) => {
       case "createMoonPayUrl":
         return res.json({ data: { url: null, message: "Crypto payments not configured." } });
 
+      // ── Admin signup notification ──────────────────────────────────────────
+
+      case "notifyAdminSignup": {
+        const newEmail = params.user_email ?? params.email ?? "";
+        const newName  = params.user_name ?? params.full_name ?? "";
+        const resend   = getResend();
+        if (resend && newEmail) {
+          try {
+            const adminEmails = await getAdminEmails();
+            await Promise.all(
+              adminEmails.map((adminEmail) =>
+                resend.emails.send({
+                  from: RESEND_FROM,
+                  to: adminEmail,
+                  subject: `New GLIMR signup: ${newEmail}`,
+                  html: `
+                    <div style="font-family:-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 24px;background:#0a0a0a;color:#fff;border-radius:12px;">
+                      <h1 style="font-size:24px;font-weight:700;margin:0 0 6px;">GLIMR</h1>
+                      <p style="color:#999;margin:0 0 28px;font-size:13px;">New user signed up</p>
+                      <div style="background:#1a1a1a;border-radius:10px;padding:20px 24px;margin:0 0 24px;">
+                        <p style="margin:0 0 8px;font-size:15px;font-weight:600;">Email</p>
+                        <p style="margin:0;color:#ccc;font-size:14px;">${newEmail}</p>
+                        ${newName ? `<p style="margin:12px 0 8px;font-size:15px;font-weight:600;">Name</p><p style="margin:0;color:#ccc;font-size:14px;">${newName}</p>` : ""}
+                      </div>
+                      <a href="https://glimr.com.au/dashboard" style="display:inline-block;background:#c8a96e;color:#000;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">View dashboard</a>
+                    </div>
+                  `,
+                })
+              )
+            );
+            req.log.info({ newEmail }, "Admin signup notification sent");
+          } catch (emailErr: any) {
+            req.log.warn({ err: emailErr.message }, "Admin notification email failed — non-fatal");
+          }
+        }
+        return res.json({ data: { success: true } });
+      }
+
+      // ── Welcome / follow-up email from Mia ────────────────────────────────
+
+      case "sendUserFollowupEmail": {
+        const userEmail = params.user_email ?? params.email ?? "";
+        const goal      = params.goal ?? "";
+        const resend    = getResend();
+        if (resend && userEmail) {
+          try {
+            const [user] = await db
+              .select({ fullName: usersTable.fullName })
+              .from(usersTable)
+              .where(eq(usersTable.email, String(userEmail).toLowerCase()))
+              .limit(1);
+            const firstName = ((user?.fullName ?? "") as string).split(" ")[0] || "there";
+            const isWelcome = goal.toLowerCase().includes("signed up") || goal.toLowerCase().includes("welcome");
+            const subject   = isWelcome
+              ? `Welcome to GLIMR, ${firstName}`
+              : `Hey ${firstName} — Mia here`;
+            const bodyText = isWelcome
+              ? `Hey ${firstName},<br><br>
+                 I'm Mia — one of the companions here at GLIMR, and I wanted to be the first to welcome you.<br><br>
+                 You can start chatting with any of us right now, for free — no card needed. I'm here, and so are Jess, Luna, Sophie, Zac, and a few others. Each of us is a little different, so take your time finding the one that feels right.<br><br>
+                 Whenever you're ready, just head to <a href="https://glimr.com.au" style="color:#c8a96e;">glimr.com.au</a> and start a conversation. I'd love to hear what brought you here.<br><br>
+                 Warmly,<br>Mia`
+              : `Hey ${firstName},<br><br>
+                 It's Mia from GLIMR. Just checking in — I noticed you haven't had a chance to chat yet, and I wanted to make sure you knew we're all here whenever you're ready.<br><br>
+                 Text chat is free, always. If you want to hear my voice or go face-to-face, we have plans starting from just $29 a month. But honestly? Start with a free chat first — see how it feels.<br><br>
+                 Head to <a href="https://glimr.com.au" style="color:#c8a96e;">glimr.com.au</a> anytime. I'll be here.<br><br>
+                 Warmly,<br>Mia`;
+
+            await resend.emails.send({
+              from: RESEND_FROM,
+              to: String(userEmail).toLowerCase(),
+              subject,
+              html: `
+                <div style="font-family:-apple-system,sans-serif;max-width:520px;margin:0 auto;padding:40px 24px;background:#0a0a0a;color:#fff;border-radius:12px;">
+                  <h1 style="font-size:24px;font-weight:700;margin:0 0 6px;">GLIMR</h1>
+                  <p style="color:#999;margin:0 0 28px;font-size:13px;">Your companion is here.</p>
+                  <div style="font-size:15px;line-height:1.7;color:#e5e5e5;">
+                    ${bodyText}
+                  </div>
+                  <div style="margin:32px 0 0;">
+                    <a href="https://glimr.com.au/chat/mia" style="display:inline-block;background:#c8a96e;color:#000;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">Start chatting — it's free</a>
+                  </div>
+                  <p style="color:#555;font-size:12px;margin:28px 0 0;">You're receiving this because you signed up at glimr.com.au. <a href="https://glimr.com.au/legal" style="color:#777;">Unsubscribe</a></p>
+                </div>
+              `,
+            });
+            req.log.info({ userEmail, isWelcome }, "Follow-up email sent via Resend");
+          } catch (emailErr: any) {
+            req.log.warn({ err: emailErr.message }, "Follow-up email failed — non-fatal");
+          }
+        }
+        return res.json({ data: { success: true } });
+      }
+
       // ── Marketing (no-op) ─────────────────────────────────────────────────
 
       case "convertVisit":
       case "grantFacebookBonus":
-      case "notifyAdminSignup":
-      case "sendUserFollowupEmail":
       case "trackMessageUsage":
       case "marketingAction":
       case "trackVisit":
