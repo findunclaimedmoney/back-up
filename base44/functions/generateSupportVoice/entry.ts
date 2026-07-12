@@ -2,13 +2,15 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 Deno.serve(async (req) => {
   try {
-    // No auth required — support chat is public
     const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
     const { text } = body;
 
     if (!text) return Response.json({ error: 'text is required' }, { status: 400 });
+    if (text.length > 500) return Response.json({ error: 'Text too long (max 500 chars)' }, { status: 400 });
 
     const voiceId = Deno.env.get('ELEVENLABS_VOICE_ID');
     if (!voiceId) return Response.json({ error: 'ElevenLabs voice ID not configured' }, { status: 500 });

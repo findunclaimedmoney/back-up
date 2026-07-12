@@ -23,12 +23,13 @@ Deno.serve(async (req) => {
     const signature = req.headers.get('stripe-signature');
     const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
 
-    let event;
-    if (webhookSecret && signature) {
-      event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
-    } else {
-      event = JSON.parse(body);
+    if (!webhookSecret) {
+      return Response.json({ error: 'Webhook secret not configured' }, { status: 500 });
     }
+    if (!signature) {
+      return Response.json({ error: 'Missing stripe-signature header' }, { status: 400 });
+    }
+    const event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
 
     // ── checkout.session.completed → grant tier or credits for ALL payment types ──
     if (event.type === 'checkout.session.completed') {
