@@ -47,7 +47,7 @@ export default function Slide1Hero() {
         {/* Logo */}
         <img
           src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/d15eaf582_glimr_logo.png"
-          alt="SoulSync"
+          alt="GLIMR"
           crossOrigin="anonymous"
           style={{ height: '5vh', width: 'auto', marginBottom: '3.5vh', objectFit: 'contain', objectPosition: 'left center' }}
         />
@@ -83,7 +83,7 @@ export default function Slide1Hero() {
             margin: 0,
           }}
         >
-          soulsync.app
+          glimr.com.au
         </p>
       </div>
     </div>
