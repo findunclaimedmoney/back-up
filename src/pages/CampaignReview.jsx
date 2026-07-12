@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Check, X, Loader2, ExternalLink, Video, MessageCircle, Pencil, Trash2, Upload, Wand2, Volume2 } from "lucide-react";
+import { ArrowLeft, Check, X, Loader2, ExternalLink, Video, MessageCircle, Pencil, Trash2, Upload, Wand2, Volume2, Clapperboard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ImageEnhancer from "@/components/campaign/ImageEnhancer";
 import AudioEnhancer from "@/components/campaign/AudioEnhancer";
+import VideoEditor from "@/components/campaign/VideoEditor";
 
 export default function CampaignReview() {
   const { toast } = useToast();
@@ -297,6 +298,15 @@ export default function CampaignReview() {
                       </button>
                       {editData.video_url && (
                         <button
+                          onClick={() => setEnhancer("video")}
+                          className="flex-1 min-h-[40px] rounded-full border border-primary/30 bg-primary/5 text-primary text-xs font-medium hover:bg-primary/10 transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <Clapperboard className="w-3.5 h-3.5" />
+                          Video Editor
+                        </button>
+                      )}
+                      {editData.video_url && (
+                        <button
                           onClick={() => setEnhancer("audio")}
                           className="flex-1 min-h-[40px] rounded-full border border-primary/30 bg-primary/5 text-primary text-xs font-medium hover:bg-primary/10 transition-colors flex items-center justify-center gap-1.5"
                         >
@@ -435,6 +445,13 @@ export default function CampaignReview() {
           <AudioEnhancer
             videoUrl={editData.video_url}
             onEnhanced={(url) => { setEditData((p) => ({ ...p, video_url: url })); setEnhancer(null); }}
+            onClose={() => setEnhancer(null)}
+          />
+        )}
+        {enhancer === "video" && editData?.video_url && (
+          <VideoEditor
+            videoUrl={editData.video_url}
+            onEdited={(url) => { setEditData((p) => ({ ...p, video_url: url })); setEnhancer(null); }}
             onClose={() => setEnhancer(null)}
           />
         )}
