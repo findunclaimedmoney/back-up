@@ -3,6 +3,10 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    const caller = await base44.auth.me();
+    if (!caller || caller.role !== 'admin') {
+      return Response.json({ error: 'Admin access required' }, { status: 403 });
+    }
 
     const body = await req.json();
     const { order_id, user_id } = body;
@@ -13,8 +17,8 @@ Deno.serve(async (req) => {
 
     // Look up the user — prefer explicit user_id, fall back to the order's created_by_id
     const userId = user_id || order.created_by_id;
-    const user = await base44.asServiceRole.entities.User.get(userId);
-    if (!user || !user.email) return Response.json({ error: 'User not found' }, { status: 404 });
+    const targetUser = await base44.asServiceRole.entities.User.get(userId);
+    if (!targetUser || !targetUser.email) return Response.json({ error: 'User not found' }, { status: 404 });
 
     // Determine what they bought and what to upsell
     const TIER_NAMES = { plus: 'GLIMR Plus', pro: 'GLIMR Pro', vip: 'GLIMR VIP' };
@@ -43,7 +47,7 @@ Deno.serve(async (req) => {
 A user just completed a crypto payment. Write them a short, personalized follow-up email.
 
 User details:
-- Name: ${user.full_name || 'there'}
+- Name: ${targetUser.full_name || 'there'}
 - What they bought: ${purchased} ($${order.usd_amount} via ${order.crypto_asset})
 
 Your upsell goal: ${upsellSuggestion}
@@ -69,13 +73,13 @@ Return JSON with: subject (string), body (string).`;
     });
 
     await base44.asServiceRole.integrations.Core.SendEmail({
-      to: user.email,
+      to: targetUser.email,
       from_name: 'Mia from GLIMR',
       subject: result.subject,
       body: result.body,
     });
 
-    return Response.json({ success: true, sent_to: user.email, subject: result.subject });
+    return Response.json({ success: true, sent_to: targetUser.email, subject: result.subject });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

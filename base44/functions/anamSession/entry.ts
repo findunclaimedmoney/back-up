@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
       sessionMaxDuration = body.duration * 60;
       const newBalance = balance - sessionPrice;
 
-      await base44.entities.Subscription.update(sub.id, {
+      await base44.asServiceRole.entities.Subscription.update(sub.id, {
         credit_balance: newBalance,
         video_minutes_used: used + body.duration,
         intimacy_sessions_completed: (sub.intimacy_sessions_completed || 0) + 1,
