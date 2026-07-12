@@ -29,8 +29,10 @@ Deno.serve(async (req) => {
     }
 
     // Verify the Stripe checkout session belongs to the authenticated user.
+    // Reject if no user_id is embedded in the session (prevents sessions with
+    // missing metadata from being replayed by a different user).
     const sessionUserId = session.metadata?.user_id || session.client_reference_id;
-    if (sessionUserId !== user.id) {
+    if (!sessionUserId || sessionUserId !== user.id) {
       return Response.json({ error: 'This payment session does not belong to your account' }, { status: 403 });
     }
 

@@ -89,6 +89,9 @@ Deno.serve(async (req) => {
     } catch {
       return Response.json({ error: 'Invalid image_url' }, { status: 400 });
     }
+    if (parsedUrl.protocol !== 'https:') {
+      return Response.json({ error: 'Image URL must use HTTPS' }, { status: 400 });
+    }
     if (!TRUSTED_HOSTS.includes(parsedUrl.hostname)) {
       return Response.json({ error: 'Image must be uploaded through the app' }, { status: 400 });
     }

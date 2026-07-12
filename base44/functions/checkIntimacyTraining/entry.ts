@@ -27,10 +27,27 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'subscription_id and user_id are required' }, { status: 400 });
     }
 
+    // Authenticate the caller when possible (direct user calls).
+    // Workflow/service-role invocations have no user session and fall through
+    // to the subscription ownership check below.
+    let callerUserId = null;
+    try {
+      const me = await base44.auth.me();
+      callerUserId = me?.id || null;
+    } catch {
+      // No user session — workflow/service-role context
+    }
+
+    // If a user session exists, the caller must match the target user_id.
+    // This prevents an authenticated attacker from manipulating other users'
+    // subscriptions by passing a known user_id/subscription_id pair.
+    if (callerUserId && callerUserId !== user_id) {
+      return Response.json({ error: 'Caller identity does not match target user' }, { status: 403 });
+    }
+
     // Verify the subscription actually belongs to the claimed user_id.
-    // This function is invoked from a workflow (service-role context, no user session),
-    // so we must confirm the subscription_id and user_id are legitimately paired
-    // before allowing any mutation or email dispatch.
+    // This is the primary trust boundary for workflow/service-role invocations
+    // (no user session), and a secondary check for direct user calls.
     const subs = await base44.asServiceRole.entities.Subscription.filter({ id: subscription_id });
     const subRecord = subs[0];
     if (!subRecord) {
