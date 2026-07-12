@@ -26,8 +26,8 @@ export const COMPANIONS = [
     accent: "from-amber-500/20 to-rose-500/10",
     personality: withEmotions(MIA_EMOTIONAL_SYSTEM_PROMPT),
     avatar_id: "3559b3f9-29e3-48eb-a4ff-7a7dc5b47ca9",
-    voice_id: "hpp4J3VqNfWAUOO0d1Us",
-    voice_name: "Bella - Professional, Bright, Warm",
+    voice_id: "ThT5KcBeYPX3keUQqHPh",
+    voice_name: "Dorothy - Pleasant, young, British female",
   },
   {
     // ⚠️ LOCKED — Do NOT change this image. Mia is the face of customer service
@@ -44,8 +44,8 @@ export const COMPANIONS = [
     accent: "from-emerald-500/20 to-green-500/10",
     personality: withEmotions(SOFIA_SYSTEM_PROMPT),
     avatar_id: null,
-    voice_id: "x3PfG9wL6FOEApZ1VJ9H",
-    voice_name: "Mia Aussie Accent",
+    voice_id: "Xb7hH8MSUJpSbSDYk0k2",
+    voice_name: "Alice - Confident, British female",
     locked: true,
   },
   {
@@ -60,8 +60,8 @@ export const COMPANIONS = [
     accent: "from-teal-500/20 to-blue-500/10",
     personality: withEmotions(LUNA_SYSTEM_PROMPT),
     avatar_id: null,
-    voice_id: "RzNYiYBiH7YrpC9QKXyc",
-    voice_name: "Sakina - Sensual, Elegant and Meditative",
+    voice_id: "pFZP5JQG7iQjIQuC4Bku",
+    voice_name: "Lily - Raspy, calm, British female",
   },
   {
     id: "sophie",
@@ -75,8 +75,8 @@ export const COMPANIONS = [
     accent: "from-amber-500/20 to-orange-500/10",
     personality: withEmotions(SOFIA_SYSTEM_PROMPT),
     avatar_id: null,
-    voice_id: "cgSgspJ2msm6clMCkdW9",
-    voice_name: "Jessica - Playful, Bright, Warm",
+    voice_id: "XB0fDUnXU5powFXDhCwa",
+    voice_name: "Charlotte - Warm, English-Swedish female",
   },
   {
     id: "zac",
@@ -90,8 +90,8 @@ export const COMPANIONS = [
     accent: "from-sky-500/20 to-slate-500/10",
     personality: withEmotions(ZAC_SYSTEM_PROMPT),
     avatar_id: null,
-    voice_id: "pDoe9k94N27tidKG2ssb",
-    voice_name: "zac-glimr",
+    voice_id: "onwK4e9ZLuTAKqWW03F9",
+    voice_name: "Daniel - Deep, British, middle-aged male",
   },
   {
     id: "zac2",
