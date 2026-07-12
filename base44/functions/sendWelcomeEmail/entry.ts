@@ -6,7 +6,17 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { to_email, to_name, companion_name, from_name, custom_html, custom_subject } = await req.json().catch(() => ({}));
+    const payload = await req.json().catch(() => ({}));
+
+    // Non-admins can only trigger a welcome email to themselves with the
+    // default template; only admins may specify a different recipient or
+    // supply custom subject/HTML content.
+    const to_email = user.role === 'admin' ? (payload.to_email || user.email) : user.email;
+    const to_name = payload.to_name;
+    const companion_name = payload.companion_name;
+    const from_name = user.role === 'admin' ? payload.from_name : undefined;
+    const custom_html = user.role === 'admin' ? payload.custom_html : undefined;
+    const custom_subject = user.role === 'admin' ? payload.custom_subject : undefined;
 
     if (!to_email) return Response.json({ error: 'to_email is required' }, { status: 400 });
 
