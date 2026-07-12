@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Check, X, Loader2, ExternalLink, Video, MessageCircle, Pencil, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, Check, X, Loader2, ExternalLink, Video, MessageCircle, Pencil, Trash2, Upload, Wand2, Volume2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import ImageEnhancer from "@/components/campaign/ImageEnhancer";
+import AudioEnhancer from "@/components/campaign/AudioEnhancer";
 
 export default function CampaignReview() {
   const { toast } = useToast();
@@ -16,6 +18,7 @@ export default function CampaignReview() {
   const [savingEdit, setSavingEdit] = useState(false);
   const [uploadingType, setUploadingType] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [enhancer, setEnhancer] = useState(null);
 
   const loadCampaigns = useCallback(async () => {
     try {
@@ -283,6 +286,25 @@ export default function CampaignReview() {
                         </label>
                       </div>
                     </div>
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        onClick={() => setEnhancer("image")}
+                        disabled={!editData.image_url}
+                        className="flex-1 min-h-[40px] rounded-full border border-primary/30 bg-primary/5 text-primary text-xs font-medium hover:bg-primary/10 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-40"
+                      >
+                        <Wand2 className="w-3.5 h-3.5" />
+                        Enhance Image
+                      </button>
+                      {editData.video_url && (
+                        <button
+                          onClick={() => setEnhancer("audio")}
+                          className="flex-1 min-h-[40px] rounded-full border border-primary/30 bg-primary/5 text-primary text-xs font-medium hover:bg-primary/10 transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <Volume2 className="w-3.5 h-3.5" />
+                          Enhance Audio
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <>
@@ -401,6 +423,20 @@ export default function CampaignReview() {
               )}
             </div>
           ))
+        )}
+        {enhancer === "image" && editData?.image_url && (
+          <ImageEnhancer
+            imageUrl={editData.image_url}
+            onEnhanced={(url) => { setEditData((p) => ({ ...p, image_url: url })); setEnhancer(null); }}
+            onClose={() => setEnhancer(null)}
+          />
+        )}
+        {enhancer === "audio" && editData?.video_url && (
+          <AudioEnhancer
+            videoUrl={editData.video_url}
+            onEnhanced={(url) => { setEditData((p) => ({ ...p, video_url: url })); setEnhancer(null); }}
+            onClose={() => setEnhancer(null)}
+          />
         )}
       </div>
     </div>
