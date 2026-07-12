@@ -78,12 +78,14 @@ export default function CompanionProfile() {
             playsInline
             className="absolute inset-0 w-full h-full object-cover object-top sm:object-center"
           />
-        ) : (
+        ) : companion.image ? (
           <img
             src={companion.image}
             alt={companion.name}
             className="absolute inset-0 w-full h-full object-cover object-top sm:object-center"
           />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-background/30" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent" />
@@ -125,6 +127,36 @@ export default function CompanionProfile() {
           </div>
         </div>
       </section>
+
+      {/* Video gallery — shown when companion has multiple clips */}
+      {companion.videos && companion.videos.length > 1 && (
+        <section className="px-6 py-16 border-t border-border">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="font-heading text-2xl sm:text-3xl font-semibold mb-2">
+              More of {companion.name}
+            </h2>
+            <p className="text-sm text-muted-foreground mb-8">
+              Get to know {companion.name} a little better.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {companion.videos.map((url, i) => (
+                <div
+                  key={i}
+                  className="relative rounded-2xl overflow-hidden border border-border bg-black aspect-[9/16] sm:aspect-video"
+                >
+                  <video
+                    src={url}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA band */}
       <section className="px-6 py-20 sm:py-28 border-t border-border">

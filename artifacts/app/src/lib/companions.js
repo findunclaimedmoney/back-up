@@ -126,7 +126,11 @@ export const COMPANIONS = [
     voice_id: "cjVigY5qzO86Huf0OWal",
     voice_name: "Eric - Smooth, Trustworthy",
     voice_locked: true,
-    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/b2a1c98c0_307f5321d_Zac_Shower_Clip.mp4",
+    video_url: "/videos/blake_promo.mp4",
+    videos: [
+      "/videos/blake_promo.mp4",
+      "/videos/blake_shower.mp4",
+    ],
     stripe_price_id: "price_1TsEbwEHzw6rVQI2pKOBvCx2",
   },
   {
@@ -205,14 +209,14 @@ export const COMPANIONS = [
     description:
       "Monica walks into a room and everything shifts. Confident, playful, and dangerously easy to talk to — she makes you feel like the most interesting person she's ever met.",
     image:
-      "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/22caf2b40_photo_2026-07-03_17-00-35.jpg",
+      null,   // ← upload Monica's profile photo here
     accent: "from-amber-500/20 to-rose-500/10",
     personality: withEmotions(MONICA_SYSTEM_PROMPT),
     avatar_id: null,
     voice_id: "FGY2WhTYpPnrIDTdsKH5",
     voice_name: "Laura - Enthusiast, Quirky Attitude",
     voice_locked: true,
-    video_url: "https://media.base44.com/videos/public/6a4ad4122d2c58f83324b2ce/18ff6aace_Jessica_Hero_Video.mp4",
+    video_url: null,   // ← upload Monica's hero video here
   },
 ];
 
