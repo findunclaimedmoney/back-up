@@ -5,6 +5,7 @@ import entitiesRouter from "./entities";
 import integrationsRouter from "./integrations";
 import functionsRouter from "./functions";
 import companionRouter from "./companion";
+import heygenRouter from "./heygen";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use("/entities", entitiesRouter);
 router.use("/integrations", integrationsRouter);
 router.use("/functions", functionsRouter);
 router.use(companionRouter);
+router.use(heygenRouter);
 
 export default router;
