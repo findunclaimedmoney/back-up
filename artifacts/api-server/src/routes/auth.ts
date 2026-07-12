@@ -63,7 +63,7 @@ router.post("/register", async (req, res) => {
     const hash = await bcrypt.hash(String(password), 12);
     const [user] = await db.insert(usersTable).values({ email: String(email).toLowerCase(), passwordHash: hash, emailVerified: false }).returning({ id: usersTable.id, email: usersTable.email });
     const code = await _generateOtp(String(email).toLowerCase(), "registration");
-    req.log.info({ email, code }, "Registration OTP (log only — wire up email to deliver)");
+    req.log.info({ email }, "Registration OTP generated — wire up email delivery to send the code");
     return res.json({ message: "Check your email for a verification code.", email: user.email });
   } catch (err) {
     req.log.error({ err }, "auth/register error");
@@ -104,7 +104,7 @@ router.post("/resend-otp", async (req, res) => {
   if (!email) return res.status(400).json({ error: "Email required" });
   try {
     const code = await _generateOtp(String(email).toLowerCase(), "registration");
-    req.log.info({ email, code }, "OTP resent");
+    req.log.info({ email }, "OTP resent — wire up email delivery to send the code");
     return res.json({ success: true });
   } catch (err) {
     req.log.error({ err }, "auth/resend-otp error");
@@ -149,7 +149,7 @@ router.post("/forgot-password", async (req, res) => {
     try {
       const token = await _generateResetToken(String(email).toLowerCase());
       // In production, send email with link: /reset-password?token=TOKEN
-      req.log.info({ email, resetLink: `/reset-password?token=${token}` }, "Password reset token generated");
+      req.log.info({ email }, "Password reset token generated — wire up email delivery to send the link");
     } catch (err) {
       req.log.error({ err }, "forgot-password token error");
     }
