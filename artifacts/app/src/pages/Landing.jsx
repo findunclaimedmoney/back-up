@@ -208,7 +208,7 @@ export default function Landing() {
       <section className="px-6 pb-20 border-t border-border pt-16">
         <div className="max-w-4xl mx-auto relative overflow-hidden rounded-[2rem] border border-border">
           <img
-            src="https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/ba7d734da_ElegantHallwayPose.png"
+            src="/images/sophie_hallway.png"
             alt="Warm intimate moment"
             className="w-full h-[280px] sm:h-[360px] object-cover object-center"
           />
