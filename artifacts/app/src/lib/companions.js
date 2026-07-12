@@ -1,4 +1,5 @@
 import { MIA_EMOTIONAL_SYSTEM_PROMPT, MIA_EMOTION_STATES_PROMPT } from "@/lib/miaEmotions";
+import { JESS_SYSTEM_PROMPT, JESS_EMOTION_STATES_PROMPT } from "@/lib/jessBrain";
 import { ZAC_SYSTEM_PROMPT } from "@/lib/zacBrain";
 import { ZAC_CONFIDENT_SYSTEM_PROMPT } from "@/lib/zacConfidentBrain";
 import { LEO_SYSTEM_PROMPT } from "@/lib/leoBrain";
@@ -29,7 +30,7 @@ export const COMPANIONS = [
     image:
       "https://media.base44.com/images/public/6a4ad4122d2c58f83324b2ce/72ed256b7_image-3.png",
     accent: "from-amber-500/20 to-rose-500/10",
-    personality: withEmotions(MIA_EMOTIONAL_SYSTEM_PROMPT),
+    personality: `${JESS_SYSTEM_PROMPT}\n\n${JESS_EMOTION_STATES_PROMPT}`,
     avatar_id: "3559b3f9-29e3-48eb-a4ff-7a7dc5b47ca9",
     voice_id: "ThT5KcBeYPX3keUQqHPh",
     voice_name: "Dorothy - Pleasant, young, British female",
